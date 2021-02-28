@@ -45,8 +45,7 @@ function partitionDisk() {
 
         printf "\nWrite to disk?\n"
 
-        write_confirmed=confirmByUser
-        if [ $write_confirmed ]; then
+        if confirmByUser; then
             clear
             # gdiskPartition $swap_size $swap_size_suffix true
             break

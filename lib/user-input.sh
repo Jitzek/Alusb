@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function confirmByUser() {
-    read -p "Y/y/N/n" yn
+    read -p "Y/y/N/n: " yn
 
     valid_input=('Y' 'y' 'N' 'n')
     while [[ " ${valid_input[@]} " =~ " ${yn} " ]]; do
