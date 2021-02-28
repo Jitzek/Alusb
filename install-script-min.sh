@@ -5,7 +5,7 @@ source "./lib/user-input.sh"
 
 partitionDisk
 
-partitionDisk() {
+function partitionDisk() {
     printf "Which block device should Linux be installed on?\n\n"
 
     listBlockDevices

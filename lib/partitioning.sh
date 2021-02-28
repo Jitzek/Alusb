@@ -5,7 +5,7 @@ export -f listBlockDevices
 #+ gdiskPartition SWAP_SIZE:int SWAP_SIZE_SUFFIX:string WRITE_TO_DISK:boolean
 #% DESCRIPTION
 #%  Partition disk using gdisk
-gdiskPartition() {
+function gdiskPartition() {
     (
         # Creating MBR partition
         echo d
@@ -45,6 +45,6 @@ gdiskPartition() {
     ) | gdisk /dev/$block_device
 }
 
-listBlockDevices() {
+function listBlockDevices() {
     lsblk -no kname
 }

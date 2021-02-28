@@ -1,6 +1,6 @@
 export -f confirmByUser
 
-confirmByUser() {
+function confirmByUser() {
     read -p "Y/y/N/n" yn
 
     valid_input=('Y' 'y' 'N' 'n')
