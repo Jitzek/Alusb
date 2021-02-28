@@ -3,7 +3,9 @@
 source "./lib/partitioning.sh"
 source "./lib/user-input.sh"
 
-partitionDisk
+function main () {
+    partitionDisk
+}
 
 function partitionDisk() {
     printf "Which block device should Linux be installed on?\n\n"
@@ -56,3 +58,5 @@ function partitionDisk() {
     #    mkswap /dev/${block_device}4
     # fi
 }
+
+main
