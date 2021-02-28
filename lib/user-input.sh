@@ -15,10 +15,17 @@ function confirmByUser() {
     done
     if [[ $yn == 'N' ]] || [[ $yn == 'n' ]]; then
         false
+        return
     fi
     true
+    return
 }
 
 function isNumeric() {
-    $1 =~ ^[0-9]+$
+    if [[ $1 =~ ^[0-9]+$ ]]; then
+        true
+        return
+    fi
+    false
+    return
 }
