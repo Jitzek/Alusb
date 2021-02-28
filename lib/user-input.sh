@@ -1,3 +1,5 @@
+#!/bin/bash
+
 export -f confirmByUser
 
 function confirmByUser() {
