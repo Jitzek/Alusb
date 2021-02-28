@@ -64,6 +64,8 @@ function partitionDisk() {
                     break
                 fi
             done
+        else
+            has_swap=false
         fi
 
         if $has_swap; then
