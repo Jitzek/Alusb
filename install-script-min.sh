@@ -36,9 +36,7 @@ function partitionDisk() {
 
         swap_size_suffix="MB"
 
-        echo $has_swap
-
-        if [ $has_swap ]; then
+        if $has_swap; then
             read -p "Determine suffix (default: ${swap_size_suffix}), Swap will be created using gdisk: " swap_size_suffix
         else
             printf "No Swap partition will be created"
