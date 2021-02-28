@@ -1,8 +1,5 @@
 #!/bin/bash
 
-export -f gdiskPartition
-export -f listBlockDevices
-
 #% gdiskPartition
 #+ gdiskPartition SWAP_SIZE:int SWAP_SIZE_SUFFIX:string WRITE_TO_DISK:boolean
 #% DESCRIPTION

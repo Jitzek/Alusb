@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export -f confirmByUser
-
 function confirmByUser() {
     read -p "Y/y/N/n" yn
 
