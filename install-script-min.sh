@@ -30,7 +30,8 @@ function partitionDisk() {
 
         printf "Create a Swap partition?\n"
         if confirmByUser; then
-            has_swap=true
+            # Reset Swap partition size
+            swap_partition_size=""
             while true; do
                 printf "Insert size of Swap partition\n"
                 printf "Only use numbers, suffix will be asked for later\n"
@@ -53,32 +54,30 @@ function partitionDisk() {
 
                 swap_size_suffix="MB"
                 read -p "Determine suffix (default: ${swap_size_suffix}), Swap will be created using gdisk: " swap_size_suffix
-                printf "\n"
                 if [ -z "$swap_size_suffix" ]; then
                     swap_size_suffix="MB"
                 fi
 
-                printf "A Swap partition with size ${swap_size}${swap_size_suffix} will be created.\n"
+                # Set Swap partition size
+                swap_partition_size=${swap_size}${swap_size_suffix}
+
+                printf "\nA Swap partition with size ${swap_partition_size} will be created.\n"
                 printf "Confirm?\n"
                 if confirmByUser; then
                     break
                 fi
             done
-        else
-            has_swap=false
         fi
 
-        if $has_swap; then
-            gdiskPartition $swap_size $swap_size_suffix false
-        else
-            gdiskPartitionNoSwap false
-        fi
+        # Display result of partitioning to user without writing to disk
+        gdiskPartition false
 
         printf "\nWrite to disk?\n"
 
         if confirmByUser; then
             clear
-            # gdiskPartition $swap_size $swap_size_suffix true
+            # Partition and write to disk
+            # gdiskPartition true
             break
         fi
     done

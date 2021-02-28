@@ -3,7 +3,7 @@
 #% confirmByUser
 #+ confirmByUser
 #% DESCRIPTION
-#%  
+#%
 #$ @return  true if user confirmed, false if user denied
 function confirmByUser() {
     read -p "Y/y/N/n: " yn
