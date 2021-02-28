@@ -3,7 +3,7 @@
 source "./lib/partitioning.sh"
 source "./lib/user-input.sh"
 
-function main () {
+function main() {
     partitionDisk
 }
 
@@ -43,9 +43,10 @@ function partitionDisk() {
         fi
         gdiskPartition $swap_size $swap_size_suffix false
 
-        printf "\nWrite to disk?"
+        printf "\nWrite to disk?\n"
 
-        if [ confirmByUser ]; then
+        write_confirmed=confirmByUser
+        if [ $write_confirmed ]; then
             clear
             # gdiskPartition $swap_size $swap_size_suffix true
             break
