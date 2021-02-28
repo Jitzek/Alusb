@@ -66,7 +66,11 @@ function partitionDisk() {
             done
         fi
 
-        gdiskPartition $swap_size $swap_size_suffix false
+        if $has_swap; then
+            gdiskPartition $swap_size $swap_size_suffix false
+        else
+            gdiskPartitionNoSwap false
+        fi
 
         printf "\nWrite to disk?\n"
 
