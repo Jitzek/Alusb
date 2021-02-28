@@ -31,7 +31,7 @@ function partitionDisk() {
         printf "Create a Swap partition?\n"
         if confirmByUser; then
             has_swap=true
-            while true:
+            while true; do
                 printf "Insert size of Swap partition\n"
                 printf "Only use numbers, suffix will be asked for later\n"
                 read swap_size
@@ -65,7 +65,7 @@ function partitionDisk() {
                 fi
             done
         fi
-        
+
         gdiskPartition $swap_size $swap_size_suffix false
 
         printf "\nWrite to disk?\n"
@@ -80,7 +80,7 @@ function partitionDisk() {
     mkfs.fat -F32 /dev/${block_device}2
     mkfs.ext4 /dev/${block_device}3
     if [ $has_swap ]; then
-       mkswap /dev/${block_device}4
+        mkswap /dev/${block_device}4
     fi
 }
 
