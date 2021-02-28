@@ -31,21 +31,21 @@ function partitionDisk() {
         printf "Only use numbers, suffix can be given later\n"
         read swap_size
 
-        suffix="MB"
-        read "Determine suffix (default: ${suffix}), Swap will be created using gdisk: " swap_size_suffix
-
         has_swap=true
         [ -z "$swap_size" ] || [ $swap_size -lt 1 ] && has_swap=false
 
+        swap_size_suffix="MB"
+
         if [ ! $has_swap ]; then
             printf "No Swap partition will be created"
+        else
+            read "Determine suffix (default: ${suffix}), Swap will be created using gdisk: " swap_size_suffix
         fi
-
         gdiskPartition $swap_size $swap_size_suffix false
 
         printf "\nWrite to disk?"
 
-        if [ confirmedByUser ]; then
+        if [ confirmByUser ]; then
             clear
             # gdiskPartition $swap_size $swap_size_suffix true
             break
