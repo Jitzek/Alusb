@@ -18,7 +18,7 @@ function partitionDisk() {
     while true; do
         read -p "Please insert the name of the block device: " block_device
         printf 'Given block device: "%s". Is this correct?\n' "/dev/$block_device"
-        if [ confirmedByUser ]; then
+        if confirmByUser; then
             break
         fi
     done
@@ -26,7 +26,7 @@ function partitionDisk() {
     while true; do
         clear
 
-        printf "/dev/%s \n\n" "$block_device"
+        printf "Block Device: /dev/%s \n\n" "$block_device"
 
         printf "Create a Swap partition?\n"
         if confirmByUser; then

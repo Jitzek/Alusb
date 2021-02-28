@@ -14,11 +14,11 @@ function confirmByUser() {
         read -p "Y/y/N/n: " yn
     done
     if [[ $yn == 'N' ]] || [[ $yn == 'n' ]]; then
-        return false
+        false
     fi
-    return true
+    true
 }
 
 function isNumeric() {
-    return $1 =~ ^[0-9]+$
+    $1 =~ ^[0-9]+$
 }
