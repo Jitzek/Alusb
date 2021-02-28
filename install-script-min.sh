@@ -39,7 +39,7 @@ function partitionDisk() {
         if [ ! $has_swap ]; then
             printf "No Swap partition will be created"
         else
-            read "Determine suffix (default: ${suffix}), Swap will be created using gdisk: " swap_size_suffix
+            read -p "Determine suffix (default: ${suffix}), Swap will be created using gdisk: " swap_size_suffix
         fi
         gdiskPartition $swap_size $swap_size_suffix false
 
