@@ -35,7 +35,7 @@ function gdiskPartition() {
         echo EF00
 
         # Creating (optional) Swap partition
-        if [[ -z $swap_partition_size ]]; then
+        if [[ ! -z $swap_partition_size ]]; then
             echo n
             echo 4
             echo
