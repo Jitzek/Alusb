@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#% confirmByUser
+#+ confirmByUser
+#% DESCRIPTION
+#%  
+#$ @return  true if user confirmed, false if user denied
 function confirmByUser() {
     read -p "Y/y/N/n: " yn
 
@@ -12,4 +17,8 @@ function confirmByUser() {
         return false
     fi
     return true
+}
+
+function isNumeric() {
+    return $1 =~ ^[0-9]+$
 }
