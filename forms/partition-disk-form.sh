@@ -1,8 +1,8 @@
 source "./forms/form.sh"
 
 function partitionDiskForm() {
-    partitionDiskFormSteps=(step1_getBlockDevice step2_createOptionalSwap step3_partitionDisk)
-    if ! subForm "Disk Partitioning" "${partitionDiskFormSteps[@]}"; then
+    clear
+    if ! form "Disk Partitioning" "${(step1_getBlockDevice step2_createOptionalSwap step3_partitionDisk)[@]}"; then
         false
         return
     fi
@@ -11,19 +11,17 @@ function partitionDiskForm() {
 }
 
 function step1_getBlockDevice() {
-    # Reset block device
-
     while true; do
-        clear
+        # Reset block device
         block_device=""
 
         printf "Which block device should Linux be installed on?\n\n"
 
         listBlockDevices
 
-        printf '\nType "cancel" to exit\n'
+        printf '\nType ":cancel" to exit\n'
         read -p "Please insert the name of the block device: /dev/" block_device
-        if [ $block_device == "cancel" ]; then
+        if [ $block_device == ":cancel" ]; then
             # Reset block device
             block_device=""
             false
@@ -103,10 +101,10 @@ function step3_partitionDisk() {
     # gdiskPartition $block_device true
     break
 
-    mkfs.fat -F32 ${block_device}2
-    mkfs.ext4 ${block_device}3
+    mkfs.fat -F32 "${block_device}${esp_partition_num}"
+    mkfs.ext4 "${block_device}${root_partition_num}"
     if [ $has_swap ]; then
-        mkswap ${block_device}4
+        mkswap "${block_device}${swap_partition_num}"
     fi
 
     true

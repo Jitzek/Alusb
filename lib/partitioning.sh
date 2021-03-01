@@ -3,6 +3,11 @@
 # The block device to partition
 block_device=""
 
+mbr_partition_num="1"
+esp_partition_num="2"
+root_partition_num="3"
+swap_partition_num="4"
+
 # The MBR partition defaults to 10MB
 mbr_partition_size="10MB"
 
@@ -25,14 +30,14 @@ function gdiskPartition() {
         # Creating MBR partition
         echo d
         echo n
-        echo 1
+        echo $mbr_partition_num
         echo
         echo "+${mbr_partition_size}"
         echo EF02
 
         # Creating ESP partition
         echo n
-        echo 2
+        echo $esp_partition_num
         echo
         echo "+${esp_partition_size}"
         echo EF00
@@ -40,7 +45,7 @@ function gdiskPartition() {
         # Creating (optional) Swap partition
         if [[ ! -z $swap_partition_size ]]; then
             echo n
-            echo 4
+            echo $swap_partition_num
             echo
             echo "+${swap_partition_size}"
             echo 8200
@@ -49,7 +54,7 @@ function gdiskPartition() {
 
         # Creating Linux partition
         echo n
-        echo 3
+        echo $root_partition_num
         echo
         if [[ ! -z $root_partition_size ]]; then
             echo "+${root_partition_size}"
