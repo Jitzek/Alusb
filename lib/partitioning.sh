@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# The block device to partition
+block_device=""
 
 # The MBR partition defaults to 10MB
 mbr_partition_size="10MB"
@@ -15,7 +17,7 @@ swap_partition_size=""
 root_partition_size=""
 
 #% gdiskPartition
-#+ gdiskPartition BLOCK_DEVICE:string WRITE_TO_DISK:boolean
+#+ gdiskPartition WRITE_TO_DISK:boolean
 #% DESCRIPTION 
 #%  Partition disk using gdisk
 function gdiskPartition() {
@@ -57,10 +59,10 @@ function gdiskPartition() {
         echo 8300
 
         echo p
-        if [ $2 ]; then
+        if [ $1 ]; then
             echo w
         fi
-    ) | gdisk $1
+    ) | gdisk $block_device
 }
 
 function listBlockDevices() {
