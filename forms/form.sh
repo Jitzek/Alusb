@@ -1,5 +1,5 @@
 #% form
-#+ form STEPS:array[function] ALLOW_PREV:boolean
+#+ form STEPS:array[function] FORM_NAME:string ALLOW_PREV:boolean
 #% DESCRIPTION 
 #%  Executes given array of functions in sequential order
 #%  If a function returns false it will return to the previous function
@@ -7,6 +7,8 @@
 function formWithPrev() {
     prev=":prev"
 
+    name=$1
+    shift
     steps=("$@")
 
     for (( i=0; i <= ${#steps[@]}; i++ )) do
@@ -15,6 +17,7 @@ function formWithPrev() {
             return
         fi
         printf "\n"
+        printf "%s %s/%s\n" "$name" "$i" "${#steps[@]}"
         printf 'Type "%s" to return to the previous step (any other input will continue the form) ' "$prev"
         read uprev
         printf "\n"

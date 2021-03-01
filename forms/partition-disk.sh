@@ -2,7 +2,7 @@ source "./forms/form.sh"
 
 function partitionDiskForm() {
     partitionDiskFormSteps=(step1_getBlockDevice step2_createOptionalSwap step3_partitionDisk)
-    if ! formWithPrev "${partitionDiskFormSteps[@]}"; then
+    if ! formWithPrev "Disk Partitioning" "${partitionDiskFormSteps[@]}"; then
         false
         return
     fi
@@ -93,16 +93,22 @@ function step3_partitionDisk() {
 
     printf "\nWrite to disk?\n"
 
-    if confirmByUser; then
-        clear
-        # Partition and write to disk
-        # gdiskPartition $block_device true
-        break
+    if ! confirmByUser; then
+        false
+        return
     fi
+
+    clear
+    # Partition and write to disk
+    # gdiskPartition $block_device true
+    break
 
     mkfs.fat -F32 ${block_device}2
     mkfs.ext4 ${block_device}3
     if [ $has_swap ]; then
         mkswap ${block_device}4
     fi
+
+    true
+    returns
 }
