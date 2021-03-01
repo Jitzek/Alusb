@@ -17,7 +17,8 @@ function partitionDisk() {
 
     while true; do
         read -p "Please insert the name of the block device: " block_device
-        printf 'Given block device: "%s". Is this correct?\n' "/dev/$block_device"
+        block_device="/dev/$block_device"
+        printf 'Given block device: "%s". Is this correct?\n' $block_device
         if confirmByUser; then
             break
         fi
@@ -26,7 +27,7 @@ function partitionDisk() {
     while true; do
         clear
 
-        printf "Block Device: /dev/%s \n\n" "$block_device"
+        printf "Block Device: %s \n\n" "$block_device"
 
         printf "Create a Swap partition?\n"
         if confirmByUser; then
@@ -70,22 +71,22 @@ function partitionDisk() {
         fi
 
         # Display result of partitioning to user without writing to disk
-        gdiskPartition false
+        gdiskPartition $block_device false
 
         printf "\nWrite to disk?\n"
 
         if confirmByUser; then
             clear
             # Partition and write to disk
-            # gdiskPartition true
+            # gdiskPartition $block_device true
             break
         fi
     done
 
-    mkfs.fat -F32 /dev/${block_device}2
-    mkfs.ext4 /dev/${block_device}3
+    mkfs.fat -F32 ${block_device}2
+    mkfs.ext4 ${block_device}3
     if [ $has_swap ]; then
-        mkswap /dev/${block_device}4
+        mkswap ${block_device}4
     fi
 }
 

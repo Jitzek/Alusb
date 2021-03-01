@@ -15,8 +15,8 @@ swap_partition_size=""
 root_partition_size=""
 
 #% gdiskPartition
-#+ gdiskPartition WRITE_TO_DISK:boolean
-#% DESCRIPTION
+#+ gdiskPartition BLOCK_DEVICE:string WRITE_TO_DISK:boolean
+#% DESCRIPTION 
 #%  Partition disk using gdisk
 function gdiskPartition() {
     (
@@ -57,10 +57,10 @@ function gdiskPartition() {
         echo 8300
 
         echo p
-        if [ $1 ]; then
+        if [ $2 ]; then
             echo w
         fi
-    ) | gdisk /dev/$block_device
+    ) | gdisk $1
 }
 
 function listBlockDevices() {
