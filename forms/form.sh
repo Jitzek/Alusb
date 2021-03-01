@@ -12,12 +12,13 @@ function formWithPrev() {
     steps=("$@")
 
     for (( i=0; i <= ${#steps[@]}; i++ )) do
+        clear
         if [ $i -lt 0 ]; then
             false
             return
         fi
         printf "\n"
-        printf "%s %s/%s\n" "$name" "$i" "${#steps[@]}"
+        printf "%s %s/%s\n" "$name" "$(($i+1))" "${#steps[@]}"
         printf 'Type "%s" to return to the previous step (any other input will continue the form) ' "$prev"
         read uprev
         printf "\n"

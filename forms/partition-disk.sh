@@ -15,7 +15,7 @@ function step1_getBlockDevice() {
 
     while true; do
         clear
-        $block_device=""
+        block_device=""
 
         printf "Which block device should Linux be installed on?\n\n"
 
