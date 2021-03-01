@@ -1,7 +1,7 @@
 source "./forms/form.sh"
 
 function partitionDiskForm() {
-    declare -a partitionDiskFormSteps=step1_getBlockDevice step2_createOptionalSwap step3_partitionDisk
+    partitionDiskFormSteps=step1_getBlockDevice step2_createOptionalSwap step3_partitionDisk
     if ! form "${partitionDiskFormSteps[@]}" true; then
         false
         return
