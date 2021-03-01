@@ -2,7 +2,7 @@ source "./forms/form.sh"
 
 function partitionDiskForm() {
     declare -a partitionDiskFormSteps=step1_getBlockDevice step2_createOptionalSwap step3_partitionDisk
-    if ! form $partitionDiskFormSteps true; then
+    if ! form "${partitionDiskFormSteps[@]}" true; then
         false
         return
     fi
@@ -20,7 +20,7 @@ function step1_getBlockDevice() {
         printf "Which block device should Linux be installed on?\n\n"
 
         listBlockDevices
-        
+
         printf '\nType "cancel" to exit\n'
         read -p "Please insert the name of the block device: /dev/" block_device
         if [ $block_device == "cancel" ]; then

@@ -7,7 +7,7 @@
 function form() {
     prev=":prev"
 
-    steps=$1
+    steps=("$@")
 
     for (( i=0; i <= ${#steps[@]}; i++ )) do
         if [ $i -lt 0 ]; then
