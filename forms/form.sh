@@ -4,7 +4,7 @@
 #%  Executes given array of functions in sequential order
 #%  If a function returns false it will return to the previous function
 #%  If there are no previous functions, the form will be exited
-function formWithPrev() {
+function subForm() {
     prev=":prev"
 
     name=$1
@@ -35,7 +35,7 @@ function formWithPrev() {
     return
 }
 
-function formWithoutPrev() {
+function mainForm() {
     prev=":prev"
 
     steps=("$@")

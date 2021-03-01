@@ -8,7 +8,7 @@ source "./forms/partition-disk.sh"
 function main() {
     clear
     installFormSteps=(partitionDiskForm)
-    if ! formWithoutPrev "${installFormSteps}"; then
+    if ! mainForm "${installFormSteps}"; then
         printf "Exiting script..."
         exit
     fi
