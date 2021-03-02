@@ -9,22 +9,27 @@ function main() {
 
     clear
 
+    if ! form "Alusb" ${(partitionDiskForm installBaseForm configureSystemForm)[@]}; then   
+        printf "Exiting Script...\n"
+        exit 1
+    fi
+
     # Partition Disk
-    if ! askForSkip "Step 1: Partitioning Disk"; then
-        partitionDiskForm
-    fi
+    # if ! askForSkip "Step 1: Partitioning Disk"; then
+    #     partitionDiskForm
+    # fi
 
-    # Install Base Package Set
-    if ! askForSkip "Step 2: Installing Base Package Set"; then
-        installBaseForm
-    fi
+    # # Install Base Package Set
+    # if ! askForSkip "Step 2: Installing Base Package Set"; then
+    #     installBaseForm
+    # fi
 
-    # Configuring New System
-    if ! askForSkip "Step 3: Configuring New System"; then
-        configureSystemForm
-    fi
+    # # Configuring New System
+    # if ! askForSkip "Step 3: Configuring New System"; then
+    #     configureSystemForm
+    # fi
 
-    exit
+    exit 0
 }
 
 function askForSkip() {
