@@ -18,23 +18,23 @@ function step1_locale() {
     while true; do
         printf "Setting Timezone: \n\n"
         printf "Which Region should be configured for this system?\n"
-        printf 'Type ":cancel" to exit\n'
+        printf 'Type ":cancel" to exit\n\n'
         read region
         if [[ -z $region ]]; then
-            printf "Region can't be empty"
+            printf "Region can't be empty\n"
             continue 
         fi
         if [ $region == ":cancel" ]; then
             false
             return
         fi
-        printf "Which City should be configured for this system?\n\n"
+        printf "Which City should be configured for this system?\n"
         read city
         if [[ -z $city ]]; then
-            printf "City can't be empty"
+            printf "City can't be empty\n"
             continue 
         fi
-        printf "Region: %s   city: %s" "$region" "$city"
+        printf "Region: %s | City: %s\n" "$region" "$city"
         printf "Is this correct?"
         if ! confirmByUser; then
             continue

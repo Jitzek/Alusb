@@ -1,4 +1,5 @@
 installBaseForm() {
+    clear
     printf "\nInstalling Base System\n\nContinue?\n"
     if ! confirmByUser; then
         false
