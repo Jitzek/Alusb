@@ -24,14 +24,16 @@ function form() {
         read fInput
         printf "\n"
         if [[ $fInput == $fprev ]]; then
+            # Return to previous step
             i=$i-2
             continue
         fi
         if [[ $fInput == $fskip ]]; then
-            i=${#steps[@]}
+            # Skip current step
             continue
         fi
         if ! ${steps[$i]}; then
+            # Step was canceled, return to previous step
             i=$i-2
             continue
         fi
