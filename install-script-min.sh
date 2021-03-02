@@ -9,7 +9,7 @@ function main() {
 
     clear
 
-    if ! form "Alusb" ${(partitionDiskForm installBaseForm configureSystemForm)[@]}; then   
+    if ! form "Alusb" partitionDiskForm installBaseForm configureSystemForm; then   
         printf "Exiting Script...\n"
         exit 1
     fi

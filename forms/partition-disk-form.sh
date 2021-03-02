@@ -2,7 +2,8 @@ source "./forms/form.sh"
 
 function partitionDiskForm() {
     clear
-    if ! form "Disk Partitioning" "${(step1_getBlockDevice step2_createOptionalSwap step3_partitionDisk)[@]}"; then
+    
+    if ! form "Disk Partitioning" step1_getBlockDevice step2_createOptionalSwap step3_partitionDisk; then
         false
         return
     fi

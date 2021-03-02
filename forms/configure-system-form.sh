@@ -1,7 +1,7 @@
 
 function configureSystemForm() {
     clear
-    if ! form "System Configuration" "${(step1_locale step2_language step3_hostname step4_sudo)[@]}"; then
+    if ! form "System Configuration" step1_locale step2_language step3_hostname step4_sudo; then
         false
         return
     fi
