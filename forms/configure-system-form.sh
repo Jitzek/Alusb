@@ -1,7 +1,7 @@
 
 function configureSystemForm() {
     clear
-    printf "Configuring System\n\nContinue?\n"
+    printf "\nConfiguring System\n\nContinue?\n"
     if ! confirmByUser; then
         false
         return

@@ -2,7 +2,7 @@ source "./forms/form.sh"
 
 function partitionDiskForm() {
     clear
-    printf "Partitioning Disk\n\nContinue?\n\n"
+    printf "\nPartitioning Disk\n\nContinue?\n\n"
     if ! confirmByUser; then
         false
         return

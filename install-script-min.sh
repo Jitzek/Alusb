@@ -3,7 +3,9 @@
 source "./lib/user-input.sh"
 source "./lib/partitioning.sh"
 source "./forms/form.sh"
+source "./forms/install-base-form.sh"
 source "./forms/partition-disk-form.sh"
+source "./forms/configure-system-form.sh"
 
 function main() {
 
