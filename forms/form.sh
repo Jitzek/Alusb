@@ -12,7 +12,7 @@ function form() {
     shift
     steps=("$@")
 
-    for ((i = 0; i <= ${#steps[@]}; i++)); do
+    for ((i = 0; i <= ${#steps[@]} - 1; i++)); do
         clear
         if [ $i -lt 0 ]; then
             false
