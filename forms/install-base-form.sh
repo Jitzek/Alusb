@@ -1,4 +1,10 @@
 installBaseForm() {
+    printf "Installing Base System\n\nContinue?\n"
+    if ! confirmByUser; then
+        false
+        return
+    fi
+
     mount "${block_device}${root_partition_num}" /mnt
     mkdir /mnt/boot
     mount "${block_device}${esp_partition_num}" /mnt/boot
@@ -9,4 +15,7 @@ installBaseForm() {
     pacstrap /mnt base linux linux-firmware
 
     genfstab -U /mnt >> /mnt/etc/fstab
+
+    true
+    return
 }

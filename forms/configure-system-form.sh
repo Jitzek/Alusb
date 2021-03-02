@@ -1,6 +1,11 @@
 
 function configureSystemForm() {
     clear
+    printf "Configuring System\n\nContinue?\n"
+    if ! confirmByUser; then
+        false
+        return
+    fi
     if ! form "System Configuration" step1_locale step2_language step3_hostname step4_sudo; then
         false
         return

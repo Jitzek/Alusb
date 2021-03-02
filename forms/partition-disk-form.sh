@@ -2,7 +2,11 @@ source "./forms/form.sh"
 
 function partitionDiskForm() {
     clear
-    
+    printf "Partitioning Disk\n\nContinue?\n\n"
+    if ! confirmByUser; then
+        false
+        return
+    fi
     if ! form "Disk Partitioning" step1_getBlockDevice step2_createOptionalSwap step3_partitionDisk; then
         false
         return
@@ -109,5 +113,5 @@ function step3_partitionDisk() {
     fi
 
     true
-    returns
+    return
 }
