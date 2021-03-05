@@ -66,19 +66,22 @@ function prompt() {
 #% DESCRIPTION
 #%  Partition disk using gdisk
 function gdiskPartition() {
+    if [[ ! -z $partition_scheme["ext4"] ]]; then
+        echo "TEST"
+    else
     (
         # Creating MBR partition
         echo d
         echo n
         echo 1
-        echo
+        echo ""
         echo "+${partition_scheme["mbr"]}"
         echo EF02
 
         # Creating ESP partition
         echo n
         echo 2
-        echo
+        echo ""
         echo "+${partition_scheme["esp"]}"
         echo EF00
 
@@ -86,7 +89,7 @@ function gdiskPartition() {
         if [[ ! -z $partition_scheme["swap"] ]]; then
             echo n
             echo 4
-            echo
+            echo ""
             echo "+${partition_scheme["swap"]}"
             echo 8200
         fi
@@ -94,11 +97,11 @@ function gdiskPartition() {
         # Creating Linux partition
         echo n
         echo 3
-        echo
+        echo ""
         if [[ ! -z $partition_scheme["ext4"] ]]; then
             echo "+${partition_scheme["ext4"]}"
         else
-            echo
+            echo ""
         fi
         echo 8300
 
