@@ -11,7 +11,7 @@ function form() {
             read -p "Please insert the name of the block device: /dev/" block_device
             block_device="/dev/$block_device"
             printf 'Given block device: "%s". Is this correct?\n' $block_device
-            if confirmByUser; then
+            if prompt; then
                 break
             fi
         done
@@ -32,7 +32,7 @@ function form() {
 
             printf "\nAn MBR partition with size ${partition_scheme["mbr"]} will be created.\n"
             printf "Confirm?\n"
-            if ! confirmByUser; then
+            if ! prompt; then
                 continue
             fi
             break
@@ -54,7 +54,7 @@ function form() {
 
             printf "\nAn ESP partition with size ${partition_scheme["esp"]} will be created.\n"
             printf "Confirm?\n"
-            if ! confirmByUser; then
+            if ! prompt; then
                 continue
             fi
             break
@@ -77,7 +77,7 @@ function form() {
 
             printf "Region: %s\n" "$region"
             printf "Confirm?\n"
-            if ! confirmByUser; then
+            if ! prompt; then
                 continue
             fi
             break
@@ -100,7 +100,7 @@ function form() {
 
             printf "City: %s\n" "$city"
             printf "Confirm?\n"
-            if ! confirmByUser; then
+            if ! prompt; then
                 continue
             fi
             break
@@ -120,7 +120,7 @@ function form() {
             fi
             printf "Chosen language: %s\n" "$lang"
             printf "Confirm?\n"
-            if ! confirmByUser; then
+            if ! prompt; then
                 continue
             fi
             break
@@ -140,7 +140,7 @@ function form() {
             fi
             printf "Chosen hostname: %s\n" $hostname
             printf "Confirm?\n"
-            if ! confirmByUser; then
+            if ! prompt; then
                 continue
             fi
             break
@@ -163,7 +163,7 @@ function form() {
                 continue
             fi
             printf "Confirm?\n"
-            if ! confirmByUser; then
+            if ! prompt; then
                 continue
             fi
             break
@@ -175,14 +175,14 @@ function form() {
         printf "\nNo user name provided\n"
         while true; do
             printf "Create a user?\n"
-            if ! confirmByUser; then
+            if ! prompt; then
                 break
             fi
             printf "Please provide a name for the new user\n"
             read user_name
             printf "Chosen username: %s\n" $user_name
             printf "Confirm?\n"
-            if ! confirmByUser; then
+            if ! prompt; then
                 continue
             fi
             break
@@ -208,7 +208,7 @@ function form() {
                 continue
             fi
             printf "Confirm?\n"
-            if ! confirmByUser; then
+            if ! prompt; then
                 continue
             fi
             break
@@ -217,7 +217,7 @@ function form() {
 
     if [[ -z $give_user_sudo_access ]]; then
         printf "Give new user sudo access?\n"
-        if confirmByUser; then
+        if prompt; then
             give_user_sudo_access=true
         else
             give_user_sudo_access=false
