@@ -70,7 +70,7 @@ function form() {
                 printf "Given input was empty\n"
                 continue
             fi
-            if ! test -f "/usr/share/zoneinfo/$region"; then
+            if ! test -d "/usr/share/zoneinfo/$region"; then
                 printf '"/usr/share/zoneinfo/%s" not found\n' "$region"
                 continue
             fi
