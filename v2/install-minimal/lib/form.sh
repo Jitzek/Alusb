@@ -85,7 +85,7 @@ function form() {
     fi
 
     if [[ -z $city ]]; then
-        printf "\City has not been set\n"
+        printf "\nCity has not been set\n"
         while true; do
             read -p "What City should be configured? used for configuring timezone " city
             printf "\n\n"
@@ -116,9 +116,8 @@ function form() {
             if [[ -z $locale ]]; then
                 locale="en_US.UTF-8 UTF-8"
                 printf "defaulting to %s\n" "$locale"
-                continue
             fi
-            printf "Chosen language: %s\n" "$lang"
+            printf "Chosen locale: %s\n" "$locale"
             printf "Confirm?\n"
             if ! prompt; then
                 continue
@@ -134,6 +133,10 @@ function form() {
             read -p "What is your desired hostname? do not use whitespaces " hostname
             printf "\n"
             pattern=" |'"
+            if [[ -z $hostname ]]; then
+                printf "Give input was empty\n"
+                continue
+            fi
             if [[ $hostname =~ $pattern ]]; then
                 printf "Do not use whitespaces\n"
                 continue
@@ -180,6 +183,10 @@ function form() {
             fi
             printf "Please provide a name for the new user\n"
             read user_name
+            if [[ -z $user_name ]]; then
+                printf "Given input was empty\n"
+                continue
+            fi
             printf "Chosen username: %s\n" $user_name
             printf "Confirm?\n"
             if ! prompt; then
@@ -193,7 +200,7 @@ function form() {
         [[ -z $user_passwd ]] &
         [[ ! -z $user_name ]]
     then
-        printf "\User password has not been set\n"
+        printf "\nUser password has not been set\n"
         while true; do
             printf "Please supply a valid password with a minimum length of 6\n"
             read -s user_passwd
