@@ -68,7 +68,7 @@ function prompt() {
 function gdiskPartition() {
     if [[ ! -z $partition_scheme["ext4"] ]]; then
         echo "TEST"
-    else
+    fi
     (
         # Creating MBR partition
         echo d
