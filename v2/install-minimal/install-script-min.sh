@@ -27,7 +27,7 @@ function main() {
     ###   Base Install   ###
     ########################
     pacstrap /mnt "${base_packages[@]}"
-    genfstab -U /mnt >> /mnt/etc/fstab
+    genfstab -U /mnt >>/mnt/etc/fstab
 
     ################################
     ###   System Configuration   ###
@@ -38,7 +38,7 @@ function main() {
     ## Uncomment desired language
     #! TODO
 
-    echo "LANG=$(printf $lang | sed 's/\s.*$//')" > /etc/locale.conf
+    echo "LANG=$(printf $lang | sed 's/\s.*$//')" >/etc/locale.conf
 }
 
 #% prompt
@@ -66,9 +66,6 @@ function prompt() {
 #% DESCRIPTION
 #%  Partition disk using gdisk
 function gdiskPartition() {
-    if [[ ! -z $partition_scheme["ext4"] ]]; then
-        echo "TEST"
-    fi
     (
         # Creating MBR partition
         echo d
@@ -86,7 +83,7 @@ function gdiskPartition() {
         echo EF00
 
         # Creating (optional) Swap partition
-        if [[ ! -z $partition_scheme["swap"] ]]; then
+        if [[ ! -z "${partition_scheme["swap"]}" ]]; then
             echo n
             echo 4
             echo ""
@@ -98,7 +95,7 @@ function gdiskPartition() {
         echo n
         echo 3
         echo ""
-        if [[ ! -z $partition_scheme["ext4"] ]]; then
+        if [[ ! -z "${partition_scheme["ext4"]}" ]]; then
             echo "+${partition_scheme["ext4"]}"
         else
             echo ""
@@ -110,6 +107,9 @@ function gdiskPartition() {
             echo w
         fi
     ) | gdisk $block_device
+    if [[ ! -z "${partition_scheme["ext4"]}" ]]; then
+        echo "TEST"
+    fi
 }
 
 main
