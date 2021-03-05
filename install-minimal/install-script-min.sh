@@ -3,7 +3,7 @@
 source "./lib/form.sh"
 
 ## Configurable variables
-block_device="/dev/sda"
+block_device=""
 partition_scheme_mbr="10MB"
 partition_scheme_esp="500MB"
 partition_scheme_swap=""
