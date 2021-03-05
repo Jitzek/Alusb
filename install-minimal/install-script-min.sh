@@ -6,6 +6,7 @@ source "./lib/form.sh"
 block_device=""
 partition_scheme_mbr="10MB"
 partition_scheme_esp="500MB"
+partition_scheme_swap=""
 partition_scheme_ext4=""
 base_packages=("base" "linux" "linux-firmware")
 region=""
@@ -81,9 +82,6 @@ function prompt() {
 #% DESCRIPTION
 #%  Partition disk using gdisk
 function gdiskPartition() {
-    echo "+${partition_scheme["mbr"]}"
-    echo "+${partition_scheme["esp"]}"
-    echo "${partition_scheme["ext4"]}"
     exit 0
     (
         # Creating MBR partition
@@ -91,22 +89,22 @@ function gdiskPartition() {
         echo n
         echo 1
         echo ""
-        echo "+${partition_scheme["mbr"]}"
+        echo "+${partition_scheme_mbr}"
         echo EF02
 
         # Creating ESP partition
         echo n
         echo 2
         echo ""
-        echo "+${partition_scheme["esp"]}"
+        echo "+${partition_scheme_esp}"
         echo EF00
 
         # Creating (optional) Swap partition
-        if [[ ! -z "${partition_scheme["swap"]}" ]]; then
+        if [[ ! -z "${partition_scheme_swap}" ]]; then
             echo n
             echo 4
             echo ""
-            echo "+${partition_scheme["swap"]}"
+            echo "+${partition_scheme_swap}"
             echo 8200
         fi
 
@@ -114,8 +112,8 @@ function gdiskPartition() {
         echo n
         echo 3
         echo ""
-        if [[ ! -z "${partition_scheme["ext4"]}" ]]; then
-            echo "+${partition_scheme["ext4"]}"
+        if [[ ! -z "${partition_scheme_ext4}" ]]; then
+            echo "+${partition_scheme_ext4}"
         else
             echo ""
         fi
@@ -126,9 +124,6 @@ function gdiskPartition() {
             echo w
         fi
     ) | gdisk $block_device
-    if [[ ! -z "${partition_scheme["ext4"]}" ]]; then
-        echo "TEST"
-    fi
 }
 
 main
