@@ -1,7 +1,7 @@
 #% form
 function form() {
     ## Block Device not set
-    echo $block_device
+    echo $partition_scheme_mbr
     if [[ -z $block_device ]]; then
         while true; do
             block_device=""
@@ -19,19 +19,18 @@ function form() {
     fi
 
     ## MBR partition is empty
-    if [[ -z $partition_scheme["mbr"] ]]; then
+    if [[ -z $partition_scheme_mbr ]]; then
         printf "\nMBR partition size is empty\n"
         while true; do
-            partition_scheme["mbr"]="10MB"
-            printf "Insert size of MBR partition (default: %s)\n" "$partition_scheme["mbr"]"
-            read mbr_part_size
-            if [ -z "$mbr_part_size" ] || [ $mbr_part_size -lt 1 ]; then
+            partition_scheme_mbr="10MB"
+            printf "Insert size of MBR partition (default: %s)\n" "$partition_scheme_mbr"
+            read partition_scheme_mbr
+            if [ -z "$partition_scheme_mbr" ]; then
                 printf "Given input is empty\n"
                 continue
             fi
-            partition_scheme["mbr"]=$mbr_part_size
 
-            printf "\nAn MBR partition with size ${partition_scheme["mbr"]} will be created.\n"
+            printf "\nAn MBR partition with size ${partition_scheme_mbr} will be created.\n"
             printf "Confirm?\n"
             if ! prompt; then
                 continue
@@ -41,19 +40,18 @@ function form() {
     fi
 
     ## ESP partition is empty
-    if [[ -z $partition_scheme["esp"] ]]; then
+    if [[ -z $partition_scheme_esp ]]; then
         printf "\nESP partition size is empty\n"
         while true; do
-            partition_scheme["esp"]="500MB"
-            printf "Insert size of MBR partition (default: %s)\n" "${partition_scheme["esp"]}"
-            read esp_part_size
-            if [ -z "$esp_part_size" ] || [ $esp_part_size -lt 1 ]; then
+            partition_scheme_esp="500MB"
+            printf "Insert size of MBR partition (default: %s)\n" "$partition_scheme_esp}"
+            read partition_scheme_esp
+            if [ -z "$partition_scheme_esp" ]; then
                 printf "Given input was empty\n"
                 continue
             fi
-            partition_scheme["esp"]=$esp_part_size
 
-            printf "\nAn ESP partition with size ${partition_scheme["esp"]} will be created.\n"
+            printf "\nAn ESP partition with size $partition_scheme_esp} will be created.\n"
             printf "Confirm?\n"
             if ! prompt; then
                 continue

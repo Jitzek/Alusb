@@ -2,6 +2,7 @@
 
 source "./lib/form.sh"
 
+## Configurable variables
 block_device=""
 partition_scheme_mbr="10MB"
 partition_scheme_esp="500MB"
@@ -16,8 +17,6 @@ root_password=""
 user_name=""
 user_password=""
 give_user_sudo_access=true
-
-echo ${${config[base_packages]}[@]}
 
 function main() {
     ## Fill all user determined variables
