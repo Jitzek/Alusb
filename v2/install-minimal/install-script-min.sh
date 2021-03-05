@@ -66,6 +66,10 @@ function prompt() {
 #% DESCRIPTION
 #%  Partition disk using gdisk
 function gdiskPartition() {
+    echo "+${partition_scheme["mbr"]}"
+    echo "+${partition_scheme["esp"]}"
+    echo "${partition_scheme["ext4"]}"
+    exit 0
     (
         # Creating MBR partition
         echo d
