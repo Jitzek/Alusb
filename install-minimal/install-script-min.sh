@@ -82,7 +82,6 @@ function prompt() {
 #% DESCRIPTION
 #%  Partition disk using gdisk
 function gdiskPartition() {
-    exit 0
     (
         # Creating MBR partition
         echo d

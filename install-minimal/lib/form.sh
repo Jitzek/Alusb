@@ -63,7 +63,7 @@ function form() {
     if [[ -z $region ]]; then
         printf "\nRegion has not been set\n"
         while true; do
-            read -p "What Region should be configured? used for configuring timezone " region
+            read -p "What Region should be configured? used for configuring timezone: " region
             printf "\n\n"
             if [[ -z $region ]]; then
                 printf "Given input was empty\n"
@@ -86,7 +86,7 @@ function form() {
     if [[ -z $city ]]; then
         printf "\nCity has not been set\n"
         while true; do
-            read -p "What City should be configured? used for configuring timezone " city
+            read -p "What City should be configured? used for configuring timezone: " city
             printf "\n\n"
             if [[ -z $city ]]; then
                 printf "Given input was empty\n"
@@ -129,7 +129,7 @@ function form() {
         printf "\nHostname has not been set\n"
         while true; do
             hostname=""
-            read -p "What is your desired hostname? do not use whitespaces " hostname
+            read -p "What is your desired hostname? do not use whitespaces: " hostname
             printf "\n"
             pattern=" |'"
             if [[ -z $hostname ]]; then
