@@ -3,7 +3,7 @@ source "./forms/form.sh"
 function partitionDiskForm() {
     clear
     printf "\nPartitioning Disk\n\nContinue?\n\n"
-    if ! confirmByUser; then
+    if ! prompt; then
         false
         return
     fi
@@ -34,7 +34,7 @@ function step1_getBlockDevice() {
         fi
         block_device="/dev/$block_device"
         printf 'Given block device: "%s". Is this correct?\n' $block_device
-        if confirmByUser; then
+        if prompt; then
             break
         fi
     done
@@ -47,7 +47,7 @@ function step2_createOptionalSwap() {
     clear
     printf "Block Device: %s \n\n" "$block_device"
     printf "Create a Swap partition?\n"
-    if ! confirmByUser; then
+    if ! prompt; then
         true
         return
     fi
@@ -64,7 +64,7 @@ function step2_createOptionalSwap() {
         if [ -z "$swap_size" ] || [ $swap_size -lt 1 ]; then
             printf "Given input was empty or below 1\n"
             printf "Continue without Swap partition?\n"
-            if confirmByUser; then
+            if prompt; then
                 has_swap=false
                 break
             fi
@@ -82,7 +82,7 @@ function step2_createOptionalSwap() {
 
         printf "\nA Swap partition with size ${swap_partition_size} will be created.\n"
         printf "Confirm?\n"
-        if confirmByUser; then
+        if prompt; then
             break
         fi
     done
@@ -96,7 +96,7 @@ function step3_partitionDisk() {
 
     printf "\nWrite to disk?\n"
 
-    if ! confirmByUser; then
+    if ! prompt; then
         false
         return
     fi
