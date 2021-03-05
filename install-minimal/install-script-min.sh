@@ -1,7 +1,25 @@
 #!/bin/bash
 
-source "./configuration.sh"
 source "./lib/form.sh"
+
+typeset -A config
+declare -A partition_scheme
+config=(
+    [block_device]=""
+    [partition_scheme_mbr]="10MB"
+    [partition_scheme_esp]="500MB"
+    [partition_scheme_ext4]=""
+    [base_packages]=("base", "linux", "linux-firmware")
+    [region]=""
+    [city]=""
+    [locale]="en_US.UTF-8 UTF-8"
+    [hostname]=""
+    [additional_packages]=("networkmanager" "xf86-video-ati", "xf86-video-intel", "xf86-video-nouveau", "xf86-video-vesa", "xf86-input-synaptics", "acpi", "sudo")
+    [root_password]=""
+    [user_name]=""
+    [user_password]=""
+    [give_user_sudo_access]=true
+)
 
 function main() {
     ## Fill all user determined variables

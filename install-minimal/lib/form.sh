@@ -1,16 +1,16 @@
 #% form
 function form() {
     ## Block Device not set
-    if [[ -z $block_device ]]; then
+    if [[ -z ${config[block_device]} ]]; then
         while true; do
-            block_device=""
+            ${config[block_device]}=""
             printf "Which block device should Linux be installed on?\n\n"
 
             lsblk -no kname
 
             read -p "Please insert the name of the block device: /dev/" block_device
-            block_device="/dev/$block_device"
-            printf 'Given block device: "%s". Is this correct?\n' $block_device
+            ${config[block_device]}="/dev/$block_device"
+            printf 'Given block device: "%s". Is this correct?\n' ${config[block_device]}
             if prompt; then
                 break
             fi
@@ -18,19 +18,20 @@ function form() {
     fi
 
     ## MBR partition is empty
-    if [[ -z $partition_scheme["mbr"] ]]; then
+    echo ${config[partition_scheme_mbr]}
+    if [[ -z ${config[$partition_scheme_mbr]} ]]; then
         printf "\nMBR partition size is empty\n"
         while true; do
-            partition_scheme["mbr"]="10MB"
-            printf "Insert size of MBR partition (default: %s)\n" "$partition_scheme["mbr"]"
+            ${config[partition_scheme_mbr]}="10MB"
+            printf "Insert size of MBR partition (default: %s)\n" "${config[partition_scheme_mbr]}"
             read mbr_part_size
             if [ -z "$mbr_part_size" ] || [ $mbr_part_size -lt 1 ]; then
                 printf "Given input is empty\n"
                 continue
             fi
-            partition_scheme["mbr"]=$mbr_part_size
+            ${config[partition_scheme_mbr]}=$mbr_part_size
 
-            printf "\nAn MBR partition with size ${partition_scheme["mbr"]} will be created.\n"
+            printf "\nAn MBR partition with size ${config[partition_scheme_mbr]}} will be created.\n"
             printf "Confirm?\n"
             if ! prompt; then
                 continue
