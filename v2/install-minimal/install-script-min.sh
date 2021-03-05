@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source "./user-configuration.conf"
+source "./configuration.sh"
 source "./lib/form.sh"
 
 function main() {
