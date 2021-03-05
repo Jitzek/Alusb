@@ -1,7 +1,6 @@
 #% form
 function form() {
     ## Block Device not set
-    echo $partition_scheme_mbr
     if [[ -z $block_device ]]; then
         while true; do
             block_device=""
