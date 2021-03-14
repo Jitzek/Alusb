@@ -6,7 +6,9 @@ source "./lib/form.sh"
 block_device=""
 partition_scheme_mbr="10MB"
 partition_scheme_esp="500MB"
+## Leave empty to not create swap
 partition_scheme_swap=""
+## Leave empty for max available size
 partition_scheme_ext4=""
 base_packages=("base" "linux" "linux-firmware")
 region=""
@@ -52,9 +54,9 @@ function main() {
     hwclock --systohc
 
     ## Uncomment desired language
-    #! TODO
+    sed -i -e "${locale}/s/^#//" /etc/locale.gen
 
-    echo "LANG=$(printf $lang | sed 's/\s.*$//')" >/etc/locale.conf
+    echo "LANG=$(printf $locale | sed 's/\s.*$//')" >/etc/locale.conf
 }
 
 #% prompt
