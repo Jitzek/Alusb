@@ -133,7 +133,7 @@ function gdiskPartition() {
         echo 8300
 
         echo p
-        if [ $1 ]; then
+        if $1; then
             echo w
             echo "Y"
         fi
