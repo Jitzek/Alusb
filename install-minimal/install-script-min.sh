@@ -135,6 +135,7 @@ function gdiskPartition() {
         echo p
         if [ $1 ]; then
             echo w
+            echo "Y"
         fi
     ) | gdisk $block_device
 }
