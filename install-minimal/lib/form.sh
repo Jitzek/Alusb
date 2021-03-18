@@ -63,7 +63,7 @@ function form() {
         printf "\nRegion has not been set\n"
         while true; do
             read -p "What Region should be configured? used for configuring timezone: " region
-            printf "\n\n"
+            printf "\n"
             if [[ -z $region ]]; then
                 printf "Given input was empty\n"
                 continue
@@ -86,7 +86,7 @@ function form() {
         printf "\nCity has not been set\n"
         while true; do
             read -p "What City should be configured? used for configuring timezone: " city
-            printf "\n\n"
+            printf "\n"
             if [[ -z $city ]]; then
                 printf "Given input was empty\n"
                 continue
@@ -148,18 +148,18 @@ function form() {
         done
     fi
 
-    if [[ -z $root_passwd ]]; then
+    if [[ -z $root_password ]]; then
         printf "\nRoot password has not been set\n"
         while true; do
             printf "Please supply a valid password with a minimum length of 6\n"
-            read -s root_passwd
+            read -s root_password
             printf "\n"
-            if [[ ${#root_passwd} -lt 6 ]]; then
+            if [[ ${#root_password} -lt 6 ]]; then
                 continue
             fi
             printf "Confirm password:\n"
-            read -s root_passwd_2
-            if [[ $root_passwd != $root_passwd_2 ]]; then
+            read -s root_password_2
+            if [[ $root_password != $root_password_2 ]]; then
                 printf "Passwords didn't match\n"
                 continue
             fi
@@ -195,20 +195,20 @@ function form() {
     fi
 
     if
-        [[ -z $user_passwd ]] &
+        [[ -z $user_password ]] &
         [[ ! -z $user_name ]]
     then
         printf "\nUser password has not been set\n"
         while true; do
             printf "Please supply a valid password with a minimum length of 6\n"
-            read -s user_passwd
+            read -s user_password
             printf "\n"
-            if [[ ${#user_passwd} -lt 6 ]]; then
+            if [[ ${#user_password} -lt 6 ]]; then
                 continue
             fi
             printf "Confirm password:\n"
-            read -s user_passwd_2
-            if [[ $user_passwd != $user_passwd_2 ]]; then
+            read -s user_password_2
+            if [[ $user_password != $user_password_2 ]]; then
                 printf "Passwords didn't match\n"
                 continue
             fi

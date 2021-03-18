@@ -2,7 +2,7 @@
 
 source "./lib/form.sh"
 
-## Configurable variables
+## Configurable variables ##
 block_device=""
 partition_scheme_mbr="10MB"
 partition_scheme_esp="500MB"
@@ -45,7 +45,7 @@ function main() {
     ###   Base Install   ###
     ########################
     pacstrap /mnt "${base_packages[@]}"
-    genfstab -U /mnt >>/mnt/etc/fstab
+    genfstab -U /mnt >> /mnt/etc/fstab
 
     ################################
     ###   System Configuration   ###
@@ -54,9 +54,9 @@ function main() {
     hwclock --systohc
 
     ## Uncomment desired language
-    sed -i -e "${locale}/s/^#//" /etc/locale.gen
+    sed -i "/${locale}/s/^#//" /etc/locale.gen
 
-    echo "LANG=$(printf $locale | sed 's/\s.*$//')" >/etc/locale.conf
+    echo "LANG=$(printf $locale | sed 's/\s.*$//')" > /etc/locale.conf
 }
 
 #% prompt
