@@ -1,6 +1,5 @@
 #!/bin/bash
 
-source "./lib/chroot.sh"
 source "./lib/form.sh"
 
 ## Configurable variables ##
@@ -50,17 +49,26 @@ function main() {
     mount "${block_device}2" /mnt/boot
 
     pacstrap /mnt "${base_packages[@]}"
-    genfstab -U /mnt >> /mnt/etc/fstab
+    genfstab -U /mnt >>/mnt/etc/fstab
 
     ################################
     ###   System Configuration   ###
     ################################
-    cp ./lib/chroot.sh /mnt
+    echo `/bin/bash` > /mnt/chroot.sh
+    echo `ln -s "/usr/share/zoneinfo/$region/$city" /etc/localtime` >> /mnt/chroot.sh
+    echo `hwclock --systohc` >> /mnt/chroot.sh
+    ## Uncomment desired language
+    echo `sed -i "/${locale}/s/^#//" /etc/locale.gen` >> /mnt/chroot.sh
+    echo `locale-gen` >> /mnt/chroot.sh
+    echo `echo "LANG=$(printf $locale | sed 's/\s.*$//')" >/etc/locale.conf` >> /mnt/chroot.sh
+    echo `echo $hostname >/etc/hostname` >> /mnt/chroot.sh
+    echo `echo -e "127.0.0.1\t\tlocalhost\n::1\t\t\tlocalhost\n127.0.1.1\t\t${hostname}.localdomain ${hostname}" >>/etc/hosts` >> /mnt/chroot.sh
+    chmod +x /mnt/chroot.sh
 
     ## Execute commands in arch-chroot
-    chroot
+    arch-chroot /mnt ./chroot.sh
 
-    rm /mnt/chroot.sh
+    # rm /mnt/chroot.sh
 }
 
 #% prompt
