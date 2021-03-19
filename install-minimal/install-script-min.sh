@@ -54,16 +54,17 @@ function main() {
     ################################
     ###   System Configuration   ###
     ################################
-    echo `/bin/bash` > /mnt/chroot.sh
-    echo `ln -s "/usr/share/zoneinfo/$region/$city" /etc/localtime` >> /mnt/chroot.sh
-    echo `hwclock --systohc` >> /mnt/chroot.sh
+    chroot_file="/mnt/chroot.sh"
+    echo `/bin/bash` > $chroot_file
+    echo `ln -s "/usr/share/zoneinfo/$region/$city" /etc/localtime` >> $chroot_file
+    echo `hwclock --systohc` >> $chroot_file
     ## Uncomment desired language
-    echo `sed -i "/${locale}/s/^#//" /etc/locale.gen` >> /mnt/chroot.sh
-    echo `locale-gen` >> /mnt/chroot.sh
-    echo `echo "LANG=$(printf $locale | sed 's/\s.*$//')" >/etc/locale.conf` >> /mnt/chroot.sh
-    echo `echo $hostname >/etc/hostname` >> /mnt/chroot.sh
-    echo `echo -e "127.0.0.1\t\tlocalhost\n::1\t\t\tlocalhost\n127.0.1.1\t\t${hostname}.localdomain ${hostname}" >>/etc/hosts` >> /mnt/chroot.sh
-    chmod +x /mnt/chroot.sh
+    echo `sed -i "/${locale}/s/^#//" /etc/locale.gen` >> $chroot_file
+    echo `locale-gen` >> $chroot_file
+    echo `echo "LANG=$(printf $locale | sed 's/\s.*$//')" >/etc/locale.conf` >> $chroot_file
+    echo `echo $hostname >/etc/hostname` >> $chroot_file
+    echo `echo -e "127.0.0.1\t\tlocalhost\n::1\t\t\tlocalhost\n127.0.1.1\t\t${hostname}.localdomain ${hostname}" >>/etc/hosts` >> $chroot_file
+    chmod +x $chroot_file
 
     ## Execute commands in arch-chroot
     arch-chroot /mnt ./chroot.sh
