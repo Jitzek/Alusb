@@ -1,5 +1,6 @@
 #!/bin/bash
 
+source "./lib/chroot.sh"
 source "./lib/form.sh"
 
 ## Configurable variables ##
@@ -56,7 +57,7 @@ function main() {
     ################################
     cp ./lib/chroot.sh /mnt
 
-    arch-chroot /mnt /bin/bash
+    arch-chroot /mnt ./chroot.sh
 
     rm /mnt/chroot.sh
 }
