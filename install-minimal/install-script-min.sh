@@ -62,7 +62,12 @@ function main() {
     locale-gen
     echo LANG=$(printf $locale | sed 's/\s.*$//') >/etc/locale.conf
     echo $hostname >/etc/hostname
-    echo -e \"127.0.0.1\\t\\tlocalhost\\n::1\\t\\t\\tlocalhost\\n127.0.1.1\\t\\t${hostname}.localdomain ${hostname}\" >> /etc/hosts
+    echo -e '127.0.0.1\\t\\tlocalhost\\n::1\\t\\t\\tlocalhost\\n127.0.1.1\\t\\t${hostname}.localdomain ${hostname}' >> /etc/hosts
+    ln -s /dev/null /etc/udev/rules.d/80-net-setup-link.rules
+    sed -i '/Storage=volatile/s/^#//' /etc/systemd/journald.conf
+    sed -i '/SystemMaxUse=/s/^#//' /etc/systemd/journald.conf
+    sed -i '/SystemMaxUse=/s/$/ 16M/'
+    sed -i '/ext4/s/relatime/noatime/' /etc/fstab
     exit" > $chroot_file
 
     chmod +x $chroot_file
@@ -70,7 +75,7 @@ function main() {
     ## Execute commands in arch-chroot
     arch-chroot /mnt ./chroot.sh
 
-    rm /mnt/chroot.sh
+    #rm /mnt/chroot.sh
 }
 
 #% prompt
