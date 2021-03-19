@@ -1,17 +1,21 @@
 #!/bin/bash
 
-ln -s "/usr/share/zoneinfo/$region/$city" /etc/localtime
-hwclock --systohc
+function chroot() {
+    arch-chroot /mnt ./chroot.sh
 
-## Uncomment desired language
-sed -i "/${locale}/s/^#//" /etc/locale.gen
+    ln -s "/usr/share/zoneinfo/$region/$city" /etc/localtime
+    hwclock --systohc
 
-locale-gen
+    ## Uncomment desired language
+    sed -i "/${locale}/s/^#//" /etc/locale.gen
 
-echo "LANG=$(printf $locale | sed 's/\s.*$//')" >/etc/locale.conf
+    locale-gen
 
-echo $hostname >/etc/hostname
+    echo "LANG=$(printf $locale | sed 's/\s.*$//')" >/etc/locale.conf
 
-echo -e "127.0.0.1\t\tlocalhost\n::1\t\t\tlocalhost\n127.0.1.1\t\t${hostname}.localdomain ${hostname}" >> /etc/hosts
+    echo $hostname >/etc/hostname
 
-exit
+    echo -e "127.0.0.1\t\tlocalhost\n::1\t\t\tlocalhost\n127.0.1.1\t\t${hostname}.localdomain ${hostname}" >>/etc/hosts
+
+    exit
+}

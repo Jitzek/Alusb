@@ -57,7 +57,8 @@ function main() {
     ################################
     cp ./lib/chroot.sh /mnt
 
-    arch-chroot /mnt ./chroot.sh
+    ## Execute commands in arch-chroot
+    chroot
 
     rm /mnt/chroot.sh
 }
