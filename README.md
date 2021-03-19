@@ -8,9 +8,7 @@ Persistent Arch Linux installation for USB
 
 ## MANUAL
 ### Step 1: Install git on installation medium
-`pacman -Sy`<br>
-`pacman -S glibc`<br>
-`pacman -S git`<br>
+`pacman -Sy glibc git`<br>
 
 ### Step 2: Clone this repository
 `git clone "https://github.com/Jitzek/Alusb.git"`
