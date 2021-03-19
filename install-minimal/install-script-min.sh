@@ -63,7 +63,7 @@ function main() {
     echo "locale-gen" >> $chroot_file
     echo "echo LANG=$(printf $locale | sed 's/\s.*$//') >/etc/locale.conf" >> $chroot_file
     echo "echo $hostname >/etc/hostname" >> $chroot_file
-    echo "echo -e "127.0.0.1\t\tlocalhost\n::1\t\t\tlocalhost\n127.0.1.1\t\t${hostname}.localdomain ${hostname}" >>/etc/hosts" >> $chroot_file
+    echo "echo -e 127.0.0.1\t\tlocalhost\n::1\t\t\tlocalhost\n127.0.1.1\t\t${hostname}.localdomain ${hostname} >>/etc/hosts" >> $chroot_file
     chmod +x $chroot_file
 
     ## Execute commands in arch-chroot
