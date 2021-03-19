@@ -55,16 +55,16 @@ function main() {
     ###   System Configuration   ###
     ################################
     chroot_file="/mnt/chroot.sh"
-    echo "#!/bin/bash" > $chroot_file
-    echo "ln -s /usr/share/zoneinfo/$region/$city /etc/localtime" >> $chroot_file
-    echo "hwclock --systohc" >> $chroot_file
-    ## Uncomment desired language
-    echo "sed -i '/${locale}/s/^#//' /etc/locale.gen" >> $chroot_file
-    echo "locale-gen" >> $chroot_file
-    echo "echo LANG=$(printf $locale | sed 's/\s.*$//') >/etc/locale.conf" >> $chroot_file
-    echo "echo $hostname >/etc/hostname" >> $chroot_file
-    echo "echo -e \"127.0.0.1\\t\\tlocalhost\\n::1\\t\\t\\tlocalhost\\n127.0.1.1\\t\\t${hostname}.localdomain ${hostname}\" >> /etc/hosts" >> $chroot_file
-    echo "exit"
+    echo "#!/bin/bash
+    ln -s /usr/share/zoneinfo/$region/$city /etc/localtime
+    hwclock --systohc
+    sed -i '/${locale}/s/^#//' /etc/locale.gen
+    locale-gen
+    echo LANG=$(printf $locale | sed 's/\s.*$//') >/etc/locale.conf
+    echo $hostname >/etc/hostname
+    echo -e \"127.0.0.1\\t\\tlocalhost\\n::1\\t\\t\\tlocalhost\\n127.0.1.1\\t\\t${hostname}.localdomain ${hostname}\" >> /etc/hosts
+    exit" > $chroot_file
+
     chmod +x $chroot_file
 
     ## Execute commands in arch-chroot
