@@ -77,7 +77,7 @@ function main() {
     grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
     grub-mkconfig -o /boot/grub/grub.cfg
     
-    pacman -S ${additional_packages}
+    pacman -S ${additional_packages} --noconfirm
 
     echo 'root:${root_password}' | chpasswd
 
@@ -85,7 +85,7 @@ function main() {
         if [ -z $user_name ]; then
             echo "useradd -m -G wheel -s /bin/bash $user_name"
             echo "echo '${user_name}:${user_password}' | chpasswd"
-            # TODO: Edit sudoers file
+            echo "${user_name}\tALL=(ALL:ALL) ALL" >> /etc/sudoers
         fi
     )
     exit" > $chroot_file
