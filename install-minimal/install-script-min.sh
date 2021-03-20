@@ -63,12 +63,31 @@ function main() {
     echo LANG=$(printf $locale | sed 's/\s.*$//') >/etc/locale.conf
     echo $hostname >/etc/hostname
     echo -e '127.0.0.1\\t\\tlocalhost\\n::1\\t\\t\\tlocalhost\\n127.0.1.1\\t\\t${hostname}.localdomain ${hostname}' >> /etc/hosts
+    
     ln -s /dev/null /etc/udev/rules.d/80-net-setup-link.rules
     sed -i '/Storage=.*/s/^#//' /etc/systemd/journald.conf
     sed -i 's/Storage=.*/Storage=volatile/' /etc/systemd/journald.conf
     sed -i '/SystemMaxUse=.*/s/^#//' /etc/systemd/journald.conf
     sed -i '/SystemMaxUse=/s/$/16M/' /etc/systemd/journald.conf
+
     sed -i '/ext4/s/relatime/noatime/' /etc/fstab
+    
+    pacman -S grub efibootmgr --noconfirm
+    grub-install --target=i386-pc --boot-directory /boot $block_device
+    grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
+    grub-mkconfig -o /boot/grub/grub.cfg
+    
+    pacman -S ${additional_packages}
+
+    echo 'root:${root_password}' | chpasswd
+
+    $(
+        if [ -z $user_name ]; then
+            echo "useradd -m -G wheel -s /bin/bash $user_name"
+            echo "echo '${user_name}:${user_password}' | chpasswd"
+            # TODO: Edit sudoers file
+        fi
+    )
     exit" > $chroot_file
 
     chmod +x $chroot_file
@@ -77,6 +96,10 @@ function main() {
     arch-chroot /mnt ./chroot.sh
 
     # rm /mnt/chroot.sh
+
+    umount /mnt/boot /mnt
+
+    echo "Installation complete!"
 }
 
 #% prompt
