@@ -195,7 +195,7 @@ function form() {
     fi
 
     if
-        [[ -z $user_password ]] &
+        [[ -z $user_password ]] &&
         [[ ! -z $user_name ]]
     then
         printf "\nUser password has not been set\n"
