@@ -105,7 +105,7 @@ function form() {
         done
     fi
 
-    if [[ -z $language ]]; then
+    if [[ -z $locale ]]; then
         printf "\nLocale has not been set\n"
         while true; do
             locale="en_US.UTF-8 UTF-8"
