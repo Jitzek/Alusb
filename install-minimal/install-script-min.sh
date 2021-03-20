@@ -77,7 +77,7 @@ function main() {
     grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
     grub-mkconfig -o /boot/grub/grub.cfg
     
-    pacman -S ${additional_packages} --noconfirm
+    pacman -S ${additional_packages[@]} --noconfirm
 
     echo 'root:${root_password}' | chpasswd
 
