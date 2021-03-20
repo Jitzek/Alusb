@@ -64,10 +64,10 @@ function main() {
     echo $hostname >/etc/hostname
     echo -e '127.0.0.1\\t\\tlocalhost\\n::1\\t\\t\\tlocalhost\\n127.0.1.1\\t\\t${hostname}.localdomain ${hostname}' >> /etc/hosts
     ln -s /dev/null /etc/udev/rules.d/80-net-setup-link.rules
-    sed -i '/Storage=/s/^#//' /etc/systemd/journald.conf
-    sed -i 's/Storage=.*/volatile/' /etc/systemd/journald.conf
-    sed -i '/SystemMaxUse=/s/^#//' /etc/systemd/journald.conf
-    sed -i '/SystemMaxUse=/s/$/ 16M/' /etc/systemd/journald.conf
+    sed -i '/Storage=.*/s/^#//' /etc/systemd/journald.conf
+    sed -i 's/Storage=.*/Storage=volatile/' /etc/systemd/journald.conf
+    sed -i '/SystemMaxUse=.*/s/^#//' /etc/systemd/journald.conf
+    sed -i '/SystemMaxUse=/s/$/16M/' /etc/systemd/journald.conf
     sed -i '/ext4/s/relatime/noatime/' /etc/fstab
     exit" > $chroot_file
 
