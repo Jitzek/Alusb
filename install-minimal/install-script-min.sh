@@ -98,7 +98,7 @@ function main() {
     ## Execute commands in arch-chroot
     arch-chroot /mnt ./chroot.sh
 
-    # rm /mnt/chroot.sh
+    rm /mnt/chroot.sh
 
     umount /mnt/boot /mnt
 
