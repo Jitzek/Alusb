@@ -85,7 +85,9 @@ function main() {
         if [ ! -z $user_name ]; then
             echo "useradd -m -G wheel -s /bin/bash $user_name"
             echo "echo '${user_name}:${user_password}' | chpasswd"
-            echo "${user_name}\tALL=(ALL:ALL) ALL" >> /etc/sudoers
+            if $give_user_sudo_access; then
+                echo "${user_name}\tALL=(ALL:ALL) ALL" >> /etc/sudoers
+            fi
         fi
     )
     exit" > $chroot_file
