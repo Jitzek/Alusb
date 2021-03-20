@@ -82,7 +82,7 @@ function main() {
     echo 'root:${root_password}' | chpasswd
 
     $(
-        if [ -z $user_name ]; then
+        if [ ! -z $user_name ]; then
             echo "useradd -m -G wheel -s /bin/bash $user_name"
             echo "echo '${user_name}:${user_password}' | chpasswd"
             echo "${user_name}\tALL=(ALL:ALL) ALL" >> /etc/sudoers
