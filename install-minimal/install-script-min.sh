@@ -86,10 +86,11 @@ function main() {
             echo "useradd -m -G wheel -s /bin/bash $user_name"
             echo "echo '${user_name}:${user_password}' | chpasswd"
             if $give_user_sudo_access; then
-                echo "${user_name}\tALL=(ALL:ALL) ALL" >> /etc/sudoers
+                echo "sed -i '/^root.*/a ${user_name} ALL=(ALL) ALL' /etc/sudoers"
             fi
         fi
     )
+    systemctl enable NetworkManager.service
     exit" > $chroot_file
 
     chmod +x $chroot_file
