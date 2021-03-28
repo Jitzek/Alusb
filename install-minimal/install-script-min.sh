@@ -1,6 +1,8 @@
 #!/bin/bash
 
-source "./lib/form.sh"
+DIR=`dirname ${0}`
+
+source "${DIR}/lib/form.sh"
 
 ## Configurable variables ##
 block_device=""
