@@ -3,7 +3,7 @@
 _DIR_MIN=`dirname ${0}`
 
 source "${_DIR_MIN}/../prompt.sh"
-source "${_DIR_MIN}/lib/form.sh"
+source "${_DIR_MIN}/form-min.sh"
 
 ## Configurable variables ##
 block_device=""
@@ -26,7 +26,7 @@ give_user_sudo_access=true
 
 function main() {
     ## Fill all user determined variables
-    form
+    form_min
 
     ########################
     ###   Partitioning   ###

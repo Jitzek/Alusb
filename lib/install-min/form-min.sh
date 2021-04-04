@@ -1,5 +1,5 @@
 #% form
-function form() {
+function form_min() {
     ## Block Device not set
     if [[ -z $block_device ]]; then
         while true; do
