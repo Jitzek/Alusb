@@ -153,7 +153,7 @@ function gdiskPartition() {
 
         # Creating Home partition
         echo n
-        echo 3
+        echo 4
         echo ""
         if [[ ! -z "${partition_scheme_home}" ]]; then
             echo "+${partition_scheme_home}"

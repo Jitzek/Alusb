@@ -50,7 +50,7 @@ function form_min() {
                 continue
             fi
 
-            printf "\nAn GPT partition with size $partition_scheme_gpt} will be created.\n"
+            printf "\nAn GPT partition with size ${partition_scheme_gpt} will be created.\n"
             printf "Confirm?\n"
             if ! prompt; then
                 continue
@@ -62,7 +62,7 @@ function form_min() {
     ## Root partition is empty
     if [[ -z $partition_scheme_root ]]; then
         printf "\nRoot partition will use max available size (this will leave no space for a Home partition).\n"
-        printf "Confirm?"
+        printf "Confirm?\n"
         if ! prompt; then
             while true; do
                 partition_scheme_root=""
@@ -71,7 +71,7 @@ function form_min() {
                 if [ -z "$partition_scheme_root" ]; then
                     printf "\nA Root partition with the max available size will be created (no Home partition will be created).\n"
                 else
-                    printf "\nA Root partition with size $partition_scheme_root} will be created.\n"
+                    printf "\nA Root partition with size ${partition_scheme_root} will be created.\n"
                 fi
                 printf "Confirm?\n"
                 if ! prompt; then
@@ -85,7 +85,7 @@ function form_min() {
     ## Home partition is empty
     if [[ ! -z $partition_scheme_root ]] && [[ -z $partition_scheme_home ]]; then
         printf "\nHome partition will use max available size\n"
-        printf "Confirm?"
+        printf "Confirm?\n"
         if ! prompt; then
             while true; do
                 partition_scheme_home=""
@@ -94,7 +94,7 @@ function form_min() {
                 if [ -z "$partition_scheme_home" ]; then
                     printf "\nA Home partition with the max available size will be created.\n"
                 else
-                    printf "\nA Home partition with size $partition_scheme_home} will be created.\n"
+                    printf "\nA Home partition with size ${partition_scheme_home} will be created.\n"
                 fi
                 printf "Confirm?\n"
                 if ! prompt; then
