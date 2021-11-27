@@ -1,6 +1,6 @@
 #!/bin/bash
 
-_DIR_MIN=`dirname ${0}`
+_DIR_MIN=$(dirname ${0})
 
 source "${_DIR_MIN}/../prompt.sh"
 source "${_DIR_MIN}/form-min.sh"
@@ -20,7 +20,7 @@ region=""
 city=""
 locale=""
 hostname=""
-additional_packages=("networkmanager" "xf86-video-ati" "xf86-video-intel" "xf86-video-nouveau" "xf86-video-vesa" "xf86-input-synaptics" "acpi" "sudo")
+additional_packages=("networkmanager" "xf86-video-ati" "xf86-video-intel" "xf86-video-nouveau" "xf86-video-vesa" "xf86-input-synaptics" "acpi" "sudo", "man-db", "nano")
 root_password=""
 user_name=""
 user_password=""
@@ -77,6 +77,13 @@ function main() {
 
     sed -i '/ext4/s/relatime/noatime/' /etc/fstab
     
+    $(
+        if [[ ! -z $partition_scheme_root ]] && [[ -z $partition_scheme_home ]]; then
+            echo '${block_device}4' >>/etc/fstab
+            blkid /dev/vda4 | awk '{print $2}') | tee --append /etc/fstab
+        fi
+    )
+
     pacman -S grub efibootmgr --noconfirm
     grub-install --target=i386-pc --boot-directory /boot $block_device
     grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
@@ -96,7 +103,7 @@ function main() {
         fi
     )
     systemctl enable NetworkManager.service
-    exit" > $chroot_file
+    exit" >$chroot_file
 
     chmod +x $chroot_file
 
@@ -134,7 +141,7 @@ function gdiskPartition() {
         # Creating (optional) Swap partition
         if [[ ! -z "${partition_scheme_swap}" ]]; then
             echo n
-            echo 4
+            echo 5
             echo ""
             echo "+${partition_scheme_swap}"
             echo 8200
