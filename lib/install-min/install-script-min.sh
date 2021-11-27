@@ -80,7 +80,7 @@ function main() {
     $(
         if [[ ! -z $partition_scheme_root ]] && [[ -z $partition_scheme_home ]]; then
             echo ${block_device}4 >> /etc/fstab
-            blkid ${block_device}4 | awk '{print $2}') | tee --append /etc/fstab
+            blkid '${block_device}4' | awk '{print $2}') | tee --append /etc/fstab
         fi
     )
 
