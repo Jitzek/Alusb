@@ -8,7 +8,7 @@ source "${_DIR_MIN}/form-min.sh"
 ## Configurable variables ##
 block_device=""
 partition_scheme_mbr="10MB"
-partition_scheme_esp="500MB"
+partition_scheme_gpt="500MB"
 ## Leave empty to not create swap
 partition_scheme_swap=""
 ## Leave empty for max available size
@@ -124,11 +124,11 @@ function gdiskPartition() {
         echo "+${partition_scheme_mbr}"
         echo EF02
 
-        # Creating ESP partition
+        # Creating GPT partition
         echo n
         echo 2
         echo ""
-        echo "+${partition_scheme_esp}"
+        echo "+${partition_scheme_gpt}"
         echo EF00
 
         # Creating (optional) Swap partition
@@ -140,16 +140,27 @@ function gdiskPartition() {
             echo 8200
         fi
 
-        # Creating Linux partition
+        # Creating Root partition
         echo n
         echo 3
         echo ""
-        if [[ ! -z "${partition_scheme_ext4}" ]]; then
-            echo "+${partition_scheme_ext4}"
+        if [[ ! -z "${partition_scheme_root}" ]]; then
+            echo "+${partition_scheme_root}"
         else
             echo ""
         fi
         echo 8300
+
+        # Creating Home partition
+        echo n
+        echo 3
+        echo ""
+        if [[ ! -z "${partition_scheme_home}" ]]; then
+            echo "+${partition_scheme_home}"
+        else
+            echo ""
+        fi
+        echo 8302
 
         echo p
         if $1; then

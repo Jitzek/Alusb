@@ -38,19 +38,19 @@ function form_min() {
         done
     fi
 
-    ## ESP partition is empty
-    if [[ -z $partition_scheme_esp ]]; then
-        printf "\nESP partition size is empty\n"
+    ## GPT partition is empty
+    if [[ -z $partition_scheme_gpt ]]; then
+        printf "\GPT partition size is empty\n"
         while true; do
-            partition_scheme_esp="500MB"
-            printf "Insert size of MBR partition (default: %s)\n" "$partition_scheme_esp}"
-            read partition_scheme_esp
-            if [ -z "$partition_scheme_esp" ]; then
+            partition_scheme_gpt="500MB"
+            printf "Insert size of GPT partition (default: %s)\n" "$partition_scheme_gpt}"
+            read partition_scheme_gpt
+            if [ -z "$partition_scheme_gpt" ]; then
                 printf "Given input was empty\n"
                 continue
             fi
 
-            printf "\nAn ESP partition with size $partition_scheme_esp} will be created.\n"
+            printf "\nAn GPT partition with size $partition_scheme_gpt} will be created.\n"
             printf "Confirm?\n"
             if ! prompt; then
                 continue
@@ -61,7 +61,7 @@ function form_min() {
 
     ## Root partition is empty
     if [[ -z $partition_scheme_root ]]; then
-        printf "\Root partition will use max available size (this will leave no space for a Home partition).\n"
+        printf "\nRoot partition will use max available size (this will leave no space for a Home partition).\n"
         printf "Confirm?"
         if ! prompt; then
             while true; do
@@ -84,7 +84,7 @@ function form_min() {
 
     ## Home partition is empty
     if [[ ! -z $partition_scheme_root ]] && [[ -z $partition_scheme_home ]]; then
-        printf "\Home partition will use max available size\n"
+        printf "\nHome partition will use max available size\n"
         printf "Confirm?"
         if ! prompt; then
             while true; do
