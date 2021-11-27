@@ -12,7 +12,9 @@ partition_scheme_esp="500MB"
 ## Leave empty to not create swap
 partition_scheme_swap=""
 ## Leave empty for max available size
-partition_scheme_ext4=""
+partition_scheme_root=""
+## Leave empty for max available size
+partition_scheme_home=""
 base_packages=("base" "linux" "linux-firmware")
 region=""
 city=""

@@ -59,6 +59,52 @@ function form_min() {
         done
     fi
 
+    ## Root partition is empty
+    if [[ -z $partition_scheme_root ]]; then
+        printf "\Root partition will use max available size (this will leave no space for a Home partition).\n"
+        printf "Confirm?"
+        if ! prompt; then
+            while true; do
+                partition_scheme_root=""
+                printf "Insert size of Root partition (leave empty for for max available size)\n"
+                read partition_scheme_root
+                if [ -z "$partition_scheme_root" ]; then
+                    printf "\nA Root partition with the max available size will be created (no Home partition will be created).\n"
+                else
+                    printf "\nA Root partition with size $partition_scheme_root} will be created.\n"
+                fi
+                printf "Confirm?\n"
+                if ! prompt; then
+                    continue
+                fi
+                break
+            done
+        fi
+    fi
+
+    ## Home partition is empty
+    if [[ ! -z $partition_scheme_root ]] && [[ -z $partition_scheme_home ]]; then
+        printf "\Home partition will use max available size\n"
+        printf "Confirm?"
+        if ! prompt; then
+            while true; do
+                partition_scheme_home=""
+                printf "Insert size of Home partition (leave empty for for max available size)\n"
+                read partition_scheme_home
+                if [ -z "$partition_scheme_home" ]; then
+                    printf "\nA Home partition with the max available size will be created.\n"
+                else
+                    printf "\nA Home partition with size $partition_scheme_home} will be created.\n"
+                fi
+                printf "Confirm?\n"
+                if ! prompt; then
+                    continue
+                fi
+                break
+            done
+        fi
+    fi
+
     if [[ -z $region ]]; then
         printf "\nRegion has not been set\n"
         while true; do
@@ -196,7 +242,7 @@ function form_min() {
 
     if
         [[ -z $user_password ]] &&
-        [[ ! -z $user_name ]]
+            [[ ! -z $user_name ]]
     then
         printf "\nUser password has not been set\n"
         while true; do
