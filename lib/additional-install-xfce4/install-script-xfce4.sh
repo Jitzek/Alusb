@@ -27,8 +27,8 @@ function main() {
     #########################
     ###   Configuration   ###
     #########################
-    sudo pacman --noconfirm -S additional_packages[@]
-    tar –xvzf "${_DIR_XFCE4}/payloads.tar.gz"
+    sudo pacman --noconfirm -S "${additional_packages[@]}"
+    tar -xvzf "${_DIR_XFCE4}/payloads.tar.gz" -C "${_DIR_XFCE4}"
 }
 
 main
