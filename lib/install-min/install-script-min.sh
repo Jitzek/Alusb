@@ -31,7 +31,7 @@ give_user_sudo_access=true
 
 function main() {
     ## Prerequisites
-    pacman --noconfirm -S prerequisites[@]
+    pacman --noconfirm -S "${prerequisites[@]}"
 
     ## Fill all user determined variables
     form_min
