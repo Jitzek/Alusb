@@ -17,7 +17,7 @@ partition_scheme_swap=""
 partition_scheme_root=""
 ## Leave empty for max available size
 partition_scheme_home=""
-base_packages=("base" "linux" "linux-firmware")
+base_packages=("base" "linux" "linux-firmware" "reflector")
 region=""
 country=""
 city=""

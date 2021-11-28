@@ -129,9 +129,9 @@ function form_min() {
     fi
 
     if [[ -z $country ]]; then
-        printf "\Country has not been set\n"
+        printf "\nCountry has not been set\n"
         while true; do
-            read -p "What Country should be configured? used for configuring mirrors): " country
+            read -p "What Country should be configured? used for configuring mirrors: " country
             printf "\n"
             if [[ -z $country ]]; then
                 printf "Given input was empty\n"
