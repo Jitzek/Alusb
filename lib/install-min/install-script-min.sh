@@ -50,6 +50,7 @@ function main() {
     ########################
     ###   Base Install   ###
     ########################
+    mount "${block_device}4" /mnt/home
     mount "${block_device}3" /mnt
     mkdir /mnt/boot
     mount "${block_device}2" /mnt/boot
