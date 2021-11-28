@@ -20,7 +20,7 @@ region=""
 city=""
 locale=""
 hostname=""
-additional_packages=("networkmanager" "xf86-video-ati" "xf86-video-intel" "xf86-video-nouveau" "xf86-video-vesa" "xf86-input-synaptics" "acpi" "sudo" "man-db" "nano")
+additional_packages=("networkmanager" "xf86-video-ati" "xf86-video-intel" "xf86-video-nouveau" "xf86-video-vesa" "xf86-input-synaptics" "acpi" "sudo" "man-db" "nano" "git" "bash-completion")
 root_password=""
 user_name=""
 user_password=""
@@ -95,6 +95,8 @@ function main() {
     grub-mkconfig -o /boot/grub/grub.cfg
     
     pacman -S ${additional_packages[@]} --noconfirm
+
+    echo -e '# Enable tab completion\nif [[ -f /etc/bash_completion ]]; then\n\t/etc/bash_completion\nfi' | tee --append /etc/environment
 
     echo 'root:${root_password}' | chpasswd
 
