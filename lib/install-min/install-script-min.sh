@@ -5,6 +5,8 @@ _DIR_MIN=$(dirname ${0})
 source "${_DIR_MIN}/../prompt.sh"
 source "${_DIR_MIN}/form-min.sh"
 
+prerequisites=("reflector")
+
 ## Configurable variables ##
 block_device=""
 partition_scheme_mbr="10MB"
@@ -29,7 +31,7 @@ give_user_sudo_access=true
 
 function main() {
     ## Prerequisites
-    pacman -S reflector
+    pacman --noconfirm -S prerequisites
 
     ## Fill all user determined variables
     form_min
