@@ -6,6 +6,7 @@ source "${_DIR_XFCE4}/form-xfce4.sh"
 
 ## Configurable variables ##
 home_dir=""
+additional_packages=("firefox" "file-roller" "gvfs")
 
 
 function main() {
@@ -26,6 +27,7 @@ function main() {
     #########################
     ###   Configuration   ###
     #########################
+    sudo pacman --noconfirm -S additional_packages[@]
     tar –xvzf "${_DIR_XFCE4}/payloads.tar.gz"
 }
 
