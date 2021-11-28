@@ -42,8 +42,9 @@ function main() {
 
     mkfs.fat -F32 "${block_device}2"
     mkfs.ext4 "${block_device}3"
+    mkfs.ext4 "${block_device}4"
     if [ ! -z $partition_scheme["swap"] ]; then
-        mkswap "${block_device}4"
+        mkswap "${block_device}5"
     fi
 
     ########################
@@ -59,6 +60,15 @@ function main() {
     ################################
     ###   System Configuration   ###
     ################################
+
+    # This code is not needed (for now)
+    # $(
+    #     if [[ ! -z $partition_scheme_root ]] && [[ -z $partition_scheme_home ]]; then
+    #         echo "echo '#${block_device}4' >> /etc/fstab"
+    #         echo "blkid '${block_device}4' | awk '{print \$2}' | sed 's/\"//g;s/\$/ \/home ext4 defaults 1 2/' | tee --append /etc/fstab"
+    #         echo "blkid '${block_device}4' | awk '{print \$2}' | echo | tee --append /etc/fstab"
+    #     fi
+    # )
     chroot_file="/mnt/chroot.sh"
     echo "#!/bin/bash
     ln -s /usr/share/zoneinfo/$region/$city /etc/localtime
@@ -76,14 +86,6 @@ function main() {
     sed -i '/SystemMaxUse=/s/$/16M/' /etc/systemd/journald.conf
 
     sed -i '/ext4/s/relatime/noatime/' /etc/fstab
-    
-    $(
-        if [[ ! -z $partition_scheme_root ]] && [[ -z $partition_scheme_home ]]; then
-            echo "echo '#${block_device}4' >> /etc/fstab"
-            echo "blkid '${block_device}4' | awk '{print \$2}' | sed 's/\"//g;s/\$/ \/home ext4 defaults 1 2/' | tee --append /etc/fstab"
-            echo "blkid '${block_device}4' | awk '{print \$2}' | echo | tee --append /etc/fstab"
-        fi
-    )
 
     pacman -S grub efibootmgr --noconfirm
     grub-install --target=i386-pc --boot-directory /boot $block_device
