@@ -116,7 +116,7 @@ function main() {
         fi
     )
     systemctl enable NetworkManager.service
-    echo -e \"--save /etc/pacman.d/mirrorlist\n--country ${country}\n--protocol https\n --latest 5\n--sort age\" | tee /etc/xdg/reflector/reflector.conf
+    echo -e \"--save /etc/pacman.d/mirrorlist\n--country ${country}\n--protocol https\n--latest 5\n--sort age\" | tee /etc/xdg/reflector/reflector.conf
     systemctl enable reflector.service reflector.timer
     exit" > $chroot_file
 
