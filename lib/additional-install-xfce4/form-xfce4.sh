@@ -1,7 +1,7 @@
 #% form
 function form_xfce4() {
     # Guess home directory of user if left empty
-    if [[] -z $home_dir ]]; then
+    if [[ -z $home_dir ]]; then
         home_dir=/home/$(who am i | awk '{print $1}')
     fi
     while true; do
