@@ -108,7 +108,7 @@ function main() {
         fi
     )
     systemctl enable NetworkManager.service
-    exit" >$chroot_file
+    exit" > $chroot_file
 
     chmod +x $chroot_file
 
