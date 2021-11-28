@@ -128,6 +128,29 @@ function form_min() {
         done
     fi
 
+    if [[ -z $country ]]; then
+        printf "\Country has not been set\n"
+        while true; do
+            read -p "What Country should be configured? used for configuring mirrors): " country
+            printf "\n"
+            if [[ -z $country ]]; then
+                printf "Given input was empty\n"
+                continue
+            fi
+            if ! reflector -c "$country"; then
+                printf "Country not found\n"
+                continue
+            fi
+
+            printf "Country: %s\n" "$country"
+            printf "Confirm?\n"
+            if ! prompt; then
+                continue
+            fi
+            break
+        done
+    fi
+
     if [[ -z $city ]]; then
         printf "\nCity has not been set\n"
         while true; do

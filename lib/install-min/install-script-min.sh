@@ -17,6 +17,7 @@ partition_scheme_root=""
 partition_scheme_home=""
 base_packages=("base" "linux" "linux-firmware")
 region=""
+country=""
 city=""
 locale=""
 hostname=""
@@ -27,6 +28,9 @@ user_password=""
 give_user_sudo_access=true
 
 function main() {
+    ## Prerequisites
+    pacman -S reflector
+
     ## Fill all user determined variables
     form_min
 
@@ -110,6 +114,8 @@ function main() {
         fi
     )
     systemctl enable NetworkManager.service
+    echo -e \"--save /etc/pacman.d/mirrorlist\n--country ${country}\n--protocol https\n --latest 5\n--sort age\" | tee /etc/xdg/reflector/reflector.conf
+    systemctl enable reflector.service reflector.timer
     exit" > $chroot_file
 
     chmod +x $chroot_file
