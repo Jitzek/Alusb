@@ -6,7 +6,7 @@ source "${_DIR_XFCE4}/form-xfce4.sh"
 
 ## Configurable variables ##
 home_dir=""
-prerequisites=("xmlstarlet")
+prerequisites=("")
 base_packages=("xfce4" "xfce4-goodies" "lightdm" "lightdm-gtk-greeter" "lightdm-gtk-greeter-settings" "git")
 additional_pacman_packages=("firefox" "file-roller" "gvfs", "catfish")
 
