@@ -1,6 +1,7 @@
 #!/bin/bash
 
 _DIR_XFCE4=$(dirname ${0})
+_TEMP_XFCE4=${_DIR_XFCE4}/tmp/
 source "${_DIR_XFCE4}/../prompt.sh"
 source "${_DIR_XFCE4}/form-xfce4.sh"
 
@@ -12,6 +13,7 @@ additional_yay_packages=("pamac-aur")
 additional_pacman_packages=("firefox" "file-roller" "gvfs" "catfish")
 
 function main() {
+    mkdir ${_TEMP_XFCE4}
     sudo pacman --noconfirm -Syu "${prerequisites[@]}"
 
     ## Fill all user determined variables
@@ -35,6 +37,10 @@ function main() {
     mkdir ~/.icons ~/.themes
     mkdir ~/.config/xfce4 ~/.config/xfce4/xfconf
     cp -rf ${_DIR_XFCE4}/payloads/home/icons/* ${home_dir}/.icons/
+    # Clone Papirus icons
+    git clone https://github.com/PapirusDevelopmentTeam/papirus-icon-theme.git ${_TEMP_XFCE4}
+    cp -rf ${_TEMP_XFCE4}/Papirus ${home_dir}/.icons/
+    cp -rf ${_TEMP_XFCE4}/Papirus-Dark ${home_dir}/.icons/
     cp -rf ${_DIR_XFCE4}/payloads/home/themes/* ${home_dir}/.themes/
     cp -rf ${_DIR_XFCE4}/payloads/home/config/gtk-2.0 ${home_dir}/.config/
     cp -rf ${_DIR_XFCE4}/payloads/home/config/gtk-3.0 ${home_dir}/.config/
@@ -45,6 +51,11 @@ function main() {
     for d in ${home_dir}/.themes/*/; do
         gtk-update-icon-cache "$d"
     done
+
+    ####################
+    ###   Clean-up   ###
+    ####################
+    rm -rf ${_TEMP_XFCE4}
 }
 
 main
