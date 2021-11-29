@@ -10,7 +10,7 @@ home_dir=""
 prerequisites=("")
 base_packages=("xfce4" "xfce4-goodies" "lightdm" "lightdm-gtk-greeter" "lightdm-gtk-greeter-settings" "git" "pipewire" "pipewire-alsa" "pipewire-pulse" "pipewire-jack" "network-manager-applet" "pavucontrol")
 # Maybe replace ttf-liberation with official microsoft fonts (see: https://wiki.archlinux.org/title/Microsoft_fonts#Installation)
-additional_yay_packages=("pamac-aur", "ttf-liberation") 
+additional_yay_packages=("pamac-aur" "ttf-liberation") 
 additional_pacman_packages=("firefox" "firefox-adblock-plus" "file-roller" "gvfs" "catfish")
 
 function main() {
