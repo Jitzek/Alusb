@@ -118,6 +118,9 @@ function main() {
     systemctl enable NetworkManager.service
     echo -e \"--save /etc/pacman.d/mirrorlist\n--country ${country}\n--protocol https\n--latest 5\n--sort age\" | tee /etc/xdg/reflector/reflector.conf
     systemctl enable reflector.service reflector.timer
+    systemctl start reflector.service reflector.timer
+    sed -i '/\[multilib]/s/^#//g' /etc/pacman.conf
+    sed -i '/^\[multilib]/{N;s/\n#/\n/}' /etc/pacman.conf
     exit" > $chroot_file
 
     chmod +x $chroot_file
