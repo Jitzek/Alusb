@@ -8,8 +8,8 @@ source "${_DIR_XFCE4}/form-xfce4.sh"
 home_dir=""
 prerequisites=("")
 base_packages=("xfce4" "xfce4-goodies" "lightdm" "lightdm-gtk-greeter" "lightdm-gtk-greeter-settings" "git")
-additional_pacman_packages=("firefox" "file-roller" "gvfs", "catfish")
-
+additional_yay_packages=("pamac-aur")
+additional_pacman_packages=("firefox" "file-roller" "gvfs" "catfish")
 
 function main() {
     sudo pacman --noconfirm -Syu "${prerequisites[@]}"
@@ -25,18 +25,26 @@ function main() {
     sudo systemctl enable lightdm
     git clone https://aur.archlinux.org/yay-git.git
     $(cd ./yay-git && makepkg -si --noconfirm)
-    yay --noconfirm -Syu pamac-aur
+    yay --noconfirm -Syu "${additional_yay_packages[@]}"
+    sudo pacman --noconfirm -S "${additional_pacman_packages[@]}"
 
     #########################
     ###   Configuration   ###
     #########################
-    sudo pacman --noconfirm -S "${additional_pacman_packages[@]}"
     tar -xvzf "${_DIR_XFCE4}/payloads.tar.gz" -C "${_DIR_XFCE4}"
-    cp -rf "${_DIR_XFCE4}/payloads/icons/*" "${home_dir}/.icons/"
-    cp -rf "${_DIR_XFCE4}/payloads/themes/*" "${home_dir}/.themes/"
-    cp -rf "${_DIR_XFCE4}/payloads/config/gtk-2.0" "${home_dir}/.config/"
-    cp -rf "${_DIR_XFCE4}/payloads/config/gtk-3.0" "${home_dir}/.config/"
-    cp -rf "${_DIR_XFCE4}/payloads/config/xfce-perchannel-xml" "${home_dir}/.config/xfce4/xfconf/"
+    mkdir ~/.icons ~/.themes
+    mkdir ~/.config/xfce4 ~/.config/xfce4/xfconf
+    cp -rf ${_DIR_XFCE4}/payloads/home/icons/* ${home_dir}/.icons/
+    cp -rf ${_DIR_XFCE4}/payloads/home/themes/* ${home_dir}/.themes/
+    cp -rf ${_DIR_XFCE4}/payloads/home/config/gtk-2.0 ${home_dir}/.config/
+    cp -rf ${_DIR_XFCE4}/payloads/home/config/gtk-3.0 ${home_dir}/.config/
+    cp -rf ${_DIR_XFCE4}/payloads/home/config/xfce-perchannel-xml ${home_dir}/.config/xfce4/xfconf/
+    for d in ${home_dir}/.icons/*/; do
+        gtk-update-icon-cache "$d"
+    done
+    for d in ${home_dir}/.themes/*/; do
+        gtk-update-icon-cache "$d"
+    done
 }
 
 main
