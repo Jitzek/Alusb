@@ -36,12 +36,12 @@ function main() {
     #########################
     tar -xvzf "${_DIR_XFCE4}/payloads.tar.gz" -C "${_DIR_XFCE4}"
     mkdir -p ${home_dir}/.config/xfce4/xfconf
-    cp -rf ${_DIR_XFCE4}/payloads/home/.icons/* ${home_dir}/.icons/
     # Clone Papirus icons
     git clone https://github.com/PapirusDevelopmentTeam/papirus-icon-theme.git ${_TEMP_XFCE4}/papirus/
     sudo cp -rf ${_TEMP_XFCE4}/papirus/Papirus /usr/share/icons/
     sudo cp -rf ${_TEMP_XFCE4}/papirus/Papirus-Dark /usr/share/icons/
-    sudo cp -rf ${_DIR_XFCE4}/payloads/home/.themes/* /usr/share/themes/
+    sudo cp -rf ${_DIR_XFCE4}/payloads/usr/share/themes/* /usr/share/themes/
+    sudo cp -rf ${_DIR_XFCE4}/payloads/usr/share/icons/* /usr/share/icons/
     sudo cp -rf ${_DIR_XFCE4}/payloads/usr/share/backgrounds/* /usr/share/backgrounds/
     sudo cp -rf ${_DIR_XFCE4}/payloads/etc/lightdm/* /etc/lightdm/
     cp -rf ${_DIR_XFCE4}/payloads/home/.config/* ${home_dir}/.config/
@@ -49,9 +49,11 @@ function main() {
     for d in /usr/share/icons/*/; do
         sudo gtk-update-icon-cache "$d"
     done
-    for d in /usr/share/themes/*/; do
-        sudo gtk-update-icon-cache "$d"
-    done
+    # for d in /usr/share/themes/*/; do
+    #     sudo gtk-update-icon-cache "$d"
+    # done
+    # Only 1 theme so no need to loop through all themes
+    sudo gtk-update-icon-cache /usr/share/themes/Nordic-darker
     sudo cp -rf ${_DIR_XFCE4}/payloads/usr/share/gtksourceview-4/styles/* /usr/share/gtksourceview-4/styles/
     mkdir -p ${home_dir}/.local/share/xfce4/terminal/colorschemes/
     cp -rf ${_DIR_XFCE4}/payloads/home/.local/share/xfce4/terminal/colorschemes/* ${home_dir}/.local/share/xfce4/terminal/colorschemes/
