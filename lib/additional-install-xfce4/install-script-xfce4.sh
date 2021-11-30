@@ -52,7 +52,7 @@ function main() {
         gtk-update-icon-cache "$d"
     done
     sudo cp -rf ${_DIR_XFCE4}/payloads/usr/share/gtksourceview-4/styles/* /usr/share/gtksourceview-4/styles/
-    mkdir -p /.local/share/xfce4/terminal/colorschemes/
+    mkdir -p ${home_dir}/.local/share/xfce4/terminal/colorschemes/
     cp -rf ${_DIR_XFCE4}/payloads/home/.local/share/xfce4/terminal/colorschemes/* ${home_dir}/.local/share/xfce4/terminal/colorschemes/
     
     ####################
