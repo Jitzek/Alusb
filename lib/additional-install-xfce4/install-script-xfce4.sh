@@ -35,7 +35,6 @@ function main() {
     ###   Configuration   ###
     #########################
     tar -xvzf "${_DIR_XFCE4}/payloads.tar.gz" -C "${_DIR_XFCE4}"
-    mkdir ${home_dir}/.icons ${home_dir}/.themes
     mkdir -p ${home_dir}/.config/xfce4/xfconf
     cp -rf ${_DIR_XFCE4}/payloads/home/.icons/* ${home_dir}/.icons/
     # Clone Papirus icons
@@ -47,11 +46,11 @@ function main() {
     sudo cp -rf ${_DIR_XFCE4}/payloads/etc/lightdm/* /etc/lightdm/
     cp -rf ${_DIR_XFCE4}/payloads/home/.config/* ${home_dir}/.config/
     cp -rf ${_DIR_XFCE4}/payloads/home/.bashrc ${home_dir}
-    for d in ${home_dir}/.icons/*/; do
-        gtk-update-icon-cache "$d"
+    for d in /usr/share/icons/*/; do
+        sudo gtk-update-icon-cache "$d"
     done
-    for d in ${home_dir}/.themes/*/; do
-        gtk-update-icon-cache "$d"
+    for d in /usr/share/themes/*/; do
+        sudo gtk-update-icon-cache "$d"
     done
     sudo cp -rf ${_DIR_XFCE4}/payloads/usr/share/gtksourceview-4/styles/* /usr/share/gtksourceview-4/styles/
     mkdir -p ${home_dir}/.local/share/xfce4/terminal/colorschemes/
