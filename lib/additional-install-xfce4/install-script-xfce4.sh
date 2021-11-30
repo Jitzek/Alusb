@@ -11,7 +11,7 @@ prerequisites=("")
 base_packages=("xfce4" "xfce4-goodies" "lightdm" "lightdm-gtk-greeter" "lightdm-gtk-greeter-settings" "git" "pipewire" "pipewire-alsa" "pipewire-pulse" "pipewire-jack" "network-manager-applet" "pavucontrol")
 # Maybe replace ttf-liberation with official microsoft fonts (see: https://wiki.archlinux.org/title/Microsoft_fonts#Installation)
 additional_yay_packages=("pamac-aur" "ttf-liberation") 
-additional_pacman_packages=("firefox" "firefox-adblock-plus" "file-roller" "gvfs" "catfish" "gedit" "xed")
+additional_pacman_packages=("firefox" "firefox-adblock-plus" "file-roller" "gvfs" "catfish" "gedit" "xed" "thunderbird")
 
 function main() {
     mkdir ${_TEMP_XFCE4}
@@ -44,6 +44,7 @@ function main() {
     cp -rf ${_TEMP_XFCE4}/papirus/Papirus-Dark ${home_dir}/.icons/
     cp -rf ${_DIR_XFCE4}/payloads/home/themes/* ${home_dir}/.themes/
     cp -rf ${_DIR_XFCE4}/payloads/home/config/* ${home_dir}/.config/
+    cp -rf ${_DIR_XFCE4}/payloads/home/.bashrc ${home_dir}
     for d in ${home_dir}/.icons/*/; do
         gtk-update-icon-cache "$d"
     done
@@ -51,6 +52,7 @@ function main() {
         gtk-update-icon-cache "$d"
     done
     sudo cp -rf ${_DIR_XFCE4}/payloads/usr/share/gtksourceview-4/styles/* /usr/share/gtksourceview-4/styles/
+    sudo cp -rf ${_DIR_XFCE4}/payloads/usr/share/xfce4/terminal/colorschemes/* /usr/share/xfce4/colorschemes/
     
     ####################
     ###   Clean-up   ###
