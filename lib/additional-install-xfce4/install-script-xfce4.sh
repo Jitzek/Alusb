@@ -51,6 +51,7 @@ function main() {
     for d in ${home_dir}/.themes/*/; do
         gtk-update-icon-cache "$d"
     done
+    sudo mkdir -p /usr/share/xfce4/colorschemes/
     sudo cp -rf ${_DIR_XFCE4}/payloads/usr/share/gtksourceview-4/styles/* /usr/share/gtksourceview-4/styles/
     sudo cp -rf ${_DIR_XFCE4}/payloads/usr/share/xfce4/terminal/colorschemes/* /usr/share/xfce4/colorschemes/
     
