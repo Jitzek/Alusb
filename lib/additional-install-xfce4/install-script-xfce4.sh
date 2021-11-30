@@ -35,15 +35,17 @@ function main() {
     ###   Configuration   ###
     #########################
     tar -xvzf "${_DIR_XFCE4}/payloads.tar.gz" -C "${_DIR_XFCE4}"
-    mkdir ~/.icons ~/.themes
-    mkdir ~/.config/xfce4 ~/.config/xfce4/xfconf
-    cp -rf ${_DIR_XFCE4}/payloads/home/icons/* ${home_dir}/.icons/
+    mkdir ${home_dir}/.icons ${home_dir}/.themes
+    mkdir -p ${home_dir}/.config/xfce4/xfconf
+    cp -rf ${_DIR_XFCE4}/payloads/home/.icons/* ${home_dir}/.icons/
     # Clone Papirus icons
     git clone https://github.com/PapirusDevelopmentTeam/papirus-icon-theme.git ${_TEMP_XFCE4}/papirus/
-    cp -rf ${_TEMP_XFCE4}/papirus/Papirus ${home_dir}/.icons/
-    cp -rf ${_TEMP_XFCE4}/papirus/Papirus-Dark ${home_dir}/.icons/
-    cp -rf ${_DIR_XFCE4}/payloads/home/themes/* ${home_dir}/.themes/
-    cp -rf ${_DIR_XFCE4}/payloads/home/config/* ${home_dir}/.config/
+    sudo cp -rf ${_TEMP_XFCE4}/papirus/Papirus /usr/share/icons/
+    sudo cp -rf ${_TEMP_XFCE4}/papirus/Papirus-Dark /usr/share/icons/
+    sudo cp -rf ${_DIR_XFCE4}/payloads/home/.themes/* /usr/share/themes/
+    sudo cp -rf ${_DIR_XFCE4}/payloads/usr/share/backgrounds/* /usr/share/backgrounds/
+    sudo cp -rf ${_DIR_XFCE4}/payloads/etc/lightdm/* /etc/lightdm/
+    cp -rf ${_DIR_XFCE4}/payloads/home/.config/* ${home_dir}/.config/
     cp -rf ${_DIR_XFCE4}/payloads/home/.bashrc ${home_dir}
     for d in ${home_dir}/.icons/*/; do
         gtk-update-icon-cache "$d"
