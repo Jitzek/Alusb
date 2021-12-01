@@ -12,4 +12,11 @@ function form_xfce4() {
         read -p "Please insert the name of the user to install for: /home/" user
         home_dir="/home/$user"
     done
+
+    if [[ ! $configure_nvidia ]]; then
+        printf 'Configure system for NVIDIA drivers? This will only configure parts that can be safely configured without potentially breaking the system\n'
+        if prompt; then
+            configure_nvidia=true
+        fi
+    fi
 }

@@ -8,10 +8,12 @@ source "${_DIR_XFCE4}/form-xfce4.sh"
 ## Configurable variables ##
 home_dir=""
 prerequisites=("")
-base_packages=("xfce4" "xfce4-goodies" "lightdm" "lightdm-gtk-greeter" "lightdm-gtk-greeter-settings" "git" "pipewire" "pipewire-alsa" "pipewire-pulse" "pipewire-jack" "network-manager-applet" "pavucontrol")
+base_packages=("xorg" "base-devel" "xfce4" "xfce4-goodies" "lightdm" "lightdm-gtk-greeter" "lightdm-gtk-greeter-settings" "git" "pipewire" "pipewire-alsa" "pipewire-pulse" "pipewire-jack" "network-manager-applet" "pavucontrol")
 # Maybe replace ttf-liberation with official microsoft fonts (see: https://wiki.archlinux.org/title/Microsoft_fonts#Installation)
-additional_yay_packages=("pamac-aur" "ttf-liberation") 
-additional_pacman_packages=("firefox" "firefox-adblock-plus" "file-roller" "gvfs" "catfish" "gedit" "xed" "thunderbird")
+additional_yay_packages=("pamac-aur" "ttf-liberation" "downgrade" "openrgb" "mugshot")
+additional_pacman_packages=("firefox" "firefox-adblock-plus" "file-roller" "gvfs" "catfish" "gedit" "xed" "thunderbird" "neofetch" "gparted" "firejail" "cups" "cups-filters" "cups-pdf" "system-config-printer" "w3m")
+configure_nvidia=false
+nvidia_packages=("nvidia" "nvidia-settings")
 
 function main() {
     mkdir ${_TEMP_XFCE4}
@@ -23,13 +25,13 @@ function main() {
     ################
     ###   Base   ###
     ################
-    sudo pacman --noconfirm -S xorg base-devel
     sudo pacman --noconfirm -S "${base_packages[@]}"
     sudo systemctl enable lightdm
     git clone https://aur.archlinux.org/yay-git.git ${_TEMP_XFCE4}/yay/
     $(cd ${_TEMP_XFCE4}/yay && makepkg -si --noconfirm)
     yay --noconfirm -Syu "${additional_yay_packages[@]}"
     sudo pacman --noconfirm -S "${additional_pacman_packages[@]}"
+    sudo systemctl enable cups.service
 
     #########################
     ###   Configuration   ###
@@ -57,7 +59,16 @@ function main() {
     sudo cp -rf ${_DIR_XFCE4}/payloads/usr/share/gtksourceview-4/styles/* /usr/share/gtksourceview-4/styles/
     mkdir -p ${home_dir}/.local/share/xfce4/terminal/colorschemes/
     cp -rf ${_DIR_XFCE4}/payloads/home/.local/share/xfce4/terminal/colorschemes/* ${home_dir}/.local/share/xfce4/terminal/colorschemes/
-    
+
+    ##################
+    ###   Nvidia   ###
+    ##################
+    if [[ $configure_nvidia ]]; then
+        sudo pacman --noconfirm -S "${nvidia_packages[@]}"
+        echo 'ACTION=="add", DEVPATH=="/bus/pci/drivers/nvidia", RUN+="/usr/bin/nvidia-modprobe -c0 -u"' | sudo tee /etc/udev/rules.d/70-nvidia.rules
+        # sudo nvidia-xconfig
+    fi
+
     ####################
     ###   Clean-up   ###
     ####################
