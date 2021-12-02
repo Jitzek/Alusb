@@ -46,7 +46,9 @@ function main() {
     fi
     gdiskPartition true
 
-    mkfs.fat -F32 "${block_device}2"
+    # mkfs.fat -F32 "${block_device}2"
+    ## NOT TESTED
+    mkfs.vfat "${block_device}2"
     mkfs.ext4 "${block_device}3"
     mkfs.ext4 "${block_device}4"
     if [ ! -z $partition_scheme["swap"] ]; then
@@ -87,8 +89,12 @@ function main() {
     sed -i '/ext4/s/relatime/noatime/' /etc/fstab
 
     pacman -S os-prober grub efibootmgr --noconfirm
-    grub-install --target=i386-pc --boot-directory /boot $block_device
-    grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
+    mkinitcpio -p linux
+    grub-install $block_device
+    # grub-install --target=i386-pc --boot-directory /boot $block_device
+    # grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
+    for i in /dev; do mkdir -p /mnt$i; done
+    for i in /dev; do mount -B $i /mnt$i; done
     echo 'GRUB_DISABLE_OS_PROBER=false' | tee --append /etc/default/grub
     grub-mkconfig -o /boot/grub/grub.cfg
     
