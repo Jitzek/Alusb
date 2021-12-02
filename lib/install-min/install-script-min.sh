@@ -17,7 +17,7 @@ partition_scheme_swap=""
 partition_scheme_root=""
 ## Leave empty for max available size
 partition_scheme_home=""
-base_packages=("base" "base-devel" "cmake" "linux" "linux-firmware" "reflector")
+base_packages=("base" "base-devel" "cmake" "linux" "linux-firmware" "reflector" "os-prober" "efibootmgr" "grub")
 region=""
 country=""
 city=""
@@ -46,7 +46,9 @@ function main() {
     fi
     gdiskPartition true
 
-    mkfs.fat -F32 "${block_device}2"
+    # mkfs.fat -F32 "${block_device}2"
+    ## NOT TESTED
+    mkfs.vfat "${block_device}2"
     mkfs.ext4 "${block_device}3"
     mkfs.ext4 "${block_device}4"
     if [ ! -z $partition_scheme["swap"] ]; then
@@ -63,20 +65,11 @@ function main() {
     mount "${block_device}4" /mnt/home
 
     pacstrap /mnt "${base_packages[@]}"
-    genfstab -U /mnt >>/mnt/etc/fstab
+    genfstab -U -p /mnt >> /mnt/etc/fstab
 
     ################################
     ###   System Configuration   ###
     ################################
-
-    # This code is not needed (for now)
-    # $(
-    #     if [[ ! -z $partition_scheme_root ]] && [[ -z $partition_scheme_home ]]; then
-    #         echo "echo '#${block_device}4' >> /etc/fstab"
-    #         echo "blkid '${block_device}4' | awk '{print \$2}' | sed 's/\"//g;s/\$/ \/home ext4 defaults 1 2/' | tee --append /etc/fstab"
-    #         echo "blkid '${block_device}4' | awk '{print \$2}' | echo | tee --append /etc/fstab"
-    #     fi
-    # )
     chroot_file="/mnt/chroot.sh"
     echo "#!/bin/bash
     ln -s /usr/share/zoneinfo/$region/$city /etc/localtime
@@ -95,9 +88,10 @@ function main() {
 
     sed -i '/ext4/s/relatime/noatime/' /etc/fstab
 
-    pacman -S grub efibootmgr --noconfirm
-    grub-install --target=i386-pc --boot-directory /boot $block_device
-    grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
+    mkinitcpio -p linux
+    grub-install --target=i386-pc --boot-directory=/boot $block_device
+    grub-install --target=x86_64-efi --efi-directory=/boot/efi --boot-directory=/boot --removable $block_device
+    echo 'GRUB_DISABLE_OS_PROBER=false' | tee --append /etc/default/grub
     grub-mkconfig -o /boot/grub/grub.cfg
     
     pacman -S ${additional_packages[@]} --noconfirm
