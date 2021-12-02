@@ -89,10 +89,11 @@ function main() {
     sed -i '/ext4/s/relatime/noatime/' /etc/fstab
 
     mkinitcpio -p linux
-    for i in /dev /dev/pts /proc /sys /run; do sudo mount -B $i /mnt$i; done
     grub-install $block_device
     # grub-install --target=i386-pc --boot-directory /boot $block_device
     # grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
+    for i in /dev; do mkdir -p /mnt$i; done
+    for i in /dev; do mount -B $i /mnt$i; done
     echo 'GRUB_DISABLE_OS_PROBER=false' | tee --append /etc/default/grub
     grub-mkconfig -o /boot/grub/grub.cfg
     
