@@ -65,7 +65,7 @@ function main() {
     mount "${block_device}4" /mnt/home
 
     pacstrap /mnt "${base_packages[@]}"
-    genfstab -U -p /mnt >> /mnt/etc/fstab
+    genfstab -U /mnt >> /mnt/etc/fstab
 
     ################################
     ###   System Configuration   ###
@@ -76,8 +76,8 @@ function main() {
     hwclock --systohc
     sed -i '/${locale}/s/^#//' /etc/locale.gen
     locale-gen
-    echo LANG=$(printf $locale | sed 's/\s.*$//') >/etc/locale.conf
-    echo $hostname >/etc/hostname
+    echo LANG=$(printf $locale | sed 's/\s.*$//') > /etc/locale.conf
+    echo $hostname > /etc/hostname
     echo -e '127.0.0.1\\t\\tlocalhost\\n::1\\t\\t\\tlocalhost\\n127.0.1.1\\t\\t${hostname}.localdomain ${hostname}' >> /etc/hosts
     
     ln -s /dev/null /etc/udev/rules.d/80-net-setup-link.rules
@@ -89,8 +89,10 @@ function main() {
     sed -i '/ext4/s/relatime/noatime/' /etc/fstab
 
     mkinitcpio -p linux
-    grub-install --target=i386-pc --boot-directory=/boot $block_device
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi --boot-directory=/boot --removable $block_device
+    for i in /dev /dev/pts /proc /sys /run; do sudo mount -B $i /mnt$i; done
+    grub-install $block_device
+    # grub-install --target=i386-pc --boot-directory /boot $block_device
+    # grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
     echo 'GRUB_DISABLE_OS_PROBER=false' | tee --append /etc/default/grub
     grub-mkconfig -o /boot/grub/grub.cfg
     
