@@ -1,6 +1,7 @@
 #!/bin/bash
 
 _DIR_MIN=$(dirname ${0})
+_CHROOT_TEMP="/chroot-tmp"
 
 source "${_DIR_MIN}/../prompt.sh"
 source "${_DIR_MIN}/form-min.sh"
@@ -72,6 +73,7 @@ function main() {
     ################################
     chroot_file="/mnt/chroot.sh"
     echo "#!/bin/bash
+    mkdir -p ${_CHROOT_TEMP}
     ln -s /usr/share/zoneinfo/$region/$city /etc/localtime
     hwclock --systohc
     sed -i '/${locale}/s/^#//' /etc/locale.gen
@@ -115,6 +117,10 @@ function main() {
     systemctl start reflector.service reflector.timer
     sed -i '/\[multilib]/s/^#//g' /etc/pacman.conf
     sed -i '/^\[multilib]/{N;s/\n#/\n/}' /etc/pacman.conf
+    echo '176' > /proc/sys/kernel/sysrq
+    git clone https://aur.archlinux.org/yay-git.git ${_CHROOT_TEMP}/yay/
+    \$(cd ${_CHROOT_TEMP}/yay && makepkg -si --noconfirm)
+    rm -rf ${_CHROOT_TEMP}
     exit" > $chroot_file
 
     chmod +x $chroot_file
