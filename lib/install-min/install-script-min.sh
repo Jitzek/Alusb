@@ -90,8 +90,8 @@ function main() {
 
     pacman -S os-prober grub efibootmgr --noconfirm
     mkinitcpio -p linux
-    grub-install --target=i386-pc --boot-directory=/boot $block_device
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi --boot-directory=/boot/efi/EFI --bootloader-id=grub --removable $block_device
+    grub-install --target=i386-pc --boot-directory /boot $block_device
+    grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
     echo 'GRUB_DISABLE_OS_PROBER=false' | tee --append /etc/default/grub
     grub-mkconfig -o /boot/grub/grub.cfg
     
