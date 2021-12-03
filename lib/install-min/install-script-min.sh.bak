@@ -1,7 +1,6 @@
 #!/bin/bash
 
 _DIR_MIN=$(dirname ${0})
-_CHROOT_TEMP="/chroot-tmp"
 
 source "${_DIR_MIN}/../prompt.sh"
 source "${_DIR_MIN}/form-min.sh"
@@ -47,7 +46,9 @@ function main() {
     fi
     gdiskPartition true
 
-    mkfs.fat -F32 "${block_device}2"
+    # mkfs.fat -F32 "${block_device}2"
+    ## NOT TESTED
+    mkfs.vfat "${block_device}2"
     mkfs.ext4 "${block_device}3"
     mkfs.ext4 "${block_device}4"
     if [ ! -z $partition_scheme["swap"] ]; then
@@ -71,7 +72,6 @@ function main() {
     ################################
     chroot_file="/mnt/chroot.sh"
     echo "#!/bin/bash
-    mkdir -p ${_CHROOT_TEMP}
     ln -s /usr/share/zoneinfo/$region/$city /etc/localtime
     hwclock --systohc
     sed -i '/${locale}/s/^#//' /etc/locale.gen
@@ -89,8 +89,12 @@ function main() {
     sed -i '/ext4/s/relatime/noatime/' /etc/fstab
 
     pacman -S os-prober grub efibootmgr --noconfirm
-    grub-install --target=i386-pc --boot-directory /boot $block_device
-    grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
+    mkinitcpio -p linux
+    grub-install $block_device
+    # grub-install --target=i386-pc --boot-directory /boot $block_device
+    # grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
+    for i in /dev; do mkdir -p /mnt$i; done
+    for i in /dev; do mount -B $i /mnt$i; done
     echo 'GRUB_DISABLE_OS_PROBER=false' | tee --append /etc/default/grub
     grub-mkconfig -o /boot/grub/grub.cfg
     
@@ -115,10 +119,6 @@ function main() {
     systemctl start reflector.service reflector.timer
     sed -i '/\[multilib]/s/^#//g' /etc/pacman.conf
     sed -i '/^\[multilib]/{N;s/\n#/\n/}' /etc/pacman.conf
-    echo '176' > /proc/sys/kernel/sysrq
-    git clone https://aur.archlinux.org/yay-git.git ${_CHROOT_TEMP}/yay/
-    \$(cd ${_CHROOT_TEMP}/yay && makepkg -si --noconfirm)
-    rm -rf ${_CHROOT_TEMP}
     exit" > $chroot_file
 
     chmod +x $chroot_file
