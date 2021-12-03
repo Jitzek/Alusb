@@ -11,7 +11,7 @@ prerequisites=("")
 base_packages=("xorg" "base-devel" "xfce4" "xfce4-goodies" "lightdm" "lightdm-gtk-greeter" "lightdm-gtk-greeter-settings" "git" "pipewire" "pipewire-alsa" "pipewire-pulse" "pipewire-jack" "network-manager-applet" "pavucontrol")
 # Maybe replace ttf-liberation with official microsoft fonts (see: https://wiki.archlinux.org/title/Microsoft_fonts#Installation)
 additional_yay_packages=("pamac-aur" "ttf-liberation" "downgrade" "openrgb" "mugshot" "update-grub")
-additional_pacman_packages=("firefox" "firefox-adblock-plus" "file-roller" "gvfs" "catfish" "gedit" "xed" "thunderbird" "neofetch" "gparted" "firejail" "cups" "cups-filters" "cups-pdf" "system-config-printer" "w3m")
+additional_pacman_packages=("firefox" "firefox-adblock-plus" "file-roller" "gvfs" "catfish" "gedit" "xed" "thunderbird" "neofetch" "gparted" "firejail" "avahi" "cups" "cups-filters" "cups-pdf" "ghostscript" "gsfonts" "system-config-printer" "w3m")
 configure_nvidia=false
 nvidia_packages=("nvidia" "nvidia-settings")
 
@@ -32,6 +32,7 @@ function main() {
     yay --noconfirm -Syu "${additional_yay_packages[@]}"
     sudo pacman --noconfirm -S "${additional_pacman_packages[@]}"
     sudo systemctl enable cups.service
+    sudo systemctl enable avahi-daemon.service
 
     #########################
     ###   Configuration   ###
