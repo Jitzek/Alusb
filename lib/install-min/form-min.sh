@@ -72,6 +72,7 @@ function form_min() {
                     create_home_partition=false
                     printf "\nA Root partition with the max available size will be created (no Home partition will be created).\n"
                 else
+                    create_home_partition=true
                     printf "\nA Root partition with size ${partition_scheme_root} will be created.\n"
                 fi
                 printf "Confirm?\n"
@@ -83,11 +84,11 @@ function form_min() {
         fi
     fi
 
+    if [[ "$create_home_partition" = true ]]; then
+        printf "${create_home_partition}: is this true?"
+    fi
     ## Home partition is empty
     if [[ "$create_home_partition" = true ]] && [[ ! -z $partition_scheme_root ]] && [[ -z $partition_scheme_home ]]; then
-        if [[ "${create_home_partition}" = true ]]; then
-            echo "${create_home_partition}: should be true"
-        fi
         printf "Create Home partition?"
         if prompt; then
             printf "\nHome partition will use max available size\n"
