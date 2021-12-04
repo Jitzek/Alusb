@@ -118,7 +118,7 @@ function main() {
     sed -i '/^\[multilib]/{N;s/\n#/\n/}' /etc/pacman.conf
     echo 'kernel.sysrq = 176' | tee --append /etc/sysctl.d/99-sysctl.conf
     rm -rf ${_CHROOT_TEMP}
-    exit" > $chroot_file
+    exit" >$chroot_file
 
     chmod +x $chroot_file
 
@@ -156,7 +156,11 @@ function gdiskPartition() {
         # Creating (optional) Swap partition
         if [[ ! -z "${partition_scheme_swap}" ]]; then
             echo n
-            echo 5
+            if [[ ! -z "${partition_scheme_home}" ]]; then
+                echo 4
+            else
+                echo 5
+            fi
             echo ""
             echo "+${partition_scheme_swap}"
             echo 8200
@@ -173,16 +177,14 @@ function gdiskPartition() {
         fi
         echo 8300
 
-        # Creating Home partition
-        echo n
-        echo 4
-        echo ""
+        # Creating (optional)  Home partition
         if [[ ! -z "${partition_scheme_home}" ]]; then
-            echo "+${partition_scheme_home}"
-        else
+            echo n
+            echo 4
             echo ""
+            echo "+${partition_scheme_home}"
+            echo 8302
         fi
-        echo 8302
 
         echo p
         if $1; then
