@@ -64,7 +64,9 @@ function main() {
     ################
     ###   GRUB   ###
     ################
-    sudo ${_TEMP_XFCE4}/payloads/grub/install.sh
+    sudo chmod +x ${_TEMP_XFCE4}/payloads/grub/install.sh
+    # sudo ${_TEMP_XFCE4}/payloads/grub/install.sh
+    $(cd ${_TEMP_XFCE4}/payloads/grub && sudo ./install.sh)
     sudo mv /boot/grub/themes/Xenlism-Arch/background.jpg /boot/grub/themes/Xenlism-Arch/background.jpg.bak
     sudo cp /usr/share/backgrounds/nordic-wallpaper.jpg /boot/grub/themes/Xenlism-Arch/background.jpg
 
