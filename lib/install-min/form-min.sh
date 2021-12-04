@@ -70,6 +70,7 @@ function form_min() {
                 read partition_scheme_root
                 if [ -z "$partition_scheme_root" ]; then
                     create_home_partition=false
+                    printf "$create_home_partition"
                     printf "\nA Root partition with the max available size will be created (no Home partition will be created).\n"
                 else
                     create_home_partition=true
