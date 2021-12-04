@@ -83,25 +83,31 @@ function form_min() {
     fi
 
     ## Home partition is empty
-    if [[ ! -z $partition_scheme_root ]] && [[ -z $partition_scheme_home ]]; then
-        printf "\nHome partition will use max available size\n"
-        printf "Confirm?\n"
-        if ! prompt; then
-            while true; do
-                partition_scheme_home=""
-                printf "Insert size of Home partition (leave empty for for max available size)\n"
-                read partition_scheme_home
-                if [ -z "$partition_scheme_home" ]; then
-                    printf "\nA Home partition with the max available size will be created.\n"
-                else
-                    printf "\nA Home partition with size ${partition_scheme_home} will be created.\n"
-                fi
-                printf "Confirm?\n"
-                if ! prompt; then
-                    continue
-                fi
-                break
-            done
+    if [[ "$create_home_partition" = true ]] && [[ ! -z $partition_scheme_root ]] && [[ -z $partition_scheme_home ]]; then
+        printf "Create Home partition?"
+        if prompt; then
+            printf "\nHome partition will use max available size\n"
+            printf "Confirm?\n"
+            if ! prompt; then
+                while true; do
+                    partition_scheme_home=""
+                    printf "Insert size of Home partition (leave empty for for max available size)\n"
+                    read partition_scheme_home
+                    if [ -z "$partition_scheme_home" ]; then
+                        printf "\nA Home partition with the max available size will be created.\n"
+                    else
+                        printf "\nA Home partition with size ${partition_scheme_home} will be created.\n"
+                    fi
+                    printf "Confirm?\n"
+                    if ! prompt; then
+                        continue
+                    fi
+                    break
+                done
+            fi
+            create_home_partition=true
+        else
+            create_home_partition=false
         fi
     fi
 

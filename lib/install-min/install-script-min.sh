@@ -18,6 +18,9 @@ partition_scheme_swap=""
 partition_scheme_root=""
 ## Leave empty for max available size
 partition_scheme_home=""
+## Temporary work-around untill I decide to implement a more elegant solution
+## If false, user will not be prompted for creation of home partition
+create_home_partition=true
 base_packages=("base" "base-devel" "cmake" "linux" "linux-firmware" "reflector")
 region=""
 country=""
@@ -156,10 +159,10 @@ function gdiskPartition() {
         # Creating (optional) Swap partition
         if [[ ! -z "${partition_scheme_swap}" ]]; then
             echo n
-            if [[ ! -z "${partition_scheme_home}" ]]; then
-                echo 4
-            else
+            if [[ "${create_home_partition}" = true ]]; then
                 echo 5
+            else
+                echo 4
             fi
             echo ""
             echo "+${partition_scheme_swap}"
@@ -177,8 +180,8 @@ function gdiskPartition() {
         fi
         echo 8300
 
-        # Creating (optional)  Home partition
-        if [[ ! -z "${partition_scheme_home}" ]]; then
+        # Creating (optional) Home partition
+        if [[ "${create_home_partition}" = true ]]; then
             echo n
             echo 4
             echo ""
