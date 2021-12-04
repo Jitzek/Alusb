@@ -70,6 +70,9 @@ function form_min() {
                 read partition_scheme_root
                 if [ -z "$partition_scheme_root" ]; then
                     create_home_partition=false
+                    if [[ "$create_home_partition" = true ]]; then
+                        printf "${create_home_partition}: is this true?"
+                    fi
                     printf "\nA Root partition with the max available size will be created (no Home partition will be created).\n"
                 else
                     create_home_partition=true
@@ -84,9 +87,6 @@ function form_min() {
         fi
     fi
 
-    if [[ "$create_home_partition" = true ]]; then
-        printf "${create_home_partition}: is this true?"
-    fi
     ## Home partition is empty
     if [[ "$create_home_partition" = true ]] && [[ ! -z $partition_scheme_root ]] && [[ -z $partition_scheme_home ]]; then
         printf "Create Home partition?"
