@@ -34,9 +34,9 @@ function main() {
     sudo systemctl enable cups.service
     sudo systemctl enable avahi-daemon.service
 
-    #########################
-    ###   Configuration   ###
-    #########################
+    ###################
+    ###   Desktop   ###
+    ###################
     tar -xvzf "${_DIR_XFCE4}/payloads.tar.gz" -C "${_TEMP_XFCE4}"
     mkdir -p ${home_dir}/.config/xfce4/xfconf
     # Clone Papirus icons
@@ -60,6 +60,11 @@ function main() {
     sudo cp -rf ${_TEMP_XFCE4}/payloads/usr/share/gtksourceview-4/styles/* /usr/share/gtksourceview-4/styles/
     mkdir -p ${home_dir}/.local/share/xfce4/terminal/colorschemes/
     cp -rf ${_TEMP_XFCE4}/payloads/home/.local/share/xfce4/terminal/colorschemes/* ${home_dir}/.local/share/xfce4/terminal/colorschemes/
+
+    ###################
+    ###   Network   ###
+    ###################
+    sudo systemctl enable avahi-daemon.service
 
     ################
     ###   GRUB   ###
