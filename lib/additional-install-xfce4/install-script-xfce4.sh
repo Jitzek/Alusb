@@ -37,18 +37,18 @@ function main() {
     #########################
     ###   Configuration   ###
     #########################
-    tar -xvzf "${_DIR_XFCE4}/payloads.tar.gz" -C "${_DIR_XFCE4}"
+    tar -xvzf "${_DIR_XFCE4}/payloads.tar.gz" -C "${_TEMP_XFCE4}"
     mkdir -p ${home_dir}/.config/xfce4/xfconf
     # Clone Papirus icons
     git clone https://github.com/PapirusDevelopmentTeam/papirus-icon-theme.git ${_TEMP_XFCE4}/papirus/
     sudo cp -rf ${_TEMP_XFCE4}/papirus/Papirus /usr/share/icons/
     sudo cp -rf ${_TEMP_XFCE4}/papirus/Papirus-Dark /usr/share/icons/
-    sudo cp -rf ${_DIR_XFCE4}/payloads/usr/share/themes/* /usr/share/themes/
-    sudo cp -rf ${_DIR_XFCE4}/payloads/usr/share/icons/* /usr/share/icons/
-    sudo cp -rf ${_DIR_XFCE4}/payloads/usr/share/backgrounds/* /usr/share/backgrounds/
-    sudo cp -rf ${_DIR_XFCE4}/payloads/etc/lightdm/* /etc/lightdm/
-    cp -rf ${_DIR_XFCE4}/payloads/home/.config/* ${home_dir}/.config/
-    cp -rf ${_DIR_XFCE4}/payloads/home/.bashrc ${home_dir}
+    sudo cp -rf ${_TEMP_XFCE4}/payloads/usr/share/themes/* /usr/share/themes/
+    sudo cp -rf ${_TEMP_XFCE4}/payloads/usr/share/icons/* /usr/share/icons/
+    sudo cp -rf ${_TEMP_XFCE4}/payloads/usr/share/backgrounds/* /usr/share/backgrounds/
+    sudo cp -rf ${_TEMP_XFCE4}/payloads/etc/lightdm/* /etc/lightdm/
+    cp -rf ${_TEMP_XFCE4}/payloads/home/.config/* ${home_dir}/.config/
+    cp -rf ${_TEMP_XFCE4}/payloads/home/.bashrc ${home_dir}
     for d in /usr/share/icons/*/; do
         sudo gtk-update-icon-cache "$d"
     done
@@ -57,9 +57,16 @@ function main() {
     # done
     # Only 1 theme so no need to loop through all themes
     sudo gtk-update-icon-cache /usr/share/themes/Nordic-darker
-    sudo cp -rf ${_DIR_XFCE4}/payloads/usr/share/gtksourceview-4/styles/* /usr/share/gtksourceview-4/styles/
+    sudo cp -rf ${_TEMP_XFCE4}/payloads/usr/share/gtksourceview-4/styles/* /usr/share/gtksourceview-4/styles/
     mkdir -p ${home_dir}/.local/share/xfce4/terminal/colorschemes/
-    cp -rf ${_DIR_XFCE4}/payloads/home/.local/share/xfce4/terminal/colorschemes/* ${home_dir}/.local/share/xfce4/terminal/colorschemes/
+    cp -rf ${_TEMP_XFCE4}/payloads/home/.local/share/xfce4/terminal/colorschemes/* ${home_dir}/.local/share/xfce4/terminal/colorschemes/
+
+    ################
+    ###   GRUB   ###
+    ################
+    sudo ${_TEMP_XFCE4}/payloads/grub/install.sh
+    sudo mv /boot/grub/themes/Xenlism-Arch/background.jpg /boot/grub/themes/Xenlism-Arch/background.jpg.bak
+    sudo cp /usr/share/backgrounds/nordic-wallpaper.jpg /boot/grub/themes/Xenlism-Arch/background.jpg
 
     ##################
     ###   Nvidia   ###

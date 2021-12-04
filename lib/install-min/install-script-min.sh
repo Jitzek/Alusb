@@ -118,7 +118,7 @@ function main() {
     sed -i '/^\[multilib]/{N;s/\n#/\n/}' /etc/pacman.conf
     echo 'kernel.sysrq = 176' | tee --append /etc/sysctl.d/99-sysctl.conf
     rm -rf ${_CHROOT_TEMP}
-    exit" >$chroot_file
+    exit" > $chroot_file
 
     chmod +x $chroot_file
 
