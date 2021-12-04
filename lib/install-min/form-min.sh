@@ -68,9 +68,8 @@ function form_min() {
                 partition_scheme_root=""
                 printf "Insert size of Root partition (leave empty for for max available size)\n"
                 read partition_scheme_root
-                if [ -z "$partition_scheme_root" ]; then
+                if [[ -z "$partition_scheme_root" ]]; then
                     create_home_partition=false
-                    printf "$create_home_partition"
                     printf "\nA Root partition with the max available size will be created (no Home partition will be created).\n"
                 else
                     create_home_partition=true
@@ -85,9 +84,6 @@ function form_min() {
         fi
     fi
 
-    if [ "$create_home_partition" = true ]; then
-        printf "${create_home_partition}: is this true?"
-    fi
     ## Home partition is empty
     if [ "$create_home_partition" = true ] && [[ ! -z $partition_scheme_root ]] && [[ -z $partition_scheme_home ]]; then
         printf "Create Home partition?"
@@ -99,7 +95,7 @@ function form_min() {
                     partition_scheme_home=""
                     printf "Insert size of Home partition (leave empty for for max available size)\n"
                     read partition_scheme_home
-                    if [ -z "$partition_scheme_home" ]; then
+                    if [[ -z "$partition_scheme_home" ]]; then
                         printf "\nA Home partition with the max available size will be created.\n"
                     else
                         printf "\nA Home partition with size ${partition_scheme_home} will be created.\n"
