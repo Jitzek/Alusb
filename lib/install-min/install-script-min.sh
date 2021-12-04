@@ -181,7 +181,7 @@ function gdiskPartition() {
         echo 8300
 
         # Creating (optional) Home partition
-        if [[ "${create_home_partition}" = true ]]; then
+        if [ "${create_home_partition}" = true ]; then
             echo n
             echo 4
             echo ""
