@@ -71,8 +71,9 @@ function main() {
     ################
     sudo chmod +x ${_TEMP_XFCE4}/payloads/grub/install.sh
     $(cd ${_TEMP_XFCE4}/payloads/grub && sudo ./install.sh)
-    sudo mv /boot/grub/themes/Xenlism-Arch/background.jpg /boot/grub/themes/Xenlism-Arch/background.jpg.bak
-    sudo cp ${_TEMP_XFCE4}/payloads/grub/background.jpg /boot/grub/themes/Xenlism-Arch/background.jpg
+    ## For some reason changing the wallpaper (sometimes) causes the grub theme to not work
+    # sudo mv /boot/grub/themes/Xenlism-Arch/background.jpg /boot/grub/themes/Xenlism-Arch/background.jpg.bak
+    # sudo cp ${_TEMP_XFCE4}/payloads/grub/background.jpg /boot/grub/themes/Xenlism-Arch/background.jpg
 
     ##################
     ###   Nvidia   ###
