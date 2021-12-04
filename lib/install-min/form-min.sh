@@ -81,6 +81,8 @@ function form_min() {
                 fi
                 break
             done
+        else
+            create_home_partition=false
         fi
     fi
 
