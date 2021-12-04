@@ -69,6 +69,7 @@ function form_min() {
                 printf "Insert size of Root partition (leave empty for for max available size)\n"
                 read partition_scheme_root
                 if [ -z "$partition_scheme_root" ]; then
+                    create_home_partition=false
                     printf "\nA Root partition with the max available size will be created (no Home partition will be created).\n"
                 else
                     printf "\nA Root partition with size ${partition_scheme_root} will be created.\n"
