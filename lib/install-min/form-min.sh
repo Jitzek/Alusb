@@ -91,7 +91,7 @@ function form_min() {
 
     ## Home partition is empty
     if [ "$create_home_partition" = true ] && [[ -z $partition_scheme_home ]]; then
-        printf "Create Home partition?"
+        printf "\nCreate Home partition?\n"
         if prompt; then
             printf "\nHome partition will use max available size\n"
             printf "Confirm?\n"
