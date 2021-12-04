@@ -140,6 +140,10 @@ function main() {
 #% DESCRIPTION
 #%  Partition disk using gdisk
 function gdiskPartition() {
+    if [[ "${create_home_partition}" = true ]]; then
+        echo "${create_home_partition}: should be true"
+    fi
+
     (
         # Creating MBR partition
         echo d
