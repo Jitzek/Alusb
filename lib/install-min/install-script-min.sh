@@ -21,6 +21,8 @@ partition_scheme_home=""
 ## Temporary work-around untill I decide to implement a more elegant solution
 ## If false, user will not be prompted for creation of home partition
 create_home_partition=true
+encrypt_root_partition=false
+encrypt_home_partition=false
 base_packages=("base" "base-devel" "cmake" "linux" "linux-firmware" "reflector")
 region=""
 country=""
@@ -57,6 +59,23 @@ function main() {
         mkswap "${block_device}5"
     fi
 
+    ######################
+    ###   Encryption   ###
+    ######################
+    if [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
+        ## Setup encryption
+        cryptsetup -c aes-xts-plain64 -y --use-random luksFormat "${block_device}4"
+        ## Remount encrypted disk to an unencrypted location
+        cryptsetup luksOpen "${block_device}3" luks
+
+        mkfs.ext4 /dev/mapper/luks
+
+        # pvcreate /dev/mapper/luks
+        # vgcreate vg0 /dev/mapper/luks
+        # lvcreate --size 8G vg0 --name swap
+        # lvcreate -l +100%FREE vg0 --name root
+    fi
+
     ########################
     ###   Base Install   ###
     ########################
@@ -64,7 +83,11 @@ function main() {
     mkdir /mnt/boot
     mount "${block_device}2" /mnt/boot
     mkdir /mnt/home
-    mount "${block_device}4" /mnt/home
+    if [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
+        mount /dev/mapper/luks /mnt/home
+    else
+        mount "${block_device}4" /mnt/home
+    fi
 
     pacstrap /mnt "${base_packages[@]}"
     genfstab -U /mnt >>/mnt/etc/fstab
@@ -93,6 +116,12 @@ function main() {
 
     pacman -S os-prober grub efibootmgr --noconfirm
     mkinitcpio -p linux
+    $(
+        if [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
+            echo "sed -i '/GRUB_ENABLE_CRYPTODISK/c\GRUB_ENABLE_CRYPTODISK=y' /etc/default/grub"
+            echo "sed -i '/GRUB_CMDLINE_LINUX/c\GRUB_CMDLINE_LINUX=\"cryptdevice=${block_device}4:luks\"' /etc/default/grub"
+        fi
+    )
     grub-install --target=i386-pc --boot-directory /boot $block_device
     grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
     echo 'GRUB_DISABLE_OS_PROBER=false' | tee --append /etc/default/grub

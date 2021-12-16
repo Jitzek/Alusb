@@ -80,6 +80,12 @@ function form_min() {
                 break
             done
         fi
+        if [ "$encrypt_root_partition" = false ]; then
+            printf "\Encrypt Root partition? (not supported currently)\n"
+            if prompt; then
+                encrypt_root_partition=true
+            fi
+        fi
     fi
 
     ## Don't create Home partition if root is configured to take up all available space
@@ -113,6 +119,12 @@ function form_min() {
                 done
             fi
             create_home_partition=true
+            if [ "$encrypt_home_partition" = false ]; then
+                printf "\Encrypt Home partition?\n"
+                if prompt; then
+                    encrypt_home_partition=true
+                fi
+            fi
         else
             create_home_partition=false
         fi
