@@ -81,7 +81,7 @@ function form_min() {
             done
         fi
         if [ "$encrypt_root_partition" = false ]; then
-            printf "\Encrypt Root partition? (not supported currently)\n"
+            printf "\nEncrypt Root partition? (not supported currently)\n"
             if prompt; then
                 encrypt_root_partition=true
             fi
@@ -120,7 +120,7 @@ function form_min() {
             fi
             create_home_partition=true
             if [ "$encrypt_home_partition" = false ]; then
-                printf "\Encrypt Home partition?\n"
+                printf "\nEncrypt Home partition?\n"
                 if prompt; then
                     encrypt_home_partition=true
                 fi
@@ -157,9 +157,12 @@ function form_min() {
         printf "\nCountry has not been set\n"
         while true; do
             read -p "What Country should be configured? used for configuring mirrors: " country
-            printf "\n"
             if [[ -z $country ]]; then
                 printf "Given input was empty\n"
+                printf "Skip setting country? (incase the command is bugged)\n"
+                if prompt; then
+                    break
+                fi
                 continue
             fi
             if ! reflector -c "$country"; then
