@@ -38,25 +38,84 @@ function form_min() {
         done
     fi
 
-    ## ESP partition is empty
-    if [[ -z $partition_scheme_esp ]]; then
-        printf "\nESP partition size is empty\n"
+    ## GPT partition is empty
+    if [[ -z $partition_scheme_gpt ]]; then
+        printf "\GPT partition size is empty\n"
         while true; do
-            partition_scheme_esp="500MB"
-            printf "Insert size of MBR partition (default: %s)\n" "$partition_scheme_esp}"
-            read partition_scheme_esp
-            if [ -z "$partition_scheme_esp" ]; then
+            partition_scheme_gpt="500MB"
+            printf "Insert size of GPT partition (default: %s)\n" "$partition_scheme_gpt}"
+            read partition_scheme_gpt
+            if [ -z "$partition_scheme_gpt" ]; then
                 printf "Given input was empty\n"
                 continue
             fi
 
-            printf "\nAn ESP partition with size $partition_scheme_esp} will be created.\n"
+            printf "\nAn GPT partition with size ${partition_scheme_gpt} will be created.\n"
             printf "Confirm?\n"
             if ! prompt; then
                 continue
             fi
             break
         done
+    fi
+
+    ## Root partition is empty
+    if [[ -z $partition_scheme_root ]]; then
+        printf "\nRoot partition will use max available size (this will leave no space for a Home partition).\n"
+        printf "Confirm?\n"
+        if ! prompt; then
+            while true; do
+                partition_scheme_root=""
+                printf "Insert size of Root partition (leave empty for for max available size)\n"
+                read partition_scheme_root
+                if [[ -z "$partition_scheme_root" ]]; then
+                    printf "\nA Root partition with the max available size will be created (no Home partition will be created).\n"
+                else
+                    printf "\nA Root partition with size ${partition_scheme_root} will be created.\n"
+                fi
+                printf "Confirm?\n"
+                if ! prompt; then
+                    continue
+                fi
+                break
+            done
+        fi
+    fi
+
+    ## Don't create Home partition if root is configured to take up all available space
+    if [[ -z $partition_scheme_root ]]; then
+        create_home_partition=false
+    else
+        create_home_partition=true
+    fi
+
+    ## Home partition is empty
+    if [ "$create_home_partition" = true ] && [[ -z $partition_scheme_home ]]; then
+        printf "\nCreate Home partition?\n"
+        if prompt; then
+            printf "\nHome partition will use max available size\n"
+            printf "Confirm?\n"
+            if ! prompt; then
+                while true; do
+                    partition_scheme_home=""
+                    printf "Insert size of Home partition (leave empty for for max available size)\n"
+                    read partition_scheme_home
+                    if [[ -z "$partition_scheme_home" ]]; then
+                        printf "\nA Home partition with the max available size will be created.\n"
+                    else
+                        printf "\nA Home partition with size ${partition_scheme_home} will be created.\n"
+                    fi
+                    printf "Confirm?\n"
+                    if ! prompt; then
+                        continue
+                    fi
+                    break
+                done
+            fi
+            create_home_partition=true
+        else
+            create_home_partition=false
+        fi
     fi
 
     if [[ -z $region ]]; then
@@ -74,6 +133,29 @@ function form_min() {
             fi
 
             printf "Region: %s\n" "$region"
+            printf "Confirm?\n"
+            if ! prompt; then
+                continue
+            fi
+            break
+        done
+    fi
+
+    if [[ -z $country ]]; then
+        printf "\nCountry has not been set\n"
+        while true; do
+            read -p "What Country should be configured? used for configuring mirrors: " country
+            printf "\n"
+            if [[ -z $country ]]; then
+                printf "Given input was empty\n"
+                continue
+            fi
+            if ! reflector -c "$country"; then
+                printf "Country not found\n"
+                continue
+            fi
+
+            printf "Country: %s\n" "$country"
             printf "Confirm?\n"
             if ! prompt; then
                 continue
@@ -196,7 +278,7 @@ function form_min() {
 
     if
         [[ -z $user_password ]] &&
-        [[ ! -z $user_name ]]
+            [[ ! -z $user_name ]]
     then
         printf "\nUser password has not been set\n"
         while true; do

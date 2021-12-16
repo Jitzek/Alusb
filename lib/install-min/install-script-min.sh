@@ -1,30 +1,42 @@
 #!/bin/bash
 
-_DIR_MIN=`dirname ${0}`
+_DIR_MIN=$(dirname ${0})
+_CHROOT_TEMP="/chroot-tmp"
 
 source "${_DIR_MIN}/../prompt.sh"
 source "${_DIR_MIN}/form-min.sh"
 
+prerequisites=("reflector")
+
 ## Configurable variables ##
 block_device=""
 partition_scheme_mbr="10MB"
-partition_scheme_esp="500MB"
+partition_scheme_gpt="500MB"
 ## Leave empty to not create swap
 partition_scheme_swap=""
 ## Leave empty for max available size
-partition_scheme_ext4=""
-base_packages=("base" "linux" "linux-firmware")
+partition_scheme_root=""
+## Leave empty for max available size
+partition_scheme_home=""
+## Temporary work-around untill I decide to implement a more elegant solution
+## If false, user will not be prompted for creation of home partition
+create_home_partition=true
+base_packages=("base" "base-devel" "cmake" "linux" "linux-firmware" "reflector")
 region=""
+country=""
 city=""
 locale=""
 hostname=""
-additional_packages=("networkmanager" "xf86-video-ati" "xf86-video-intel" "xf86-video-nouveau" "xf86-video-vesa" "xf86-input-synaptics" "acpi" "sudo")
+additional_packages=("networkmanager" "xf86-video-ati" "xf86-video-intel" "xf86-video-nouveau" "xf86-video-vesa" "xf86-input-synaptics" "acpi" "sudo" "man-db" "nano" "git" "bash-completion")
 root_password=""
 user_name=""
 user_password=""
 give_user_sudo_access=true
 
 function main() {
+    ## Prerequisites
+    pacman --noconfirm -S "${prerequisites[@]}"
+
     ## Fill all user determined variables
     form_min
 
@@ -40,8 +52,9 @@ function main() {
 
     mkfs.fat -F32 "${block_device}2"
     mkfs.ext4 "${block_device}3"
+    mkfs.ext4 "${block_device}4"
     if [ ! -z $partition_scheme["swap"] ]; then
-        mkswap "${block_device}4"
+        mkswap "${block_device}5"
     fi
 
     ########################
@@ -50,6 +63,8 @@ function main() {
     mount "${block_device}3" /mnt
     mkdir /mnt/boot
     mount "${block_device}2" /mnt/boot
+    mkdir /mnt/home
+    mount "${block_device}4" /mnt/home
 
     pacstrap /mnt "${base_packages[@]}"
     genfstab -U /mnt >>/mnt/etc/fstab
@@ -59,12 +74,13 @@ function main() {
     ################################
     chroot_file="/mnt/chroot.sh"
     echo "#!/bin/bash
+    mkdir -p ${_CHROOT_TEMP}
     ln -s /usr/share/zoneinfo/$region/$city /etc/localtime
     hwclock --systohc
     sed -i '/${locale}/s/^#//' /etc/locale.gen
     locale-gen
-    echo LANG=$(printf $locale | sed 's/\s.*$//') >/etc/locale.conf
-    echo $hostname >/etc/hostname
+    echo LANG=$(printf $locale | sed 's/\s.*$//') > /etc/locale.conf
+    echo $hostname > /etc/hostname
     echo -e '127.0.0.1\\t\\tlocalhost\\n::1\\t\\t\\tlocalhost\\n127.0.1.1\\t\\t${hostname}.localdomain ${hostname}' >> /etc/hosts
     
     ln -s /dev/null /etc/udev/rules.d/80-net-setup-link.rules
@@ -74,13 +90,17 @@ function main() {
     sed -i '/SystemMaxUse=/s/$/16M/' /etc/systemd/journald.conf
 
     sed -i '/ext4/s/relatime/noatime/' /etc/fstab
-    
-    pacman -S grub efibootmgr --noconfirm
+
+    pacman -S os-prober grub efibootmgr --noconfirm
+    mkinitcpio -p linux
     grub-install --target=i386-pc --boot-directory /boot $block_device
     grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
+    echo 'GRUB_DISABLE_OS_PROBER=false' | tee --append /etc/default/grub
     grub-mkconfig -o /boot/grub/grub.cfg
     
     pacman -S ${additional_packages[@]} --noconfirm
+
+    echo -e '# Enable tab completion\nif [[ -f /etc/bash_completion ]]; then\n\t/etc/bash_completion\nfi' | tee --append /etc/environment
 
     echo 'root:${root_password}' | chpasswd
 
@@ -94,7 +114,14 @@ function main() {
         fi
     )
     systemctl enable NetworkManager.service
-    exit" > $chroot_file
+    echo -e \"--save /etc/pacman.d/mirrorlist\n--country ${country}\n--protocol https\n--latest 5\n--sort age\" | tee /etc/xdg/reflector/reflector.conf
+    systemctl enable reflector.service reflector.timer
+    systemctl start reflector.service reflector.timer
+    sed -i '/\[multilib]/s/^#//g' /etc/pacman.conf
+    sed -i '/^\[multilib]/{N;s/\n#/\n/}' /etc/pacman.conf
+    echo 'kernel.sysrq = 176' | tee --append /etc/sysctl.d/99-sysctl.conf
+    rm -rf ${_CHROOT_TEMP}
+    exit" >$chroot_file
 
     chmod +x $chroot_file
 
@@ -103,7 +130,7 @@ function main() {
 
     rm /mnt/chroot.sh
 
-    umount /mnt/boot /mnt
+    umount /mnt/boot /mnt/home /mnt
 
     echo "Installation complete!"
 }
@@ -122,32 +149,45 @@ function gdiskPartition() {
         echo "+${partition_scheme_mbr}"
         echo EF02
 
-        # Creating ESP partition
+        # Creating GPT partition
         echo n
         echo 2
         echo ""
-        echo "+${partition_scheme_esp}"
+        echo "+${partition_scheme_gpt}"
         echo EF00
 
         # Creating (optional) Swap partition
         if [[ ! -z "${partition_scheme_swap}" ]]; then
             echo n
-            echo 4
+            if [[ "${create_home_partition}" = true ]]; then
+                echo 5
+            else
+                echo 4
+            fi
             echo ""
             echo "+${partition_scheme_swap}"
             echo 8200
         fi
 
-        # Creating Linux partition
+        # Creating Root partition
         echo n
         echo 3
         echo ""
-        if [[ ! -z "${partition_scheme_ext4}" ]]; then
-            echo "+${partition_scheme_ext4}"
+        if [[ ! -z "${partition_scheme_root}" ]]; then
+            echo "+${partition_scheme_root}"
         else
             echo ""
         fi
         echo 8300
+
+        # Creating (optional) Home partition
+        if [ "${create_home_partition}" = true ]; then
+            echo n
+            echo 4
+            echo ""
+            echo "+${partition_scheme_home}"
+            echo 8302
+        fi
 
         echo p
         if $1; then
