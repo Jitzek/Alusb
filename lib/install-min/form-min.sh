@@ -159,14 +159,13 @@ function form_min() {
             read -p "What Country should be configured? used for configuring mirrors: " country
             if [[ -z $country ]]; then
                 printf "Given input was empty\n"
+            fi
+            if ! reflector -c "$country"; then
+                printf "Country not found\n"
                 printf "Skip setting country? (incase the command is bugged)\n"
                 if prompt; then
                     break
                 fi
-                continue
-            fi
-            if ! reflector -c "$country"; then
-                printf "Country not found\n"
                 continue
             fi
 
