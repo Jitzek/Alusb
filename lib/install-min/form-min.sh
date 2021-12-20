@@ -114,7 +114,7 @@ function form_min() {
             fi
             create_home_partition=true
             if [ "$encrypt_home_partition" = false ]; then
-                printf "\Encrypt Home partition?\n"
+                printf "\nEncrypt Home partition?\n"
                 if prompt; then
                     encrypt_home_partition=true
                 fi

@@ -54,8 +54,8 @@ function main() {
     mkfs.fat -F32 "${block_device}2"
     mkfs.ext4 "${block_device}3"
     if [ "${encrypt_home_partition}" = true ]; then
-        cryptsetup luksFormat --type luks1 --use-random -S 1 -s 512 -h sha512 -i 5000 $block_device
-        cryptsetup open $block_device cryptlvm
+        cryptsetup luksFormat --type luks1 --use-random -S 1 -s 512 -h sha512 -i 5000 "${block_device}4"
+        cryptsetup open "${block_device}4" cryptlvm
         ## Creating logical volumes
         pvcreate /dev/mapper/cryptlvm
         ## Creating volume group "vg" to add physical volume to
