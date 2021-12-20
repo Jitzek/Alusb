@@ -110,6 +110,12 @@ function main() {
 
     pacman -S os-prober grub efibootmgr --noconfirm
     mkinitcpio -p linux
+    $(
+        if [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
+            echo "sed -i '/GRUB_ENABLE_CRYPTODISK/c\GRUB_ENABLE_CRYPTODISK=y' /etc/default/grub"
+            echo "sed -i '/GRUB_CMDLINE_LINUX/c\GRUB_CMDLINE_LINUX=\"cryptdevice=\${blkid -s UUID -o value ${block_device}4}:luks\"' /etc/default/grub"
+        fi
+    )
     grub-install --target=i386-pc --boot-directory /boot $block_device
     grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
     echo 'GRUB_DISABLE_OS_PROBER=false' | tee --append /etc/default/grub
