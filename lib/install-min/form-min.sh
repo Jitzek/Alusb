@@ -113,6 +113,12 @@ function form_min() {
                 done
             fi
             create_home_partition=true
+            if [ "$encrypt_home_partition" = false ]; then
+                printf "\Encrypt Home partition?\n"
+                if prompt; then
+                    encrypt_home_partition=true
+                fi
+            fi
         else
             create_home_partition=false
         fi
@@ -152,6 +158,10 @@ function form_min() {
             fi
             if ! reflector -c "$country"; then
                 printf "Country not found\n"
+                printf "Skip setting country? Incase command is bugged\n"
+                if prompt; then
+                    break
+                fi
                 continue
             fi
 

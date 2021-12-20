@@ -18,9 +18,10 @@ partition_scheme_swap=""
 partition_scheme_root=""
 ## Leave empty for max available size
 partition_scheme_home=""
-## Temporary work-around untill I decide to implement a more elegant solution
 ## If false, user will not be prompted for creation of home partition
 create_home_partition=true
+## If false, home partition will not be encrypted (user will be prompted)
+encrypt_home_partition=false
 base_packages=("base" "base-devel" "cmake" "linux" "linux-firmware" "reflector")
 region=""
 country=""
@@ -52,7 +53,19 @@ function main() {
 
     mkfs.fat -F32 "${block_device}2"
     mkfs.ext4 "${block_device}3"
-    mkfs.ext4 "${block_device}4"
+    if [ "${encrypt_home_partition}" = true ]; then
+        cryptsetup luksFormat --type luks1 --use-random -S 1 -s 512 -h sha512 -i 5000 $block_device
+        cryptsetup open $block_device cryptlvm
+        ## Creating logical volumes
+        pvcreate /dev/mapper/cryptlvm
+        ## Creating volume group "vg" to add physical volume to
+        vgcreate vg /dev/mapper/cryptlvm
+        ## Creating logical volume for home
+        lvcreate -l 100%FREE vg -n home
+        mkfs.ext4 /dev/vg/home
+    else
+        mkfs.ext4 "${block_device}4"
+    fi
     if [ ! -z $partition_scheme["swap"] ]; then
         mkswap "${block_device}5"
     fi
@@ -64,7 +77,11 @@ function main() {
     mkdir /mnt/boot
     mount "${block_device}2" /mnt/boot
     mkdir /mnt/home
-    mount "${block_device}4" /mnt/home
+    if [ "${encrypt_home_partition}" = true ]; then
+        mount /dev/vg/home /mnt/home
+    else
+        mount "${block_device}4" /mnt/home
+    fi
 
     pacstrap /mnt "${base_packages[@]}"
     genfstab -U /mnt >>/mnt/etc/fstab
@@ -186,7 +203,13 @@ function gdiskPartition() {
             echo 4
             echo ""
             echo "+${partition_scheme_home}"
-            echo 8302
+            if [ "${encrypt_home_partition}" = true ]; then
+                ## Linux LUKS
+                echo 8309
+            else
+                ## Linux Home
+                echo 8302
+            fi
         fi
 
         echo p
