@@ -56,8 +56,8 @@ function main() {
     mkfs.fat -F32 "${block_device}2"
     mkfs.ext4 "${block_device}3"
     if [ "${encrypt_home_partition}" = true ]; then
-        cryptsetup luksFormat --type luks1 --use-random -S 1 -s 512 -h sha512 -i 5000 "${block_device}4"
-        cryptsetup open "${block_device}4" cryptlvm
+        echo "${root_password}" | cryptsetup luksFormat --type luks1 --use-random -S 1 -s 512 -h sha512 -i 5000 "${block_device}4"
+        echo "${root_password}" | cryptsetup open "${block_device}4" cryptlvm
         ## Creating logical volumes
         pvcreate /dev/mapper/cryptlvm
         ## Creating volume group "vg" to add physical volume to
@@ -117,7 +117,7 @@ function main() {
     mkinitcpio -p linux
     $(
         if [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
-            # echo "sed -i \"/GRUB_ENABLE_CRYPTODISK/c\GRUB_ENABLE_CRYPTODISK=y\" /etc/default/grub"
+            echo "sed -i \"/GRUB_ENABLE_CRYPTODISK/c\GRUB_ENABLE_CRYPTODISK=y\" /etc/default/grub"
             # echo "sed -i \"/GRUB_CMDLINE_LINUX/c\GRUB_CMDLINE_LINUX=\\"cryptdevice=UUID=\$(blkid -s UUID -o value ${block_device}4):cryptlvm\\"\" /etc/default/grub"
         fi
     )
