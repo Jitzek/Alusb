@@ -152,6 +152,10 @@ function form_min() {
             fi
             if ! reflector -c "$country"; then
                 printf "Country not found\n"
+                printf "Skip setting country? Incase command is bugged\n"
+                if prompt; then
+                    break
+                fi
                 continue
             fi
 
