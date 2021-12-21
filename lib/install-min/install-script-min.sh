@@ -22,7 +22,9 @@ partition_scheme_home=""
 create_home_partition=true
 ## If false, home partition will not be encrypted (user will be prompted)
 encrypt_home_partition=false
+decrypt_key="secretkey"
 base_packages=("base" "base-devel" "cmake" "linux" "linux-firmware" "reflector")
+encrypt_packages=("lvm2" "cryptsetup")
 region=""
 country=""
 city=""
@@ -84,6 +86,9 @@ function main() {
     fi
 
     pacstrap /mnt "${base_packages[@]}"
+    if [ "${encrypt_home_partition}" = true ]; then
+        pacstrap /mnt "${encrypt_packages[@]}"
+    fi
     genfstab -U /mnt >>/mnt/etc/fstab
 
     ################################
@@ -112,8 +117,8 @@ function main() {
     mkinitcpio -p linux
     $(
         if [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
-            echo "sed -i \"/GRUB_ENABLE_CRYPTODISK/c\GRUB_ENABLE_CRYPTODISK=y\" /etc/default/grub"
-            echo "sed -i \"/GRUB_CMDLINE_LINUX/c\GRUB_CMDLINE_LINUX=\\"cryptdevice=UUID=\$(blkid -s UUID -o value ${block_device}4):cryptlvm\\"\" /etc/default/grub"
+            # echo "sed -i \"/GRUB_ENABLE_CRYPTODISK/c\GRUB_ENABLE_CRYPTODISK=y\" /etc/default/grub"
+            # echo "sed -i \"/GRUB_CMDLINE_LINUX/c\GRUB_CMDLINE_LINUX=\\"cryptdevice=UUID=\$(blkid -s UUID -o value ${block_device}4):cryptlvm\\"\" /etc/default/grub"
         fi
     )
     grub-install --target=i386-pc --boot-directory /boot $block_device
