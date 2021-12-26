@@ -108,8 +108,8 @@ function main() {
         uid=$(cat /etc/passwd | grep ${user_name} | cut -d":" -f3)
         echo "
         [Unit]
-        Requires=${user_name}@${uid}.service
-        Before=${user_name}@${uid}.service
+        Requires=user@${uid}.service
+        Before=user@${uid}.service
 
         [Mount]
         Where=/home/${user_name}
@@ -118,7 +118,7 @@ function main() {
         Options=defaults,relatime,compress=zstd
 
         [Install]
-        RequiredBy=${user_name}@${uid}.service
+        RequiredBy=user@${uid}.service
         " >"/mnt/etc/systemd/system/home-${user_name}.mount"
 
         dev_partition=$(systemd-escape -p "/dev/${block_device}4")
@@ -142,6 +142,7 @@ function main() {
         [Install]
         RequiredBy=dev-mapper-home\x2d${user_name}.device
         "
+        ## TODO: https://wiki.archlinux.org/title/Pam_mount
     fi
     chroot_file="/mnt/chroot.sh"
     echo "#!/bin/bash
