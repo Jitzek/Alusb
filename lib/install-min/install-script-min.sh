@@ -209,6 +209,7 @@ function main() {
     rm /mnt/chroot.sh
 
     umount /mnt/boot /mnt/home /mnt
+    cryptsetup close home
 
     echo "Installation complete!"
 }
