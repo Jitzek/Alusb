@@ -56,15 +56,12 @@ function main() {
     mkfs.fat -F32 "${block_device}2"
     mkfs.ext4 "${block_device}3"
     if [ "${encrypt_home_partition}" = true ]; then
-        echo "${root_password}" | cryptsetup luksFormat --type luks1 --use-random -S 1 -s 512 -h sha512 -i 5000 "${block_device}4"
-        echo "${root_password}" | cryptsetup open "${block_device}4" cryptlvm
-        ## Creating logical volumes
-        pvcreate /dev/mapper/cryptlvm
-        ## Creating volume group "vg" to add physical volume to
-        vgcreate vg /dev/mapper/cryptlvm
-        ## Creating logical volume for home
-        lvcreate -l 100%FREE vg -n home
-        mkfs.ext4 /dev/vg/home
+        ## Setup LUKS disk encryption for /home
+        cryptsetup -c aes-xts-plain64 -y --use-random luksFormat "${block_device}4"
+        ## Unlock encrypted partition with device mapper to gain access
+        ## After unlocking the partition, it will be available at /dev/mapper/home (since we named it "home")
+        cryptsetup open "${block_device}4" home
+        mkfs.ext4 /dev/mapper/home
     else
         mkfs.ext4 "${block_device}4"
     fi
@@ -80,7 +77,7 @@ function main() {
     mount "${block_device}2" /mnt/boot
     mkdir /mnt/home
     if [ "${encrypt_home_partition}" = true ]; then
-        mount /dev/vg/home /mnt/home
+        mount /dev/mapper/home /mnt/home
     else
         mount "${block_device}4" /mnt/home
     fi
@@ -94,6 +91,58 @@ function main() {
     ################################
     ###   System Configuration   ###
     ################################
+    if [[ ! -z $user_name ]] && [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
+        pam_cryptsetup_file="/mnt/etc/pam_cryptsetup.sh"
+        echo "#!/usr/bin/env bash
+
+        CRYPT_USER=\"${user_name}\"
+        PARTITION=\"${block_device}4\"
+        NAME=\"home-$CRYPT_USER\"
+
+        if [[ \"$PAM_USER\" == \"$CRYPT_USER\" && ! -e \"/dev/mapper/$NAME\" ]]; then
+            /usr/bin/cryptsetup open \"$PARTITION\" \"$NAME\"
+        fi
+        " >$pam_cryptsetup_file
+        chmod +x $pam_cryptsetup_file
+
+        uid=$(cat /etc/passwd | grep ${user_name} | cut -d":" -f3)
+        echo "
+        [Unit]
+        Requires=${user_name}@${uid}.service
+        Before=${user_name}@${uid}.service
+
+        [Mount]
+        Where=/home/${user_name}
+        What=/dev/mapper/home-${user_name}
+        Type=btrfs
+        Options=defaults,relatime,compress=zstd
+
+        [Install]
+        RequiredBy=${user_name}@${uid}.service
+        " >"/mnt/etc/systemd/system/home-${user_name}.mount"
+
+        dev_partition=$(systemd-escape -p "/dev/${block_device}4")
+        echo "
+        [Unit]
+        DefaultDependencies=no
+        BindsTo=${dev_partition}.device
+        After=${dev_partition}.device
+        BindsTo=dev-mapper-home\x2d${user_name}.device
+        Requires=home-${user_name}.mount
+        Before=home-${user_name}.mount
+        Conflicts=umount.target
+        Before=umount.target
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        TimeoutSec=0
+        ExecStop=/usr/bin/cryptsetup close home-${user_name}
+
+        [Install]
+        RequiredBy=dev-mapper-home\x2d${user_name}.device
+        "
+    fi
     chroot_file="/mnt/chroot.sh"
     echo "#!/bin/bash
     mkdir -p ${_CHROOT_TEMP}
@@ -117,7 +166,8 @@ function main() {
     mkinitcpio -p linux
     $(
         if [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
-            echo "sed -i \"/GRUB_ENABLE_CRYPTODISK/c\GRUB_ENABLE_CRYPTODISK=y\" /etc/default/grub"
+            echo "echo -e \"auth \\t optional \\t pam_exec.so expose_authtok /etc/pam_cryptsetup.sh\""
+            # echo "sed -i \"/GRUB_ENABLE_CRYPTODISK/c\GRUB_ENABLE_CRYPTODISK=y\" /etc/default/grub"
             # echo "sed -i \"/GRUB_CMDLINE_LINUX/c\GRUB_CMDLINE_LINUX=\\"cryptdevice=UUID=\$(blkid -s UUID -o value ${block_device}4):cryptlvm\\"\" /etc/default/grub"
         fi
     )
@@ -214,13 +264,13 @@ function gdiskPartition() {
             echo 4
             echo ""
             echo "+${partition_scheme_home}"
-            if [ "${encrypt_home_partition}" = true ]; then
-                ## Linux LUKS
-                echo 8309
-            else
-                ## Linux Home
-                echo 8302
-            fi
+            # if [ "${encrypt_home_partition}" = true ]; then
+            ## Linux LUKS
+            # echo 8309
+            # else
+            ## Linux Home
+            echo 8302
+            # fi
         fi
 
         echo p
