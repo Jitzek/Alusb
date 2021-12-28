@@ -78,6 +78,7 @@ function main() {
     mount "${block_device}2" /mnt/boot
     mkdir /mnt/home
     if [ "${encrypt_home_partition}" = true ]; then
+        :
         # mount /dev/mapper/home /mnt/home
     else
         mount "${block_device}4" /mnt/home
