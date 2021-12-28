@@ -93,59 +93,6 @@ function main() {
     ################################
     ###   System Configuration   ###
     ################################
-    if [[ ! -z $user_name ]] && [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
-        pam_cryptsetup_file="/mnt/etc/pam_cryptsetup.sh"
-        echo "#!/usr/bin/env bash
-
-        CRYPT_USER=\"${user_name}\"
-        PARTITION=\"${block_device}4\"
-        NAME=\"home-$CRYPT_USER\"
-
-        if [[ \"$PAM_USER\" == \"$CRYPT_USER\" && ! -e \"/dev/mapper/$NAME\" ]]; then
-            /usr/bin/cryptsetup open \"$PARTITION\" \"$NAME\"
-        fi
-        " >$pam_cryptsetup_file
-        chmod +x $pam_cryptsetup_file
-
-        uid=$(cat /etc/passwd | grep ${user_name} | cut -d":" -f3)
-        echo "
-        [Unit]
-        Requires=user@${uid}.service
-        Before=user@${uid}.service
-
-        [Mount]
-        Where=/home/${user_name}
-        What=/dev/mapper/home-${user_name}
-        Type=btrfs
-        Options=defaults,relatime,compress=zstd
-
-        [Install]
-        RequiredBy=user@${uid}.service
-        " >"/mnt/etc/systemd/system/home-${user_name}.mount"
-
-        dev_partition=$(systemd-escape -p "/dev/${block_device}4")
-        echo "
-        [Unit]
-        DefaultDependencies=no
-        BindsTo=${dev_partition}.device
-        After=${dev_partition}.device
-        BindsTo=dev-mapper-home\x2d${user_name}.device
-        Requires=home-${user_name}.mount
-        Before=home-${user_name}.mount
-        Conflicts=umount.target
-        Before=umount.target
-
-        [Service]
-        Type=oneshot
-        RemainAfterExit=yes
-        TimeoutSec=0
-        ExecStop=/usr/bin/cryptsetup close home-${user_name}
-
-        [Install]
-        RequiredBy=dev-mapper-home\x2d${user_name}.device
-        " >"/mnt/etc/systemd/system/cryptsetup-${user_name}.service"
-        ## TODO: https://wiki.archlinux.org/title/Pam_mount
-    fi
     chroot_file="/mnt/chroot.sh"
     echo "#!/bin/bash
     mkdir -p ${_CHROOT_TEMP}
@@ -210,6 +157,60 @@ function main() {
     arch-chroot /mnt ./chroot.sh
 
     rm /mnt/chroot.sh
+
+    if [[ ! -z $user_name ]] && [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
+        pam_cryptsetup_file="/mnt/etc/pam_cryptsetup.sh"
+        echo "#!/usr/bin/env bash
+
+        CRYPT_USER=\"${user_name}\"
+        PARTITION=\"${block_device}4\"
+        NAME=\"home-$CRYPT_USER\"
+
+        if [[ \"$PAM_USER\" == \"$CRYPT_USER\" && ! -e \"/dev/mapper/$NAME\" ]]; then
+            /usr/bin/cryptsetup open \"$PARTITION\" \"$NAME\"
+        fi
+        " >$pam_cryptsetup_file
+        chmod +x $pam_cryptsetup_file
+
+        uid=$(cat /etc/passwd | grep ${user_name} | cut -d":" -f3)
+        echo "
+        [Unit]
+        Requires=user@${uid}.service
+        Before=user@${uid}.service
+
+        [Mount]
+        Where=/home/${user_name}
+        What=/dev/mapper/home-${user_name}
+        Type=btrfs
+        Options=defaults,relatime,compress=zstd
+
+        [Install]
+        RequiredBy=user@${uid}.service
+        " >"/mnt/etc/systemd/system/home-${user_name}.mount"
+
+        dev_partition=$(systemd-escape -p "/dev/${block_device}4")
+        echo "
+        [Unit]
+        DefaultDependencies=no
+        BindsTo=${dev_partition}.device
+        After=${dev_partition}.device
+        BindsTo=dev-mapper-home\x2d${user_name}.device
+        Requires=home-${user_name}.mount
+        Before=home-${user_name}.mount
+        Conflicts=umount.target
+        Before=umount.target
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        TimeoutSec=0
+        ExecStop=/usr/bin/cryptsetup close home-${user_name}
+
+        [Install]
+        RequiredBy=dev-mapper-home\x2d${user_name}.device
+        " >"/mnt/etc/systemd/system/cryptsetup-${user_name}.service"
+        ## TODO: https://wiki.archlinux.org/title/Pam_mount
+    fi
 
     umount /mnt/boot /mnt/home /mnt
     cryptsetup close home
