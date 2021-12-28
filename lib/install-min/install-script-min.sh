@@ -159,15 +159,16 @@ function main() {
     rm /mnt/chroot.sh
 
     if [[ ! -z $user_name ]] && [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
+        echo -e "auth \t optional \t pam_exec.so expose_authtok /etc/pam_cryptsetup.sh" >>/mnt/etc/pam.d/system-login
+
         pam_cryptsetup_file="/mnt/etc/pam_cryptsetup.sh"
         echo "#!/usr/bin/env bash
-
         CRYPT_USER=\"${user_name}\"
         PARTITION=\"${block_device}4\"
-        NAME=\"home-$CRYPT_USER\"
+        NAME=\"home-\$CRYPT_USER\"
 
-        if [[ \"$PAM_USER\" == \"$CRYPT_USER\" && ! -e \"/dev/mapper/$NAME\" ]]; then
-            /usr/bin/cryptsetup open \"$PARTITION\" \"$NAME\"
+        if [[ \"\$PAM_USER\" == \"\$CRYPT_USER\" && ! -e \"/dev/mapper/\$NAME\" ]]; then
+            /usr/bin/cryptsetup open \"\$PARTITION\" \"\$NAME\"
         fi
         " >$pam_cryptsetup_file
         chmod +x $pam_cryptsetup_file
