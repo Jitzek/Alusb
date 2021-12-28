@@ -78,8 +78,8 @@ function main() {
     mount "${block_device}2" /mnt/boot
     mkdir /mnt/home
     if [ "${encrypt_home_partition}" = true ]; then
-        :
         # mount /dev/mapper/home /mnt/home
+        :
     else
         mount "${block_device}4" /mnt/home
     fi
@@ -143,7 +143,7 @@ function main() {
 
         [Install]
         RequiredBy=dev-mapper-home\x2d${user_name}.device
-        "
+        " >"/mnt/etc/systemd/system/cryptsetup-${user_name}.service"
         ## TODO: https://wiki.archlinux.org/title/Pam_mount
     fi
     chroot_file="/mnt/chroot.sh"
