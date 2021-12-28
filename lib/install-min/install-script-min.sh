@@ -174,6 +174,7 @@ function main() {
         chmod +x $pam_cryptsetup_file
 
         uid=$(cat /etc/passwd | grep ${user_name} | cut -d":" -f3)
+        uid="1000"
         echo "
         [Unit]
         Requires=user@${uid}.service
@@ -189,7 +190,7 @@ function main() {
         RequiredBy=user@${uid}.service
         " >"/mnt/etc/systemd/system/home-${user_name}.mount"
 
-        dev_partition=$(systemd-escape -p "/dev/${block_device}4")
+        dev_partition=$(systemd-escape -p "${block_device}4")
         echo "
         [Unit]
         DefaultDependencies=no
