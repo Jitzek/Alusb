@@ -57,10 +57,10 @@ function main() {
     mkfs.ext4 "${block_device}3"
     if [ "${encrypt_home_partition}" = true ]; then
         ## Setup LUKS disk encryption for /home
-        cryptsetup -c aes-xts-plain64 -y --use-random luksFormat "${block_device}4"
+        printf "%s" "${root_password}" | cryptsetup -c aes-xts-plain64 -y --use-random luksFormat "${block_device}4"
         ## Unlock encrypted partition with device mapper to gain access
         ## After unlocking the partition, it will be available at /dev/mapper/home (since we named it "home")
-        cryptsetup open "${block_device}4" home
+        printf "%s" "${root_password}" | cryptsetup open "${block_device}4" home
         mkfs.ext4 /dev/mapper/home
         cryptsetup close home
     else
@@ -78,8 +78,7 @@ function main() {
     mount "${block_device}2" /mnt/boot
     mkdir /mnt/home
     if [ "${encrypt_home_partition}" = true ]; then
-        # mount /dev/mapper/home /mnt/home
-        :
+        mount /dev/mapper/home /mnt/home
     else
         mount "${block_device}4" /mnt/home
     fi
