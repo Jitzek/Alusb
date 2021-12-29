@@ -62,7 +62,7 @@ function main() {
         ## After unlocking the partition, it will be available at /dev/mapper/home (since we named it "home")
         printf "%s" "${root_password}" | cryptsetup open "${block_device}4" home
         mkfs.ext4 /dev/mapper/home
-        cryptsetup close home
+        # cryptsetup close home
     else
         mkfs.ext4 "${block_device}4"
     fi
