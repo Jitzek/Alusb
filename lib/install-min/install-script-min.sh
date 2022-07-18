@@ -233,7 +233,6 @@ function main() {
 function gdiskPartition() {
     (
         # Creating MBR partition
-        echo d
         echo n
         echo $(($block_device_start))
         echo ""
