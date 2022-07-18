@@ -47,7 +47,7 @@ function main() {
     ########################
     ###   Partitioning   ###
     ########################
-    block_device_start=$(($(grep -c "$(echo '${block_device}' | cut -c 6-)[0-9]" /proc/partitions) + 1))
+    block_device_start=$(($(grep -c "$(echo ${block_device} | cut -c 6-)[0-9]" /proc/partitions) + 1))
     gdiskPartition false
     printf "Write to disk?\n"
     if ! prompt; then
@@ -274,7 +274,11 @@ function gdiskPartition() {
             echo n
             echo $(($block_device_start + 3))
             echo ""
-            echo "+${partition_scheme_home}"
+            if [[ ! -z "${partition_scheme_home}" ]]; then
+                echo "+${partition_scheme_home}"
+            else
+                echo ""
+            fi
             # if [ "${encrypt_home_partition}" = true ]; then
             ## Linux LUKS
             # echo 8309
