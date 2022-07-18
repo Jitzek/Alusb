@@ -16,8 +16,6 @@ function form_min() {
             fi
         done
     fi
-    block_device_start=$(($(grep -c "$(echo ${block_device} | cut -c 6-)[0-9]" /proc/partitions) + 1))
-    printf "%s: %d\n" "Starting ${block_device} from" $block_device_start
 
     ## MBR partition is empty
     if [[ -z $partition_scheme_mbr ]]; then
