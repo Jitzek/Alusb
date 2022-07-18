@@ -74,12 +74,11 @@ function main() {
     ###   Base Install   ###
     ########################
     mount "${block_device}3" /mnt
-    mkdir -p /mnt/boot
+    mkdir /mnt/boot
     mount "${block_device}2" /mnt/boot
-    mkdir -p /mnt/home
+    mkdir /mnt/home
     if [ "${encrypt_home_partition}" = true ]; then
         mount /dev/mapper/home /mnt/home
-        :
     else
         mount "${block_device}4" /mnt/home
     fi
