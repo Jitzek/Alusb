@@ -273,7 +273,7 @@ function gdiskPartition() {
         # Creating (optional) Home partition
         if [ "${create_home_partition}" = true ]; then
             echo n
-            echo 4
+            echo $(($block_device_start + 3))
             echo ""
             echo "+${partition_scheme_home}"
             # if [ "${encrypt_home_partition}" = true ]; then
