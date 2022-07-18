@@ -56,34 +56,34 @@ function main() {
     fi
     gdiskPartition true
 
-    mkfs.fat -F32 "${block_device}2"
-    mkfs.ext4 "${block_device}3"
+    mkfs.fat -F32 "${block_device}$(($block_device_start + 1))"
+    mkfs.ext4 "${block_device}$(($block_device_start + 2))"
     if [ "${encrypt_home_partition}" = true ]; then
         ## Setup LUKS disk encryption for /home
-        printf "%s" "${root_password}" | cryptsetup --verbose --cipher aes-xts-plain64 --key-size 512 --hash sha512 --iter-time 5000 --use-random luksFormat "${block_device}4"
+        printf "%s" "${root_password}" | cryptsetup --verbose --cipher aes-xts-plain64 --key-size 512 --hash sha512 --iter-time 5000 --use-random luksFormat "${block_device}$(($block_device_start + 3))"
         ## Unlock encrypted partition with device mapper to gain access
         ## After unlocking the partition, it will be available at /dev/mapper/home (since we named it "home")
-        printf "%s" "${root_password}" | cryptsetup open --type luks "${block_device}4" home
+        printf "%s" "${root_password}" | cryptsetup open --type luks "${block_device}$(($block_device_start + 3))" home
         mkfs.ext4 /dev/mapper/home
         # cryptsetup close home
     else
-        mkfs.ext4 "${block_device}4"
+        mkfs.ext4 "${block_device}$(($block_device_start + 3))"
     fi
     if [ ! -z $partition_scheme["swap"] ]; then
-        mkswap "${block_device}5"
+        mkswap "${block_device}$(($block_device_start + 4))"
     fi
 
     ########################
     ###   Base Install   ###
     ########################
-    mount "${block_device}3" /mnt
+    mount "${block_device}$(($block_device_start + 2))" /mnt
     mkdir /mnt/boot
-    mount "${block_device}2" /mnt/boot
+    mount "${block_device}$(($block_device_start + 1))" /mnt/boot
     mkdir /mnt/home
     if [ "${encrypt_home_partition}" = true ]; then
         mount /dev/mapper/home /mnt/home
     else
-        mount "${block_device}4" /mnt/home
+        mount "${block_device}$(($block_device_start + 3))" /mnt/home
     fi
 
     pacstrap /mnt "${base_packages[@]}"
@@ -120,7 +120,7 @@ function main() {
         if [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
             # echo "echo -e \"auth \\t optional \\t pam_exec.so expose_authtok /etc/pam_cryptsetup.sh\""
             # echo "sed -i \"/GRUB_ENABLE_CRYPTODISK/c\GRUB_ENABLE_CRYPTODISK=y\" /etc/default/grub"
-            echo "sed -i \"/GRUB_CMDLINE_LINUX=/c\\GRUB_CMDLINE_LINUX=cryptdevice=$(blkid -s UUID -o value ${block_device}4):home\" /etc/default/grub"
+            echo "sed -i \"/GRUB_CMDLINE_LINUX=/c\\GRUB_CMDLINE_LINUX=cryptdevice=$(blkid -s UUID -o value ${block_device}$(($block_device_start + 3))):home\" /etc/default/grub"
             echo "sed -i 's/^HOOKS=(base udev autodetect modconf block/& encrypt/' /etc/mkinitcpio.conf"
         fi
     )
