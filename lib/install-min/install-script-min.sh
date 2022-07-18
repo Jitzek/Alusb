@@ -9,6 +9,7 @@ source "${_DIR_MIN}/form-min.sh"
 prerequisites=("reflector")
 
 ## Configurable variables ##
+block_device_start=1
 block_device=""
 partition_scheme_mbr="10MB"
 partition_scheme_gpt="500MB"
@@ -46,6 +47,8 @@ function main() {
     ########################
     ###   Partitioning   ###
     ########################
+    block_device_start=$(($(grep -c "${block_device}[0-9]" /proc/partitions) + 1))
+    printf "%s: %d" "Starting from" $block_device_start
     gdiskPartition false
     printf "Write to disk?\n"
     if ! prompt; then
@@ -232,14 +235,14 @@ function gdiskPartition() {
         # Creating MBR partition
         echo d
         echo n
-        echo 1
+        echo $(($block_device_start))
         echo ""
         echo "+${partition_scheme_mbr}"
         echo EF02
 
         # Creating GPT partition
         echo n
-        echo 2
+        echo $(($block_device_start + 1))
         echo ""
         echo "+${partition_scheme_gpt}"
         echo EF00
@@ -248,9 +251,9 @@ function gdiskPartition() {
         if [[ ! -z "${partition_scheme_swap}" ]]; then
             echo n
             if [[ "${create_home_partition}" = true ]]; then
-                echo 5
+                echo $(($block_device_start + 4))
             else
-                echo 4
+                echo $(($block_device_start + 3))
             fi
             echo ""
             echo "+${partition_scheme_swap}"
@@ -259,7 +262,7 @@ function gdiskPartition() {
 
         # Creating Root partition
         echo n
-        echo 3
+        echo $(($block_device_start + 2))
         echo ""
         if [[ ! -z "${partition_scheme_root}" ]]; then
             echo "+${partition_scheme_root}"
