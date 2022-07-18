@@ -57,12 +57,12 @@ function main() {
     mkfs.ext4 "${block_device}3"
     if [ "${encrypt_home_partition}" = true ]; then
         ## Setup LUKS disk encryption for /home
-        printf "%s" "${root_password}" | cryptsetup -c aes-xts-plain64 -y --use-random luksFormat "${block_device}4"
+        printf "%s" "${root_password}" | cryptsetup --verbose --cipher aes-xts-plain64 --key-size 512 --hash sha512 --iter-time 5000 --use-random luksFormat "${block_device}4"
         ## Unlock encrypted partition with device mapper to gain access
         ## After unlocking the partition, it will be available at /dev/mapper/home (since we named it "home")
-        printf "%s" "${root_password}" | cryptsetup open "${block_device}4" home
+        printf "%s" "${root_password}" | cryptsetup open --type luks "${block_device}4" home
         mkfs.ext4 /dev/mapper/home
-        cryptsetup close home
+        # cryptsetup close home
     else
         mkfs.ext4 "${block_device}4"
     fi
@@ -74,11 +74,11 @@ function main() {
     ###   Base Install   ###
     ########################
     mount "${block_device}3" /mnt
-    mkdir /mnt/boot
+    mkdir -p /mnt/boot
     mount "${block_device}2" /mnt/boot
-    mkdir /mnt/home
+    mkdir -p /mnt/home
     if [ "${encrypt_home_partition}" = true ]; then
-        # mount /dev/mapper/home /mnt/home
+        mount /dev/mapper/home /mnt/home
         :
     else
         mount "${block_device}4" /mnt/home
@@ -116,9 +116,10 @@ function main() {
     mkinitcpio -p linux
     $(
         if [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
-            echo "echo -e \"auth \\t optional \\t pam_exec.so expose_authtok /etc/pam_cryptsetup.sh\""
+            # echo "echo -e \"auth \\t optional \\t pam_exec.so expose_authtok /etc/pam_cryptsetup.sh\""
             # echo "sed -i \"/GRUB_ENABLE_CRYPTODISK/c\GRUB_ENABLE_CRYPTODISK=y\" /etc/default/grub"
-            # echo "sed -i \"/GRUB_CMDLINE_LINUX/c\GRUB_CMDLINE_LINUX=\\"cryptdevice=UUID=\$(blkid -s UUID -o value ${block_device}4):cryptlvm\\"\" /etc/default/grub"
+            echo "sed -i \"/GRUB_CMDLINE_LINUX/c\GRUB_CMDLINE_LINUX=\\"cryptdevice=UUID=\$(blkid -s UUID -o value ${block_device}4):home\\"\" /etc/default/grub"
+            echo "sed -i 's/^HOOKS=(base udev autodetect modconf block/& encrypt/' /etc/mkinitcpio.conf"
         fi
     )
     grub-install --target=i386-pc --boot-directory /boot $block_device
@@ -158,64 +159,67 @@ function main() {
 
     rm /mnt/chroot.sh
 
-    if [[ ! -z $user_name ]] && [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
-        echo -e "auth \t optional \t pam_exec.so expose_authtok /etc/pam_cryptsetup.sh" >>/mnt/etc/pam.d/system-login
+    # if [[ ! -z $user_name ]] && [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
+    #     echo -e "auth \t optional \t pam_exec.so expose_authtok /etc/pam_cryptsetup.sh" >>/mnt/etc/pam.d/system-login
 
-        pam_cryptsetup_file="/mnt/etc/pam_cryptsetup.sh"
-        echo "#!/usr/bin/env bash
-        CRYPT_USER=\"${user_name}\"
-        PARTITION=\"${block_device}4\"
-        NAME=\"home-\$CRYPT_USER\"
+    #     pam_cryptsetup_file="/mnt/etc/pam_cryptsetup.sh"
+    #     echo "#!/usr/bin/env bash
+    #     CRYPT_USER=\"${user_name}\"
+    #     PARTITION=\"${block_device}4\"
+    #     NAME=\"home-\$CRYPT_USER\"
 
-        if [[ \"\$PAM_USER\" == \"\$CRYPT_USER\" && ! -e \"/dev/mapper/\$NAME\" ]]; then
-            /usr/bin/cryptsetup open \"\$PARTITION\" \"\$NAME\"
-        fi
-        " >$pam_cryptsetup_file
-        chmod +x $pam_cryptsetup_file
+    #     if [[ \"\$PAM_USER\" == \"\$CRYPT_USER\" && ! -e \"/dev/mapper/\$NAME\" ]]; then
+    #         /usr/bin/cryptsetup open \"\$PARTITION\" \"\$NAME\"
+    #     fi
+    #     " >$pam_cryptsetup_file
+    #     chmod +x $pam_cryptsetup_file
 
-        uid=$(cat /etc/passwd | grep ${user_name} | cut -d":" -f3)
-        uid="1000"
-        echo "
-        [Unit]
-        Requires=user@${uid}.service
-        Before=user@${uid}.service
+    #     uid=$(cat /etc/passwd | grep ${user_name} | cut -d":" -f3)
+    #     uid="1000"
+    #     echo "
+    #     [Unit]
+    #     Requires=user@${uid}.service
+    #     Before=user@${uid}.service
 
-        [Mount]
-        Where=/home/${user_name}
-        What=/dev/mapper/home-${user_name}
-        Type=btrfs
-        Options=defaults,relatime,compress=zstd
+    #     [Mount]
+    #     Where=/home/${user_name}
+    #     What=/dev/mapper/home-${user_name}
+    #     Type=btrfs
+    #     Options=defaults,relatime,compress=zstd
 
-        [Install]
-        RequiredBy=user@${uid}.service
-        " >"/mnt/etc/systemd/system/home-${user_name}.mount"
+    #     [Install]
+    #     RequiredBy=user@${uid}.service
+    #     " >"/mnt/etc/systemd/system/home-${user_name}.mount"
 
-        dev_partition=$(systemd-escape -p "${block_device}4")
-        echo "
-        [Unit]
-        DefaultDependencies=no
-        BindsTo=${dev_partition}.device
-        After=${dev_partition}.device
-        BindsTo=dev-mapper-home\x2d${user_name}.device
-        Requires=home-${user_name}.mount
-        Before=home-${user_name}.mount
-        Conflicts=umount.target
-        Before=umount.target
+    #     dev_partition=$(systemd-escape -p "${block_device}4")
+    #     echo "
+    #     [Unit]
+    #     DefaultDependencies=no
+    #     BindsTo=${dev_partition}.device
+    #     After=${dev_partition}.device
+    #     BindsTo=dev-mapper-home\x2d${user_name}.device
+    #     Requires=home-${user_name}.mount
+    #     Before=home-${user_name}.mount
+    #     Conflicts=umount.target
+    #     Before=umount.target
 
-        [Service]
-        Type=oneshot
-        RemainAfterExit=yes
-        TimeoutSec=0
-        ExecStop=/usr/bin/cryptsetup close home-${user_name}
+    #     [Service]
+    #     Type=oneshot
+    #     RemainAfterExit=yes
+    #     TimeoutSec=0
+    #     ExecStop=/usr/bin/cryptsetup close home-${user_name}
 
-        [Install]
-        RequiredBy=dev-mapper-home\x2d${user_name}.device
-        " >"/mnt/etc/systemd/system/cryptsetup-${user_name}.service"
-        ## TODO: https://wiki.archlinux.org/title/Pam_mount
-    fi
+    #     [Install]
+    #     RequiredBy=dev-mapper-home\x2d${user_name}.device
+    #     " >"/mnt/etc/systemd/system/cryptsetup-${user_name}.service"
+    #     ## TODO: https://wiki.archlinux.org/title/Pam_mount
+    # fi
 
     umount /mnt/boot /mnt/home /mnt
-    cryptsetup close home
+
+    if [ "${encrypt_home_partition}" = true ]; then
+        cryptsetup close home
+    fi
 
     echo "Installation complete!"
 }
