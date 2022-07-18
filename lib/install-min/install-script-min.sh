@@ -47,7 +47,7 @@ function main() {
     ########################
     ###   Partitioning   ###
     ########################
-    block_device_start=$(($(grep -c "$(echo ${block_device} | cut -c 6-)[0-9]" /proc/partitions) + 1))
+    block_device_start=$(($(grep -c "$(echo '${block_device}' | cut -c 6-)[0-9]" /proc/partitions) + 1))
     printf "%s: %d\n" "Starting from" $block_device_start
     exit 0
     gdiskPartition false
