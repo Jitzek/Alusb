@@ -49,6 +49,7 @@ function main() {
     ########################
     block_device_start=$(($(grep -c "${block_device}[0-9]" /proc/partitions) + 1))
     printf "%s: %d" "Starting from" $block_device_start
+    exit 0
     gdiskPartition false
     printf "Write to disk?\n"
     if ! prompt; then
