@@ -108,10 +108,13 @@ function main() {
     ########################
     mount "${block_device}${partition_number_root}" /mnt
     mkdir /mnt/boot
+    mkdir /mnt/boot/efi
     if [ "$create_boot_partitions" = true ]; then
-        mount "${block_device}${partition_number_gpt}" /mnt/boot
+        mount "${block_device}${partition_number_mbr}" /mnt/boot
+        mount "${block_device}${partition_number_gpt}" /mnt/boot/efi
     else
-        mount "${partition_device_gpt}" /mnt/boot
+        mount "${partition_device_mbr}" /mnt/boot
+        mount "${partition_device_gpt}" /mnt/boot/efi
     fi
     mkdir /mnt/home
     if [ "${encrypt_home_partition}" = true ]; then
@@ -160,7 +163,7 @@ function main() {
         fi
     )
     grub-install --target=i386-pc --boot-directory /boot $block_device
-    grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
+    grub-install --target=x86_64-efi --efi-directory /boot/efi --boot-directory /boot --removable
     echo 'GRUB_DISABLE_OS_PROBER=false' | tee --append /etc/default/grub
     grub-mkconfig -o /boot/grub/grub.cfg
     
@@ -252,7 +255,7 @@ function main() {
     #     ## TODO: https://wiki.archlinux.org/title/Pam_mount
     # fi
 
-    umount /mnt/boot /mnt/home /mnt
+    umount /mnt/boot/efi /mnt/boot /mnt/home /mnt
 
     if [ "${encrypt_home_partition}" = true ]; then
         cryptsetup close home

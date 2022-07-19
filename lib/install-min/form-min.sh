@@ -54,7 +54,7 @@ function form_min() {
                         continue
                     fi
 
-                    printf "\nAn GPT partition with size ${partition_scheme_gpt} will be created.\n"
+                    printf "\nA GPT partition with size ${partition_scheme_gpt} will be created.\n"
                     printf "Confirm?\n"
                     if ! prompt; then
                         continue
