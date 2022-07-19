@@ -44,6 +44,8 @@ root_password=""
 user_name=""
 user_password=""
 give_user_sudo_access=true
+partition_device_mbr=""
+partition_device_gpt=""
 
 function main() {
     ## Prerequisites
@@ -106,7 +108,11 @@ function main() {
     ########################
     mount "${block_device}${partition_number_root}" /mnt
     mkdir /mnt/boot
-    mount "${block_device}${partition_number_gpt}" /mnt/boot
+    if [ "$create_boot_partitions" = true ]; then
+        mount "${block_device}${partition_number_gpt}" /mnt/boot
+    else
+        mount "${partition_device_gpt}" /mnt/boot
+    fi
     mkdir /mnt/home
     if [ "${encrypt_home_partition}" = true ]; then
         mount /dev/mapper/home /mnt/home
@@ -153,14 +159,10 @@ function main() {
             echo "sed -i 's/^HOOKS=(base udev autodetect modconf block/& encrypt/' /etc/mkinitcpio.conf"
         fi
     )
-    $(
-        if [ "$create_boot_partitions" = true ]; then
-            echo "grub-install --target=i386-pc --boot-directory /boot $block_device"
-            echo "grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable"
-            echo "echo 'GRUB_DISABLE_OS_PROBER=false' | tee --append /etc/default/grub"
-            echo "grub-mkconfig -o /boot/grub/grub.cfg"
-        fi
-    )
+    grub-install --target=i386-pc --boot-directory /boot $block_device
+    grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
+    echo 'GRUB_DISABLE_OS_PROBER=false' | tee --append /etc/default/grub
+    grub-mkconfig -o /boot/grub/grub.cfg
     
     pacman -S ${additional_packages[@]} --noconfirm
 

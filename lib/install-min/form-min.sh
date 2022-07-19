@@ -66,6 +66,52 @@ function form_min() {
             create_boot_partitions=false
         fi
     fi
+    if [ "$create_boot_partitions" = false ]; then
+        if [[ -z $partition_device_mbr ]]; then
+            partition_device_mbr="${block_device}1"
+            printf "Using existing MBR partition %s, is this correct?\n" $partition_device_mbr
+            if ! prompt; then
+                while true; do
+                    partition_device_mbr="${block_device}1"
+                    printf "Insert MBR partition (default: %s)\n" "$partition_device_mbr}"
+                    read partition_device_mbr
+                    if [[ -z "$partition_device_mbr" ]]; then
+                        printf "Given input was empty\n"
+                        continue
+                    fi
+
+                    printf "The MBR partition %s will be used.\n" $partition_device_mbr
+                    printf "Confirm?\n"
+                    if ! prompt; then
+                        continue
+                    fi
+                    break
+                done
+            fi
+        fi
+        if [[ -z $partition_device_gpt ]]; then
+            partition_device_gpt="${block_device}2"
+            printf "Using existing GPT partition %s, is this correct?\n" $partition_device_gpt
+            if ! prompt; then
+                while true; do
+                    partition_device_gpt="${block_device}1"
+                    printf "Insert GPT partition (default: %s)\n" "$partition_device_gpt}"
+                    read partition_device_gpt
+                    if [[ -z "$partition_device_gpt" ]]; then
+                        printf "Given input was empty\n"
+                        continue
+                    fi
+
+                    printf "The GPT partition %s will be used.\n" $partition_device_gpt
+                    printf "Confirm?\n"
+                    if ! prompt; then
+                        continue
+                    fi
+                    break
+                done
+            fi
+        fi
+    fi
 
     ## Root partition is empty
     if [[ -z $partition_scheme_root ]]; then
