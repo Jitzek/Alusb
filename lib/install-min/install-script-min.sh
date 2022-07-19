@@ -14,6 +14,14 @@ partition_number_root=3
 partition_number_home=4
 partition_number_swap=5
 
+block_device_ends_with_number=false
+
+partition_suffix_mbr="1"
+partition_number_gpt="2"
+partition_number_root="3"
+partition_number_home="4"
+partition_number_swap="5"
+
 ## Configurable variables ##
 block_device_start=1
 block_device=""
@@ -78,6 +86,11 @@ function main() {
             partition_number_swap=$(($block_device_start + 1))
         fi
     fi
+    partition_suffix_mbr=$([[ "${block_device_ends_with_number}" = true ]] && echo "p${partition_number_mbr}" || echo "${partition_number_mbr}")
+    partition_suffix_gpt=$([[ "${block_device_ends_with_number}" = true ]] && echo "p${partition_number_gpt}" || echo "${partition_number_gpt}")
+    partition_suffix_root=$([[ "${block_device_ends_with_number}" = true ]] && echo "p${partition_number_root}" || echo "${partition_number_root}")
+    partition_suffix_home=$([[ "${block_device_ends_with_number}" = true ]] && echo "p${partition_number_home}" || echo "${partition_number_home}")
+    partition_suffix_swap=$([[ "${block_device_ends_with_number}" = true ]] && echo "p${partition_number_swap}" || echo "${partition_number_swap}")
 
     gdiskPartition false
     printf "Write to disk?\n"
@@ -86,41 +99,41 @@ function main() {
     fi
     gdiskPartition true
 
-    mkfs.fat -F32 "${block_device}${partition_number_gpt}"
-    mkfs.ext4 "${block_device}${partition_number_root}"
+    mkfs.fat -F32 "${block_device}${partition_suffix_gpt}"
+    mkfs.ext4 "${block_device}${partition_suffix_root}"
     if [ "${encrypt_home_partition}" = true ]; then
         ## Setup LUKS disk encryption for /home
-        printf "%s" "${root_password}" | cryptsetup --verbose --cipher aes-xts-plain64 --key-size 512 --hash sha512 --iter-time 5000 --use-random luksFormat "${block_device}${partition_number_home}"
+        printf "%s" "${root_password}" | cryptsetup --verbose --cipher aes-xts-plain64 --key-size 512 --hash sha512 --iter-time 5000 --use-random luksFormat "${block_device}${partition_suffix_home}"
         ## Unlock encrypted partition with device mapper to gain access
         ## After unlocking the partition, it will be available at /dev/mapper/home (since we named it "home")
-        printf "%s" "${root_password}" | cryptsetup open --type luks "${block_device}${partition_number_home}" home
+        printf "%s" "${root_password}" | cryptsetup open --type luks "${block_device}${partition_suffix_home}" home
         mkfs.ext4 /dev/mapper/home
         # cryptsetup close home
     else
-        mkfs.ext4 "${block_device}${partition_number_home}"
+        mkfs.ext4 "${block_device}${partition_suffix_home}"
     fi
     if [ ! -z $partition_scheme["swap"] ]; then
-        mkswap "${block_device}${partition_number_swap}"
+        mkswap "${block_device}${partition_suffix_swap}"
     fi
 
     ########################
     ###   Base Install   ###
     ########################
-    mount "${block_device}${partition_number_root}" /mnt
+    mount "${block_device}${partition_suffix_root}" /mnt
     mkdir /mnt/boot
     mkdir /mnt/boot/efi
     if [ "$create_boot_partitions" = true ]; then
-        mount "${block_device}${partition_number_mbr}" /mnt/boot
-        mount "${block_device}${partition_number_gpt}" /mnt/boot/efi
+        mount "${block_device}${partition_suffix_mbr}" /mnt/boot
+        mount "${block_device}${partition_suffix_gpt}" /mnt/boot/efi
     else
-        mount "${partition_device_mbr}" /mnt/boot
-        mount "${partition_device_gpt}" /mnt/boot/efi
+        mount "${partition_suffix_mbr}" /mnt/boot
+        mount "${partition_suffix_gpt}" /mnt/boot/efi
     fi
     mkdir /mnt/home
     if [ "${encrypt_home_partition}" = true ]; then
         mount /dev/mapper/home /mnt/home
     else
-        mount "${block_device}${partition_number_home}" /mnt/home
+        mount "${block_device}${partition_suffix_home}" /mnt/home
     fi
 
     pacstrap /mnt "${base_packages[@]}"
@@ -158,7 +171,7 @@ function main() {
         if [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
             # echo "echo -e \"auth \\t optional \\t pam_exec.so expose_authtok /etc/pam_cryptsetup.sh\""
             # echo "sed -i \"/GRUB_ENABLE_CRYPTODISK/c\GRUB_ENABLE_CRYPTODISK=y\" /etc/default/grub"
-            echo "sed -i \"/GRUB_CMDLINE_LINUX=/c\\GRUB_CMDLINE_LINUX=cryptdevice=$(blkid -s UUID -o value ${block_device}${partition_number_home}):home\" /etc/default/grub"
+            echo "sed -i \"/GRUB_CMDLINE_LINUX=/c\\GRUB_CMDLINE_LINUX=cryptdevice=$(blkid -s UUID -o value ${block_device}${partition_suffix_home}):home\" /etc/default/grub"
             echo "sed -i 's/^HOOKS=(base udev autodetect modconf block/& encrypt/' /etc/mkinitcpio.conf"
         fi
     )

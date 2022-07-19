@@ -17,6 +17,12 @@ function form_min() {
         done
     fi
 
+    if [[ $block_device = *[0-9] ]]; then
+        block_device_ends_with_number=true
+    else
+        block_device_ends_with_number=false
+    fi
+
     if [ "$create_boot_partitions" = true ]; then
         printf "\nCreate Boot partitions?\n"
         if prompt; then
