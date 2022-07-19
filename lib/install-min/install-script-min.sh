@@ -11,6 +11,8 @@ prerequisites=("reflector")
 ## Configurable variables ##
 block_device_start=1
 block_device=""
+## If false, user will not be prompted for creation of mbr and gpt partitions
+create_boot_partitions=true
 partition_scheme_mbr="10MB"
 partition_scheme_gpt="500MB"
 ## Leave empty to not create swap
@@ -231,27 +233,37 @@ function main() {
 #%  Partition disk using gdisk
 function gdiskPartition() {
     (
-        # Creating MBR partition
-        echo n
-        echo $(($block_device_start))
-        echo ""
-        echo "+${partition_scheme_mbr}"
-        echo EF02
+        if [ "${create_boot_partitions}" = true ]; then
+            # Creating MBR partition
+            echo n
+            echo $(($block_device_start))
+            echo ""
+            echo "+${partition_scheme_mbr}"
+            echo EF02
 
-        # Creating GPT partition
-        echo n
-        echo $(($block_device_start + 1))
-        echo ""
-        echo "+${partition_scheme_gpt}"
-        echo EF00
+            # Creating GPT partition
+            echo n
+            echo $(($block_device_start + 1))
+            echo ""
+            echo "+${partition_scheme_gpt}"
+            echo EF00
+        fi
 
         # Creating (optional) Swap partition
         if [[ ! -z "${partition_scheme_swap}" ]]; then
             echo n
             if [[ "${create_home_partition}" = true ]]; then
-                echo $(($block_device_start + 4))
+                if [ "${create_boot_partitions}" = true ]; then
+                    echo $(($block_device_start + 4))
+                else
+                    echo $(($block_device_start + 2))
+                fi
             else
-                echo $(($block_device_start + 3))
+                if [ "${create_boot_partitions}" = true ]; then
+                    echo $(($block_device_start + 3))
+                else
+                    echo $(($block_device_start + 1))
+                fi
             fi
             echo ""
             echo "+${partition_scheme_swap}"
@@ -260,7 +272,11 @@ function gdiskPartition() {
 
         # Creating Root partition
         echo n
-        echo $(($block_device_start + 2))
+        if [ "${create_boot_partitions}" = true ]; then
+            echo $(($block_device_start + 2))
+        else
+            echo $(($block_device_start))
+        fi
         echo ""
         if [[ ! -z "${partition_scheme_root}" ]]; then
             echo "+${partition_scheme_root}"
@@ -272,7 +288,11 @@ function gdiskPartition() {
         # Creating (optional) Home partition
         if [ "${create_home_partition}" = true ]; then
             echo n
-            echo $(($block_device_start + 3))
+            if [ "${create_boot_partitions}" = true ]; then
+                echo $(($block_device_start + 3))
+            else
+                echo $(($block_device_start + 1))
+            fi
             echo ""
             if [[ ! -z "${partition_scheme_home}" ]]; then
                 echo "+${partition_scheme_home}"
