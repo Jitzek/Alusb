@@ -8,6 +8,12 @@ source "${_DIR_MIN}/form-min.sh"
 
 prerequisites=("reflector")
 
+partition_number_mbr=1
+partition_number_gpt=2
+partition_number_root=3
+partition_number_home=4
+partition_number_swap=5
+
 ## Configurable variables ##
 block_device_start=1
 block_device=""
@@ -50,6 +56,27 @@ function main() {
     ###   Partitioning   ###
     ########################
     block_device_start=$(($(grep -c "$(echo ${block_device} | cut -c 6-)[0-9]" /proc/partitions) + 1))
+
+    if [ "${create_boot_partitions}" = true ]; then
+        partition_number_mbr=$(($block_device_start))
+        partition_number_gpt=$(($block_device_start + 1))
+        partition_number_root=$(($block_device_start + 2))
+        if [ "${create_home_partition}" = true ]; then
+            partition_number_home=$(($block_device_start + 3))
+            partition_number_swap=$(($block_device_start + 4))
+        else
+            partition_number_swap=$(($block_device_start + 3))
+        fi
+    else
+        partition_number_root=$(($block_device_start))
+        if [ "${create_home_partition}" = true ]; then
+            partition_number_home=$(($block_device_start + 1))
+            partition_number_swap=$(($block_device_start + 2))
+        else
+            partition_number_swap=$(($block_device_start + 1))
+        fi
+    fi
+
     gdiskPartition false
     printf "Write to disk?\n"
     if ! prompt; then
@@ -57,34 +84,34 @@ function main() {
     fi
     gdiskPartition true
 
-    mkfs.fat -F32 "${block_device}$(($block_device_start + 1))"
-    mkfs.ext4 "${block_device}$(($block_device_start + 2))"
+    mkfs.fat -F32 "${block_device}${partition_number_gpt}"
+    mkfs.ext4 "${block_device}${partition_number_root}"
     if [ "${encrypt_home_partition}" = true ]; then
         ## Setup LUKS disk encryption for /home
-        printf "%s" "${root_password}" | cryptsetup --verbose --cipher aes-xts-plain64 --key-size 512 --hash sha512 --iter-time 5000 --use-random luksFormat "${block_device}$(($block_device_start + 3))"
+        printf "%s" "${root_password}" | cryptsetup --verbose --cipher aes-xts-plain64 --key-size 512 --hash sha512 --iter-time 5000 --use-random luksFormat "${block_device}${partition_number_home}"
         ## Unlock encrypted partition with device mapper to gain access
         ## After unlocking the partition, it will be available at /dev/mapper/home (since we named it "home")
-        printf "%s" "${root_password}" | cryptsetup open --type luks "${block_device}$(($block_device_start + 3))" home
+        printf "%s" "${root_password}" | cryptsetup open --type luks "${block_device}${partition_number_home}" home
         mkfs.ext4 /dev/mapper/home
         # cryptsetup close home
     else
-        mkfs.ext4 "${block_device}$(($block_device_start + 3))"
+        mkfs.ext4 "${block_device}${partition_number_home}"
     fi
     if [ ! -z $partition_scheme["swap"] ]; then
-        mkswap "${block_device}$(($block_device_start + 4))"
+        mkswap "${block_device}${partition_number_swap}"
     fi
 
     ########################
     ###   Base Install   ###
     ########################
-    mount "${block_device}$(($block_device_start + 2))" /mnt
+    mount "${block_device}${partition_number_root}" /mnt
     mkdir /mnt/boot
-    mount "${block_device}$(($block_device_start + 1))" /mnt/boot
+    mount "${block_device}${partition_number_gpt}" /mnt/boot
     mkdir /mnt/home
     if [ "${encrypt_home_partition}" = true ]; then
         mount /dev/mapper/home /mnt/home
     else
-        mount "${block_device}$(($block_device_start + 3))" /mnt/home
+        mount "${block_device}${partition_number_home}" /mnt/home
     fi
 
     pacstrap /mnt "${base_packages[@]}"
@@ -121,7 +148,7 @@ function main() {
         if [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
             # echo "echo -e \"auth \\t optional \\t pam_exec.so expose_authtok /etc/pam_cryptsetup.sh\""
             # echo "sed -i \"/GRUB_ENABLE_CRYPTODISK/c\GRUB_ENABLE_CRYPTODISK=y\" /etc/default/grub"
-            echo "sed -i \"/GRUB_CMDLINE_LINUX=/c\\GRUB_CMDLINE_LINUX=cryptdevice=$(blkid -s UUID -o value ${block_device}$(($block_device_start + 3))):home\" /etc/default/grub"
+            echo "sed -i \"/GRUB_CMDLINE_LINUX=/c\\GRUB_CMDLINE_LINUX=cryptdevice=$(blkid -s UUID -o value ${block_device}${partition_number_home}):home\" /etc/default/grub"
             echo "sed -i 's/^HOOKS=(base udev autodetect modconf block/& encrypt/' /etc/mkinitcpio.conf"
         fi
     )
@@ -234,16 +261,16 @@ function main() {
 function gdiskPartition() {
     (
         if [ "${create_boot_partitions}" = true ]; then
-            # Creating MBR partition
+            # Creating (optional) MBR partition
             echo n
-            echo $(($block_device_start))
+            echo $partition_number_mbr
             echo ""
             echo "+${partition_scheme_mbr}"
             echo EF02
 
-            # Creating GPT partition
+            # Creating (optional) GPT partition
             echo n
-            echo $(($block_device_start + 1))
+            echo $partition_number_gpt
             echo ""
             echo "+${partition_scheme_gpt}"
             echo EF00
@@ -252,19 +279,7 @@ function gdiskPartition() {
         # Creating (optional) Swap partition
         if [[ ! -z "${partition_scheme_swap}" ]]; then
             echo n
-            if [[ "${create_home_partition}" = true ]]; then
-                if [ "${create_boot_partitions}" = true ]; then
-                    echo $(($block_device_start + 4))
-                else
-                    echo $(($block_device_start + 2))
-                fi
-            else
-                if [ "${create_boot_partitions}" = true ]; then
-                    echo $(($block_device_start + 3))
-                else
-                    echo $(($block_device_start + 1))
-                fi
-            fi
+            echo $partition_number_swap
             echo ""
             echo "+${partition_scheme_swap}"
             echo 8200
@@ -272,11 +287,7 @@ function gdiskPartition() {
 
         # Creating Root partition
         echo n
-        if [ "${create_boot_partitions}" = true ]; then
-            echo $(($block_device_start + 2))
-        else
-            echo $(($block_device_start))
-        fi
+        echo $partition_number_root
         echo ""
         if [[ ! -z "${partition_scheme_root}" ]]; then
             echo "+${partition_scheme_root}"
@@ -285,27 +296,18 @@ function gdiskPartition() {
         fi
         echo 8300
 
-        # Creating (optional) Home partition
         if [ "${create_home_partition}" = true ]; then
+            # Creating (optional) Home partition
             echo n
-            if [ "${create_boot_partitions}" = true ]; then
-                echo $(($block_device_start + 3))
-            else
-                echo $(($block_device_start + 1))
-            fi
+            echo $partition_number_home
             echo ""
             if [[ ! -z "${partition_scheme_home}" ]]; then
                 echo "+${partition_scheme_home}"
             else
                 echo ""
             fi
-            # if [ "${encrypt_home_partition}" = true ]; then
-            ## Linux LUKS
-            # echo 8309
-            # else
             ## Linux Home
             echo 8302
-            # fi
         fi
 
         echo p
