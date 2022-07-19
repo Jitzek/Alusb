@@ -162,13 +162,13 @@ function main() {
     grub-install --target=i386-pc --boot-directory /boot $block_device
     grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
     echo 'GRUB_DISABLE_OS_PROBER=false' | tee --append /etc/default/grub
+    grub-mkconfig -o /boot/grub/grub.cfg
     $(
         if [ "$create_boot_partitions" = false ]; then
             echo "dd if=/os.mbr of=${block_device} bs=512 count=1"
             echo "dd if=/os.bsc of=${block_device} bs=512 count=1"
         fi
     )
-    grub-mkconfig -o /boot/grub/grub.cfg
     
     pacman -S ${additional_packages[@]} --noconfirm
 
