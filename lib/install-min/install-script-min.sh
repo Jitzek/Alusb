@@ -153,12 +153,12 @@ function main() {
             echo "sed -i 's/^HOOKS=(base udev autodetect modconf block/& encrypt/' /etc/mkinitcpio.conf"
         fi
     )
-    dd if=/dev/${block_device}1 of=/os.bsc bs=512 count=1
-    dd if=/dev/${block_device}2 of=/os.mbr bs=512 count=1
+    dd if=${block_device}1 of=/os.bsc bs=512 count=1
+    dd if=${block_device}2 of=/os.mbr bs=512 count=1
     grub-install --target=i386-pc --boot-directory /boot $block_device
     grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
     echo 'GRUB_DISABLE_OS_PROBER=false' | tee --append /etc/default/grub
-    dd if=/os.mbr of=/dev/sda bs=512 count=1
+    dd if=/os.mbr of=${block_device} bs=512 count=1
     grub-mkconfig -o /boot/grub/grub.cfg
     
     pacman -S ${additional_packages[@]} --noconfirm
