@@ -163,7 +163,8 @@ function main() {
     grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
     echo 'GRUB_DISABLE_OS_PROBER=false' | tee --append /etc/default/grub
     $(
-        if [ "$create_boot_partitions" = false ]; then
+        if [ "$create_boot_partitions" = false ]; then\
+            echo "dd if=/os.bsc of=${block_device} bs=512 count=1"
             echo "dd if=/os.mbr of=${block_device} bs=512 count=1"
         fi
     )
