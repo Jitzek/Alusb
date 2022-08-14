@@ -135,7 +135,7 @@ function main() {
     else
         mount "${block_device}${partition_suffix_home}" /mnt/home
     fi
-
+    
     pacstrap /mnt "${base_packages[@]}"
     if [ "${encrypt_home_partition}" = true ]; then
         pacstrap /mnt "${encrypt_packages[@]}"
