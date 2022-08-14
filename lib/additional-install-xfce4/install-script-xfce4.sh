@@ -13,7 +13,7 @@ base_packages=("xorg" "base-devel" "xfce4" "xfce4-goodies" "lightdm" "lightdm-gt
 additional_yay_packages=("pamac-aur" "ttf-liberation" "downgrade" "openrgb" "mugshot" "update-grub")
 additional_pacman_packages=("firefox" "firefox-adblock-plus" "file-roller" "gvfs" "catfish" "gedit" "xed" "thunderbird" "neofetch" "gparted" "firejail" "avahi" "cups" "cups-filters" "cups-pdf" "ghostscript" "gsfonts" "system-config-printer" "w3m")
 configure_nvidia=false
-nvidia_packages=("nvidia" "nvidia-settings")
+nvidia_packages=("nvidia-lts" "nvidia-settings")
 
 function main() {
     mkdir ${_TEMP_XFCE4}
