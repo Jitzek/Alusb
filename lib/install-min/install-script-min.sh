@@ -50,8 +50,9 @@ additional_packages=("networkmanager" "xf86-video-ati" "xf86-video-intel" "xf86-
 root_password=""
 user_name=""
 user_password=""
-give_user_sudo_access=true
+
 partition_device_mbr=""
+give_user_sudo_access=true
 partition_device_gpt=""
 
 function main() {
