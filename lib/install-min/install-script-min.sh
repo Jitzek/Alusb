@@ -39,7 +39,7 @@ partition_scheme_home=""
 create_home_partition=true
 ## If false, home partition will not be encrypted (user will be prompted)
 encrypt_home_partition=false
-base_packages=("base" "base-devel" "cmake" "linux-lts" "linux-firmware" "reflector")
+base_packages=("archlinux-keyring" "base" "base-devel" "cmake" "linux-lts" "linux-firmware" "reflector")
 encrypt_packages=("lvm2" "cryptsetup")
 region=""
 country=""
