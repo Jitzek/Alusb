@@ -8,8 +8,25 @@ source "${_DIR_MIN}/form-min.sh"
 
 prerequisites=("reflector")
 
+partition_number_mbr=1
+partition_number_gpt=2
+partition_number_root=3
+partition_number_home=4
+partition_number_swap=5
+
+block_device_ends_with_number=false
+
+partition_suffix_mbr="1"
+partition_number_gpt="2"
+partition_number_root="3"
+partition_number_home="4"
+partition_number_swap="5"
+
 ## Configurable variables ##
+block_device_start=1
 block_device=""
+## If false, user will not be prompted for creation of mbr and gpt partitions
+create_boot_partitions=true
 partition_scheme_mbr="10MB"
 partition_scheme_gpt="500MB"
 ## Leave empty to not create swap
@@ -18,10 +35,12 @@ partition_scheme_swap=""
 partition_scheme_root=""
 ## Leave empty for max available size
 partition_scheme_home=""
-## Temporary work-around untill I decide to implement a more elegant solution
 ## If false, user will not be prompted for creation of home partition
 create_home_partition=true
-base_packages=("base" "base-devel" "cmake" "linux" "linux-firmware" "reflector")
+## If false, home partition will not be encrypted (user will be prompted)
+encrypt_home_partition=false
+base_packages=("archlinux-keyring" "base" "base-devel" "cmake" "linux-lts" "linux-firmware" "reflector")
+encrypt_packages=("lvm2" "cryptsetup")
 region=""
 country=""
 city=""
@@ -31,7 +50,10 @@ additional_packages=("networkmanager" "xf86-video-ati" "xf86-video-intel" "xf86-
 root_password=""
 user_name=""
 user_password=""
+
+partition_device_mbr=""
 give_user_sudo_access=true
+partition_device_gpt=""
 
 function main() {
     ## Prerequisites
@@ -43,6 +65,33 @@ function main() {
     ########################
     ###   Partitioning   ###
     ########################
+    block_device_start=$(($(grep -c "$(echo ${block_device} | cut -c 6-)[0-9]" /proc/partitions) + 1))
+
+    if [ "${create_boot_partitions}" = true ]; then
+        partition_number_mbr=$(($block_device_start))
+        partition_number_gpt=$(($block_device_start + 1))
+        partition_number_root=$(($block_device_start + 2))
+        if [ "${create_home_partition}" = true ]; then
+            partition_number_home=$(($block_device_start + 3))
+            partition_number_swap=$(($block_device_start + 4))
+        else
+            partition_number_swap=$(($block_device_start + 3))
+        fi
+    else
+        partition_number_root=$(($block_device_start))
+        if [ "${create_home_partition}" = true ]; then
+            partition_number_home=$(($block_device_start + 1))
+            partition_number_swap=$(($block_device_start + 2))
+        else
+            partition_number_swap=$(($block_device_start + 1))
+        fi
+    fi
+    partition_suffix_mbr=$([[ "${block_device_ends_with_number}" = true ]] && echo "p${partition_number_mbr}" || echo "${partition_number_mbr}")
+    partition_suffix_gpt=$([[ "${block_device_ends_with_number}" = true ]] && echo "p${partition_number_gpt}" || echo "${partition_number_gpt}")
+    partition_suffix_root=$([[ "${block_device_ends_with_number}" = true ]] && echo "p${partition_number_root}" || echo "${partition_number_root}")
+    partition_suffix_home=$([[ "${block_device_ends_with_number}" = true ]] && echo "p${partition_number_home}" || echo "${partition_number_home}")
+    partition_suffix_swap=$([[ "${block_device_ends_with_number}" = true ]] && echo "p${partition_number_swap}" || echo "${partition_number_swap}")
+
     gdiskPartition false
     printf "Write to disk?\n"
     if ! prompt; then
@@ -50,23 +99,46 @@ function main() {
     fi
     gdiskPartition true
 
-    mkfs.fat -F32 "${block_device}2"
-    mkfs.ext4 "${block_device}3"
-    mkfs.ext4 "${block_device}4"
+    mkfs.fat -F32 "${block_device}${partition_suffix_gpt}"
+    mkfs.ext4 "${block_device}${partition_suffix_root}"
+    if [ "${encrypt_home_partition}" = true ]; then
+        ## Setup LUKS disk encryption for /home
+        printf "%s" "${root_password}" | cryptsetup --verbose --cipher aes-xts-plain64 --key-size 512 --hash sha512 --iter-time 5000 --use-random luksFormat "${block_device}${partition_suffix_home}"
+        ## Unlock encrypted partition with device mapper to gain access
+        ## After unlocking the partition, it will be available at /dev/mapper/home (since we named it "home")
+        printf "%s" "${root_password}" | cryptsetup open --type luks "${block_device}${partition_suffix_home}" home
+        mkfs.ext4 /dev/mapper/home
+    else
+        mkfs.ext4 "${block_device}${partition_suffix_home}"
+    fi
     if [ ! -z $partition_scheme["swap"] ]; then
-        mkswap "${block_device}5"
+        mkswap "${block_device}${partition_suffix_swap}"
     fi
 
     ########################
     ###   Base Install   ###
     ########################
-    mount "${block_device}3" /mnt
+    mount "${block_device}${partition_suffix_root}" /mnt
     mkdir /mnt/boot
-    mount "${block_device}2" /mnt/boot
+    mkdir /mnt/boot/efi
+    if [ "$create_boot_partitions" = true ]; then
+        mount "${block_device}${partition_suffix_mbr}" /mnt/boot
+        mount "${block_device}${partition_suffix_gpt}" /mnt/boot/efi
+    else
+        mount "${partition_suffix_mbr}" /mnt/boot
+        mount "${partition_suffix_gpt}" /mnt/boot/efi
+    fi
     mkdir /mnt/home
-    mount "${block_device}4" /mnt/home
-
+    if [ "${encrypt_home_partition}" = true ]; then
+        mount /dev/mapper/home /mnt/home
+    else
+        mount "${block_device}${partition_suffix_home}" /mnt/home
+    fi
+    
     pacstrap /mnt "${base_packages[@]}"
+    if [ "${encrypt_home_partition}" = true ]; then
+        pacstrap /mnt "${encrypt_packages[@]}"
+    fi
     genfstab -U /mnt >>/mnt/etc/fstab
 
     ################################
@@ -92,9 +164,16 @@ function main() {
     sed -i '/ext4/s/relatime/noatime/' /etc/fstab
 
     pacman -S os-prober grub efibootmgr --noconfirm
+
     mkinitcpio -p linux
+    $(
+        if [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
+            echo "sed -i \"/GRUB_CMDLINE_LINUX=/c\\GRUB_CMDLINE_LINUX=cryptdevice=$(blkid -s UUID -o value ${block_device}${partition_suffix_home}):home\" /etc/default/grub"
+            echo "sed -i 's/^HOOKS=(base udev autodetect modconf block/& encrypt/' /etc/mkinitcpio.conf"
+        fi
+    )
     grub-install --target=i386-pc --boot-directory /boot $block_device
-    grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
+    grub-install --target=x86_64-efi --efi-directory /boot/efi --boot-directory /boot --removable
     echo 'GRUB_DISABLE_OS_PROBER=false' | tee --append /etc/default/grub
     grub-mkconfig -o /boot/grub/grub.cfg
     
@@ -120,6 +199,7 @@ function main() {
     sed -i '/\[multilib]/s/^#//g' /etc/pacman.conf
     sed -i '/^\[multilib]/{N;s/\n#/\n/}' /etc/pacman.conf
     echo 'kernel.sysrq = 176' | tee --append /etc/sysctl.d/99-sysctl.conf
+    echo 'blacklist pcspkr' > /etc/modprobe.d/nobeep.conf
     rm -rf ${_CHROOT_TEMP}
     exit" >$chroot_file
 
@@ -130,7 +210,11 @@ function main() {
 
     rm /mnt/chroot.sh
 
-    umount /mnt/boot /mnt/home /mnt
+    umount /mnt/boot/efi /mnt/boot /mnt/home /mnt
+
+    if [ "${encrypt_home_partition}" = true ]; then
+        cryptsetup close home
+    fi
 
     echo "Installation complete!"
 }
@@ -141,29 +225,26 @@ function main() {
 #%  Partition disk using gdisk
 function gdiskPartition() {
     (
-        # Creating MBR partition
-        echo d
-        echo n
-        echo 1
-        echo ""
-        echo "+${partition_scheme_mbr}"
-        echo EF02
+        if [ "${create_boot_partitions}" = true ]; then
+            # Creating (optional) MBR partition
+            echo n
+            echo $partition_number_mbr
+            echo ""
+            echo "+${partition_scheme_mbr}"
+            echo EF02
 
-        # Creating GPT partition
-        echo n
-        echo 2
-        echo ""
-        echo "+${partition_scheme_gpt}"
-        echo EF00
+            # Creating (optional) GPT partition
+            echo n
+            echo $partition_number_gpt
+            echo ""
+            echo "+${partition_scheme_gpt}"
+            echo EF00
+        fi
 
         # Creating (optional) Swap partition
         if [[ ! -z "${partition_scheme_swap}" ]]; then
             echo n
-            if [[ "${create_home_partition}" = true ]]; then
-                echo 5
-            else
-                echo 4
-            fi
+            echo $partition_number_swap
             echo ""
             echo "+${partition_scheme_swap}"
             echo 8200
@@ -171,7 +252,7 @@ function gdiskPartition() {
 
         # Creating Root partition
         echo n
-        echo 3
+        echo $partition_number_root
         echo ""
         if [[ ! -z "${partition_scheme_root}" ]]; then
             echo "+${partition_scheme_root}"
@@ -180,12 +261,17 @@ function gdiskPartition() {
         fi
         echo 8300
 
-        # Creating (optional) Home partition
         if [ "${create_home_partition}" = true ]; then
+            # Creating (optional) Home partition
             echo n
-            echo 4
+            echo $partition_number_home
             echo ""
-            echo "+${partition_scheme_home}"
+            if [[ ! -z "${partition_scheme_home}" ]]; then
+                echo "+${partition_scheme_home}"
+            else
+                echo ""
+            fi
+            ## Linux Home
             echo 8302
         fi
 

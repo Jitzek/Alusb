@@ -17,46 +17,106 @@ function form_min() {
         done
     fi
 
-    ## MBR partition is empty
-    if [[ -z $partition_scheme_mbr ]]; then
-        printf "\nMBR partition size is empty\n"
-        while true; do
-            partition_scheme_mbr="10MB"
-            printf "Insert size of MBR partition (default: %s)\n" "$partition_scheme_mbr"
-            read partition_scheme_mbr
-            if [ -z "$partition_scheme_mbr" ]; then
-                printf "Given input is empty\n"
-                continue
-            fi
-
-            printf "\nAn MBR partition with size ${partition_scheme_mbr} will be created.\n"
-            printf "Confirm?\n"
-            if ! prompt; then
-                continue
-            fi
-            break
-        done
+    if [[ $block_device = *[0-9] ]]; then
+        block_device_ends_with_number=true
+    else
+        block_device_ends_with_number=false
     fi
 
-    ## GPT partition is empty
-    if [[ -z $partition_scheme_gpt ]]; then
-        printf "\GPT partition size is empty\n"
-        while true; do
-            partition_scheme_gpt="500MB"
-            printf "Insert size of GPT partition (default: %s)\n" "$partition_scheme_gpt}"
-            read partition_scheme_gpt
-            if [ -z "$partition_scheme_gpt" ]; then
-                printf "Given input was empty\n"
-                continue
+    if [ "$create_boot_partitions" = true ]; then
+        printf "\nCreate Boot partitions?\n"
+        if prompt; then
+            create_boot_partitions=true
+            ## MBR partition is empty
+            if [[ -z $partition_scheme_mbr ]]; then
+                printf "\nMBR partition size is empty\n"
+                while true; do
+                    partition_scheme_mbr="10MB"
+                    printf "Insert size of MBR partition (default: %s)\n" "$partition_scheme_mbr"
+                    read partition_scheme_mbr
+                    if [ -z "$partition_scheme_mbr" ]; then
+                        printf "Given input is empty\n"
+                        continue
+                    fi
+
+                    printf "\nAn MBR partition with size ${partition_scheme_mbr} will be created.\n"
+                    printf "Confirm?\n"
+                    if ! prompt; then
+                        continue
+                    fi
+                    break
+                done
             fi
 
-            printf "\nAn GPT partition with size ${partition_scheme_gpt} will be created.\n"
-            printf "Confirm?\n"
-            if ! prompt; then
-                continue
+            ## GPT partition is empty
+            if [[ -z $partition_scheme_gpt ]]; then
+                printf "\GPT partition size is empty\n"
+                while true; do
+                    partition_scheme_gpt="500MB"
+                    printf "Insert size of GPT partition (default: %s)\n" "$partition_scheme_gpt}"
+                    read partition_scheme_gpt
+                    if [ -z "$partition_scheme_gpt" ]; then
+                        printf "Given input was empty\n"
+                        continue
+                    fi
+
+                    printf "\nA GPT partition with size ${partition_scheme_gpt} will be created.\n"
+                    printf "Confirm?\n"
+                    if ! prompt; then
+                        continue
+                    fi
+                    break
+                done
             fi
-            break
-        done
+        else
+            create_boot_partitions=false
+        fi
+    fi
+    if [ "$create_boot_partitions" = false ]; then
+        if [[ -z $partition_device_mbr ]]; then
+            partition_device_mbr="${block_device}1"
+            printf "Using existing MBR partition %s, is this correct?\n" $partition_device_mbr
+            if ! prompt; then
+                while true; do
+                    partition_device_mbr="${block_device}1"
+                    printf "Insert MBR partition (default: %s)\n" "$partition_device_mbr}"
+                    read partition_device_mbr
+                    if [[ -z "$partition_device_mbr" ]]; then
+                        printf "Given input was empty\n"
+                        continue
+                    fi
+
+                    printf "The MBR partition %s will be used.\n" $partition_device_mbr
+                    printf "Confirm?\n"
+                    if ! prompt; then
+                        continue
+                    fi
+                    break
+                done
+            fi
+        fi
+        if [[ -z $partition_device_gpt ]]; then
+            partition_device_gpt="${block_device}2"
+            printf "Using existing GPT partition %s, is this correct?\n" $partition_device_gpt
+            if ! prompt; then
+                while true; do
+                    partition_device_gpt="${block_device}1"
+                    printf "Insert GPT partition (default: %s)\n" "$partition_device_gpt}"
+                    read partition_device_gpt
+                    if [[ -z "$partition_device_gpt" ]]; then
+                        printf "Given input was empty\n"
+                        continue
+                    fi
+
+                    printf "The GPT partition %s will be used.\n" $partition_device_gpt
+                    printf "Confirm?\n"
+                    if ! prompt; then
+                        continue
+                    fi
+                    break
+                done
+            fi
+        fi
     fi
 
     ## Root partition is empty
@@ -113,6 +173,12 @@ function form_min() {
                 done
             fi
             create_home_partition=true
+            if [ "$encrypt_home_partition" = false ]; then
+                printf "\nEncrypt Home partition?\n"
+                if prompt; then
+                    encrypt_home_partition=true
+                fi
+            fi
         else
             create_home_partition=false
         fi
