@@ -202,6 +202,7 @@ function main() {
     sed -i '/\[multilib]/s/^#//g' /etc/pacman.conf
     sed -i '/^\[multilib]/{N;s/\n#/\n/}' /etc/pacman.conf
     echo 'kernel.sysrq = 176' | tee --append /etc/sysctl.d/99-sysctl.conf
+    echo 'blacklist pcspkr' > /etc/modprobe.d/nobeep.conf
     rm -rf ${_CHROOT_TEMP}
     exit" >$chroot_file
 
