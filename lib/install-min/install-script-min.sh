@@ -14,13 +14,9 @@ partition_number_root=3
 partition_number_home=4
 partition_number_swap=5
 
-block_device_ends_with_number=false
+custom_home_partition=""
 
-partition_suffix_mbr="1"
-partition_number_gpt="2"
-partition_number_root="3"
-partition_number_home="4"
-partition_number_swap="5"
+block_device_ends_with_number=false
 
 ## Configurable variables ##
 block_device_start=1
@@ -92,6 +88,11 @@ function main() {
     partition_suffix_home=$([[ "${block_device_ends_with_number}" = true ]] && echo "p${partition_number_home}" || echo "${partition_number_home}")
     partition_suffix_swap=$([[ "${block_device_ends_with_number}" = true ]] && echo "p${partition_number_swap}" || echo "${partition_number_swap}")
 
+    home_partition="${block_device}${partition_suffix_home}"
+    if [[ ! -z $custom_home_partition ]]; then
+        home_partition="$custom_home_partition"
+    fi
+
     gdiskPartition false
     printf "Write to disk?\n"
     if ! prompt; then
@@ -103,13 +104,13 @@ function main() {
     mkfs.ext4 "${block_device}${partition_suffix_root}"
     if [ "${encrypt_home_partition}" = true ]; then
         ## Setup LUKS disk encryption for /home
-        printf "%s" "${root_password}" | cryptsetup --verbose --cipher aes-xts-plain64 --key-size 512 --hash sha512 --iter-time 5000 --use-random luksFormat "${block_device}${partition_suffix_home}"
+        printf "%s" "${root_password}" | cryptsetup --verbose --cipher aes-xts-plain64 --key-size 512 --hash sha512 --iter-time 5000 --use-random luksFormat "${home_partition}"
         ## Unlock encrypted partition with device mapper to gain access
         ## After unlocking the partition, it will be available at /dev/mapper/home (since we named it "home")
-        printf "%s" "${root_password}" | cryptsetup open --type luks "${block_device}${partition_suffix_home}" home
+        printf "%s" "${root_password}" | cryptsetup open --type luks "${home_partition}" home
         mkfs.ext4 /dev/mapper/home
     else
-        mkfs.ext4 "${block_device}${partition_suffix_home}"
+        mkfs.ext4 "${home_partition}"
     fi
     if [ ! -z $partition_scheme["swap"] ]; then
         mkswap "${block_device}${partition_suffix_swap}"
@@ -132,7 +133,7 @@ function main() {
     if [ "${encrypt_home_partition}" = true ]; then
         mount /dev/mapper/home /mnt/home
     else
-        mount "${block_device}${partition_suffix_home}" /mnt/home
+        mount "${home_partition}" /mnt/home
     fi
     
     pacstrap /mnt "${base_packages[@]}"
@@ -168,7 +169,7 @@ function main() {
     mkinitcpio -p linux
     $(
         if [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
-            echo "sed -i \"/GRUB_CMDLINE_LINUX=/c\\GRUB_CMDLINE_LINUX=cryptdevice=$(blkid -s UUID -o value ${block_device}${partition_suffix_home}):home\" /etc/default/grub"
+            echo "sed -i \"/GRUB_CMDLINE_LINUX=/c\\GRUB_CMDLINE_LINUX=cryptdevice=$(blkid -s UUID -o value ${home_partition}):home\" /etc/default/grub"
             echo "sed -i 's/^HOOKS=(base udev autodetect modconf block/& encrypt/' /etc/mkinitcpio.conf"
         fi
     )

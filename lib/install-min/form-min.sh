@@ -184,6 +184,22 @@ function form_min() {
         fi
     fi
 
+    if [ "$create_home_partition" = true ] && [[ -z $custom_home_partition ]]; then
+        printf "\nUse Custom Home partition?\n"
+        if prompt; then
+            while true; do
+                lsblk -no kname
+
+                read -p "Please insert the name of the partition: /dev/" custom_home_partition
+                custom_home_partition="/dev/$block_device"
+                printf 'Given partition: "%s". Is this correct?\n' $custom_home_partition
+                if prompt; then
+                    break
+                fi
+            done
+        fi
+    fi
+
     if [[ -z $region ]]; then
         printf "\nRegion has not been set\n"
         while true; do
