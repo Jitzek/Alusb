@@ -191,7 +191,7 @@ function form_min() {
                 lsblk -no kname
 
                 read -p "Please insert the name of the partition: /dev/" custom_home_partition
-                custom_home_partition="/dev/$block_device"
+                custom_home_partition="/dev/$custom_home_partition"
                 printf 'Given partition: "%s". Is this correct?\n' $custom_home_partition
                 if prompt; then
                     break
