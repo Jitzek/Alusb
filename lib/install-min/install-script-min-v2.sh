@@ -4,7 +4,8 @@ _DIR_MIN=$(dirname ${0})
 _CHROOT_TEMP="/chroot-tmp"
 
 source "${_DIR_MIN}/../prompt.sh"
-source "${_DIR_MIN}/form-min.sh"
+source "${_DIR_MIN}/form-rest.sh"
+source "${_DIR_MIN}/form-partition.sh"
 
 prerequisites=("reflector")
 
@@ -61,7 +62,8 @@ function main() {
     pacman --noconfirm -S "${prerequisites[@]}"
 
     ## Fill all user determined variables
-    form_min
+    form_partition
+    form_rest
 
     ########################
     ###   Partitioning   ###
