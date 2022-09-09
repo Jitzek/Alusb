@@ -100,9 +100,6 @@ function main() {
     if [ "$create_boot_partitions" = true ]; then
         mount "${partition_mbr}" /mnt/boot
         mount "${partition_gpt}" /mnt/boot/efi
-    else
-        mount "${partition_mbr}" /mnt/boot
-        mount "${partition_gpt}" /mnt/boot/efi
     fi
     mkdir /mnt/home
     if [ "${encrypt_home_partition}" = true ]; then
@@ -141,7 +138,7 @@ function main() {
 
     pacman -S os-prober grub efibootmgr --noconfirm
 
-    mkinitcpio -p linux
+    mkinitcpio -p linux-lts
     $(
         if [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
             echo "sed -i \"/GRUB_CMDLINE_LINUX=/c\\GRUB_CMDLINE_LINUX=cryptdevice=$(blkid -s UUID -o value ${partition_home}):home\" /etc/default/grub"

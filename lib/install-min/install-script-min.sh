@@ -165,7 +165,7 @@ function main() {
 
     pacman -S os-prober grub efibootmgr --noconfirm
 
-    mkinitcpio -p linux
+    mkinitcpio -p linux-lts
     $(
         if [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
             echo "sed -i \"/GRUB_CMDLINE_LINUX=/c\\GRUB_CMDLINE_LINUX=cryptdevice=$(blkid -s UUID -o value ${block_device}${partition_suffix_home}):home\" /etc/default/grub"
