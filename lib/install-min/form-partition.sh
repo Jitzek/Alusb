@@ -207,6 +207,7 @@ function form_get_first_available_partition() {
         fi
 
         partition_suffix=$(get_first_available_partition_suffix $partition_block_device)
+        
         local partition_number=$?
         printf 'The %s will be installed on "%s"\n' "$topic" "${partition_block_device}${partition_suffix}"
         printf "Confirm?\n"
@@ -216,6 +217,8 @@ function form_get_first_available_partition() {
 
         break
     done
+
+    touch /proc/partition/"${partition_block_device}${partition_suffix}"
 
     partition_return="${partition_block_device}${partition_suffix}"
 }
