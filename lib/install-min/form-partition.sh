@@ -1,3 +1,5 @@
+partition_return=""
+
 function form_partition() {
     if [ "$create_boot_partitions" = true ]; then
         printf "\nCreate Boot partitions?\n"
@@ -7,8 +9,8 @@ function form_partition() {
             ## MBR partition not set
             if [[ -z $partition_mbr ]]; then
                 printf "\nMBR partition not set\n"
-                lsblk -no kname
-                partition_mbr=$(form_get_first_available_partition "MBR")
+                form_get_first_available_partition "MBR"
+                partition_mbr="$partition_return"
                 partition_number_mbr=${partition_mbr: -1}
 
                 if [[ "$partition_mbr" == *p[0-9] ]]; then
@@ -42,8 +44,8 @@ function form_partition() {
             ## GPT partition not set
             if [[ -z $partition_gpt ]]; then
                 printf "\GPT partition not set\n"
-                lsblk -no kname
-                partition_gpt=$(form_get_first_available_partition "GPT")
+                form_get_first_available_partition "GPT"
+                partition_gpt="$partition_return"
                 partition_number_gpt=${partition_gpt: -1}
 
                 if [[ "$partition_gpt" == *p[0-9] ]]; then
@@ -80,8 +82,8 @@ function form_partition() {
 
     if [[ -z $partition_root ]]; then
         printf "\Root partition not set\n"
-        lsblk -no kname
-        partition_root=$(form_get_first_available_partition "Root")
+        form_get_first_available_partition "Root"
+        partition_root="$partition_return"
         partition_number_root=${partition_root: -1}
 
         if [[ "$partition_root" == *p[0-9] ]]; then
@@ -127,8 +129,8 @@ function form_partition() {
         if prompt; then
             if [[ -z $partition_home ]]; then
                 printf "\Home partition not set\n"
-                lsblk -no kname
-                partition_home=$(form_get_first_available_partition "Home")
+                form_get_first_available_partition "Home"
+                partition_home="$partition_return"
                 partition_number_home=${partition_home: -1}
 
                 if [[ "$partition_home" == *p[0-9] ]]; then
@@ -185,10 +187,12 @@ function get_first_available_partition_suffix() {
 
 function form_get_first_available_partition() {
     topic=$1
-    partition=""
+    partition_return=""
     while true; do
         local partition_block_device=""
         printf "Which block device should the %s partition be installed on?\n\n" "$topic"
+
+        lsblk -no kname
 
         read -p "Please insert the name of the block device for the ${topic} partition: /dev/" partition_block_device
         if [ -z "$partition_block_device" ]; then
@@ -212,5 +216,5 @@ function form_get_first_available_partition() {
         break
     done
 
-    echo "${partition_block_device}${partition_suffix}"
+    partition_return="${partition_block_device}${partition_suffix}"
 }
