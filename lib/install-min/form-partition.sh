@@ -1,6 +1,10 @@
 partition_return=""
+temp_partitions_file="${_DIR_MIN}/temp_partitions"
+touch $temp_partitions_file
 
 function form_partition() {
+    cat /proc/partitions > $temp_partitions_file
+
     if [ "$create_boot_partitions" = true ]; then
         printf "\nCreate Boot partitions?\n"
         if prompt; then
@@ -179,7 +183,7 @@ function get_first_available_partition_suffix() {
     else
         block_device_ends_with_number=false
     fi
-    local block_device_start=$(($(grep -c "$(echo ${block_device} | cut -c 6-)[0-9]" /proc/partitions) + 1))
+    local block_device_start=$(($(grep -c "$(echo ${block_device} | cut -c 6-)[0-9]" ${temp_partitions_file}) + 1))
     local partition_number=$(($block_device_start))
     local partition_suffix=$([[ "${block_device_ends_with_number}" = true ]] && echo "p${partition_number}" || echo "${partition_number}")
     echo $partition_suffix
@@ -221,4 +225,6 @@ function form_get_first_available_partition() {
     touch /proc/partition/"${partition_block_device}${partition_suffix}"
 
     partition_return="${partition_block_device}${partition_suffix}"
+
+    echo $partition_return >> $temp_partitions_file
 }
