@@ -199,6 +199,7 @@ function form_get_first_available_partition() {
             printf "Given input is empty\n"
             continue
         fi
+        partition_block_device="/dev/${partition_block_device}"
         printf 'Given block device for the %s partition: "%s". Is this correct?\n' "$topic" $partition_block_device
         printf "Confirm?\n"
         if ! prompt; then
