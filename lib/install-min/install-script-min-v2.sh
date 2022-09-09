@@ -209,8 +209,8 @@ function gdiskPartition() {
             echo "+${partition_scheme_mbr}"
             echo EF02
 
-            echo p
             if $1; then
+                echo p
                 echo w
                 echo "Y"
             fi
@@ -226,8 +226,8 @@ function gdiskPartition() {
             echo "+${partition_scheme_gpt}"
             echo EF00
 
-            echo p
             if $1; then
+                echo p
                 echo w
                 echo "Y"
             fi
@@ -243,8 +243,8 @@ function gdiskPartition() {
             echo "+${partition_scheme_swap}"
             echo 8200
 
-            echo p
             if $1; then
+                echo p
                 echo w
                 echo "Y"
             fi
@@ -263,8 +263,8 @@ function gdiskPartition() {
         fi
         echo 8300
 
-        echo p
         if $1; then
+            echo p
             echo w
             echo "Y"
         fi
@@ -284,8 +284,8 @@ function gdiskPartition() {
             ## Linux Home
             echo 8302
 
-            echo p
             if $1; then
+                echo p
                 echo w
                 echo "Y"
             fi

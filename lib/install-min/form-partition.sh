@@ -178,12 +178,14 @@ function form_partition() {
 function get_first_available_partition_suffix() {
     local block_device=$1
     local block_device_ends_with_number=false
+    local block_device_start=0
     if [[ $block_device = *[0-9] ]]; then
         block_device_ends_with_number=true
+        block_device_start=$(($(grep -c "$(echo "${block_device}p" | cut -c 6-)[0-9]" ${temp_partitions_file}) + 1))
     else
         block_device_ends_with_number=false
+        block_device_start=$(($(grep -c "$(echo ${block_device} | cut -c 6-)[0-9]" ${temp_partitions_file}) + 1))
     fi
-    local block_device_start=$(($(grep -c "$(echo ${block_device} | cut -c 6-)[0-9]" ${temp_partitions_file}) + 1))
     local partition_number=$(($block_device_start))
     local partition_suffix=$([[ "${block_device_ends_with_number}" = true ]] && echo "p${partition_number}" || echo "${partition_number}")
     echo $partition_suffix
