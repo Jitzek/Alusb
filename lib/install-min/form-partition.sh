@@ -188,7 +188,7 @@ function form_get_first_available_partition() {
 
         lsblk -no kname
 
-        read -p "Please insert the name of the block device for the ${topic} partition: /dev/" block_device
+        read -p "Please insert the name of the block device for the ${topic} partition: /dev/" partition_block_device
         if [ -z "$partition_block_device" ]; then
             printf "Given input is empty\n"
             continue
