@@ -41,7 +41,7 @@ partition_scheme_home=""
 create_home_partition=true
 ## If false, home partition will not be encrypted (user will be prompted)
 encrypt_home_partition=false
-base_packages=("archlinux-keyring" "base" "base-devel" "cmake" "linux-lts" "linux-firmware" "reflector")
+base_packages=("archlinux-keyring" "base" "base-devel" "cmake" "linux-lts" "linux-firmware" "reflector" "os-prober" "grub" "efibootmgr")
 encrypt_packages=("lvm2" "cryptsetup")
 region=""
 country=""
@@ -135,8 +135,6 @@ function main() {
     sed -i '/SystemMaxUse=/s/$/16M/' /etc/systemd/journald.conf
 
     sed -i '/ext4/s/relatime/noatime/' /etc/fstab
-
-    pacman -S os-prober grub efibootmgr --noconfirm
 
     mkinitcpio -p linux-lts
     $(
