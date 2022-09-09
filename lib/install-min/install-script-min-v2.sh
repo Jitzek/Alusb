@@ -110,7 +110,7 @@ function main() {
     else
         mount "${partition_home}" /mnt/home
     fi
-    
+
     pacstrap /mnt "${base_packages[@]}"
     if [ "${encrypt_home_partition}" = true ]; then
         pacstrap /mnt "${encrypt_packages[@]}"
@@ -209,14 +209,32 @@ function gdiskPartition() {
             echo "+${partition_scheme_mbr}"
             echo EF02
 
+            echo p
+            if $1; then
+                echo w
+                echo "Y"
+            fi
+        fi
+
+    ) | gdisk $partition_block_device_mbr
+    (
+        if [ "${create_boot_partitions}" = true ]; then
             # Creating (optional) GPT partition
             echo n
             echo $partition_number_gpt
             echo ""
             echo "+${partition_scheme_gpt}"
             echo EF00
-        fi
 
+            echo p
+            if $1; then
+                echo w
+                echo "Y"
+            fi
+        fi
+    ) | gdisk $partition_block_device_gpt
+
+    (
         # Creating (optional) Swap partition
         if [[ ! -z "${partition_scheme_swap}" ]]; then
             echo n
@@ -224,8 +242,16 @@ function gdiskPartition() {
             echo ""
             echo "+${partition_scheme_swap}"
             echo 8200
-        fi
 
+            echo p
+            if $1; then
+                echo w
+                echo "Y"
+            fi
+        fi
+    ) | gdisk $partition_block_device_swap
+
+    (
         # Creating Root partition
         echo n
         echo $partition_number_root
@@ -237,6 +263,14 @@ function gdiskPartition() {
         fi
         echo 8300
 
+        echo p
+        if $1; then
+            echo w
+            echo "Y"
+        fi
+    ) | gdisk $partition_block_device_root
+
+    (
         if [ "${create_home_partition}" = true ]; then
             # Creating (optional) Home partition
             echo n
@@ -249,14 +283,14 @@ function gdiskPartition() {
             fi
             ## Linux Home
             echo 8302
-        fi
 
-        echo p
-        if $1; then
-            echo w
-            echo "Y"
+            echo p
+            if $1; then
+                echo w
+                echo "Y"
+            fi
         fi
-    ) | gdisk $block_device
+    ) | gdisk $partition_block_device_home
 }
 
 main
