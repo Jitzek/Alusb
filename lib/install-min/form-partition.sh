@@ -7,6 +7,7 @@ function form_partition() {
             ## MBR partition not set
             if [[ -z $partition_mbr ]]; then
                 printf "\nMBR partition not set\n"
+                lsblk -no kname
                 partition_mbr=$(form_get_first_available_partition "MBR")
                 partition_number_mbr=${partition_mbr: -1}
 
@@ -41,6 +42,7 @@ function form_partition() {
             ## GPT partition not set
             if [[ -z $partition_gpt ]]; then
                 printf "\GPT partition not set\n"
+                lsblk -no kname
                 partition_gpt=$(form_get_first_available_partition "GPT")
                 partition_number_gpt=${partition_gpt: -1}
 
@@ -78,6 +80,7 @@ function form_partition() {
 
     if [[ -z $partition_root ]]; then
         printf "\Root partition not set\n"
+        lsblk -no kname
         partition_root=$(form_get_first_available_partition "Root")
         partition_number_root=${partition_root: -1}
 
@@ -124,6 +127,7 @@ function form_partition() {
         if prompt; then
             if [[ -z $partition_home ]]; then
                 printf "\Home partition not set\n"
+                lsblk -no kname
                 partition_home=$(form_get_first_available_partition "Home")
                 partition_number_home=${partition_home: -1}
 
@@ -185,8 +189,6 @@ function form_get_first_available_partition() {
     while true; do
         local partition_block_device=""
         printf "Which block device should the %s partition be installed on?\n\n" "$topic"
-
-        lsblk -no kname
 
         read -p "Please insert the name of the block device for the ${topic} partition: /dev/" partition_block_device
         if [ -z "$partition_block_device" ]; then
