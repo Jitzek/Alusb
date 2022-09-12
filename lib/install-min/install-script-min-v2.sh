@@ -42,7 +42,7 @@ create_home_partition=true
 ## If false, home partition will not be encrypted (user will be prompted)
 encrypt_home_partition=false
 base_packages=("archlinux-keyring" "base" "base-devel" "cmake" "linux-lts" "linux-firmware" "reflector" "os-prober" "grub" "efibootmgr")
-encrypt_packages=("lvm2" "cryptsetup")
+encrypt_packages=("lvm2" "cryptsetup") #FIXME: lvm2 might be unnecessary
 region=""
 country=""
 city=""
@@ -137,7 +137,7 @@ function main() {
 
     $(
         if [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
-            echo "echo 'home\\t${partition_home}' >> /etc/crypttab"
+            echo "echo -e 'home\\t${partition_home}' >> /etc/crypttab"
             echo "sed -i \"/GRUB_CMDLINE_LINUX=/c\\GRUB_CMDLINE_LINUX=cryptdevice=$(blkid -s UUID -o value ${partition_home}):home\" /etc/default/grub"
             echo "sed -i 's/^HOOKS=(base udev autodetect modconf block/& encrypt/' /etc/mkinitcpio.conf"
         fi
