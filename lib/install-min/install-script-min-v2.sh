@@ -55,7 +55,6 @@ user_password=""
 
 partition_device_mbr=""
 give_user_sudo_access=true
-partition_device_gpt=""
 
 function main() {
     ## Prerequisites
@@ -136,13 +135,14 @@ function main() {
 
     sed -i '/ext4/s/relatime/noatime/' /etc/fstab
 
-    mkinitcpio -p linux-lts
     $(
         if [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
             echo "sed -i \"/GRUB_CMDLINE_LINUX=/c\\GRUB_CMDLINE_LINUX=cryptdevice=$(blkid -s UUID -o value ${partition_home}):home\" /etc/default/grub"
             echo "sed -i 's/^HOOKS=(base udev autodetect modconf block/& encrypt/' /etc/mkinitcpio.conf"
         fi
     )
+    mkinitcpio -p linux-lts
+
     grub-install --target=i386-pc --boot-directory /boot $partition_block_device_mbr
     grub-install --target=x86_64-efi --efi-directory /boot/efi --boot-directory /boot --removable
     echo 'GRUB_DISABLE_OS_PROBER=false' | tee --append /etc/default/grub
