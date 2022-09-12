@@ -224,8 +224,6 @@ function form_get_first_available_partition() {
         break
     done
 
-    touch /proc/partition/"${partition_block_device}${partition_suffix}"
-
     partition_return="${partition_block_device}${partition_suffix}"
 
     echo $partition_return >> $temp_partitions_file
