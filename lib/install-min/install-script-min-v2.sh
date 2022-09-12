@@ -137,6 +137,7 @@ function main() {
 
     $(
         if [ "$create_home_partition" = true ] && [ "$encrypt_home_partition" = true ]; then
+            echo "echo 'home\\t${partition_home}' >> /etc/crypttab"
             echo "sed -i \"/GRUB_CMDLINE_LINUX=/c\\GRUB_CMDLINE_LINUX=cryptdevice=$(blkid -s UUID -o value ${partition_home}):home\" /etc/default/grub"
             echo "sed -i 's/^HOOKS=(base udev autodetect modconf block/& encrypt/' /etc/mkinitcpio.conf"
         fi
