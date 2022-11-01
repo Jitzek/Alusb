@@ -1,9 +1,9 @@
 _DIR_FORM_PARTITIONING=$(dirname ${0})
 partition_return=""
 temp_partitions_file="${_DIR_FORM_PARTITIONING}/temp_partitions"
-touch $temp_partitions_file
 
-function form_partitioning() {
+function form_partition_min() {
+    touch $temp_partitions_file
     cat /proc/partitions > $temp_partitions_file
 
     if [ "$create_boot_partitions" = true ]; then
@@ -174,6 +174,7 @@ function form_partitioning() {
             create_home_partition=false
         fi
     fi
+    rm $temp_partitions_file
 }
 
 function get_first_available_partition_suffix() {
