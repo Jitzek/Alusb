@@ -2,11 +2,11 @@
 
 _DIR_PARTITIONING=$(dirname ${0})
 
-local mbr_code="EF02"
-local gpt_code="EF00"
-local swap_code="8200"
-local root_code="8300"
-local home_code="8302"
+mbr_code="EF02"
+gpt_code="EF00"
+swap_code="8200"
+root_code="8300"
+home_code="8302"
 
 
 ########################
