@@ -1,6 +1,6 @@
-_FORM_PARTITIONING_DIR=$(dirname ${0})
+_DIR_FORM_PARTITIONING=$(dirname ${0})
 partition_return=""
-temp_partitions_file="${_FORM_PARTITIONING_DIR}/temp_partitions"
+temp_partitions_file="${_DIR_FORM_PARTITIONING}/temp_partitions"
 touch $temp_partitions_file
 
 function form_partitioning() {

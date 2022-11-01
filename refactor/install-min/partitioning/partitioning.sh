@@ -1,9 +1,9 @@
 #!/bin/bash
 
-_PARTITIONING_DIR=$(dirname ${0})
-source "${_PARTITIONING_DIR}/form.sh"
-source "${_PARTITIONING_DIR}/../../general/prompt.sh"
-source "${_PARTITIONING_DIR}/data/partitioning-data.sh"
+_DIR_PARTITIONING=$(dirname ${0})
+source "${_DIR_PARTITIONING}/form.sh"
+source "${_DIR_PARTITIONING}/../../general/prompt.sh"
+source "${_DIR_PARTITIONING}/data/partitioning-data.sh"
 
 ########################
 ###   Partitioning   ###

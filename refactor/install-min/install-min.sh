@@ -1,5 +1,5 @@
 #!/bin/bash
-_MIN_DIR=$(dirname ${0})
+_DIR_MIN=$(dirname ${0})
 
 source "${_DIR_MIN}/../general/prompt.sh"
 source "${_DIR_MIN}/partitioning/form-partitioning.sh"
