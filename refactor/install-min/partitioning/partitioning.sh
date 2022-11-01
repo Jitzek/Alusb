@@ -20,11 +20,11 @@ function partition_min() {
 #% DESCRIPTION
 #% Helper function to partition all disks using gdisk
 function gdisk_partition_all() {
-    gdisk_partition $1 $block_device_mbr $partition_number_mbr $partition_scheme_mbr "EF02"
-    gdisk_partition $1 $partition_number_gpt $partition_number_gpt $partition_scheme_gpt "EF00"
-    gdisk_partition $1 $partition_number_swap $partition_number_swap $partition_scheme_swap "8200"
-    gdisk_partition $1 $partition_number_root $partition_number_root $partition_scheme_root "8300"
-    gdisk_partition $1 $partition_number_home $partition_number_home $partition_scheme_home "8302"
+    [[ ! -z $partition_mbr ]] gdisk_partition $1 $block_device_mbr $partition_number_mbr $partition_scheme_mbr "EF02"
+    [[ ! -z $partition_gpt ]] gdisk_partition $1 $block_device_gpt $partition_number_gpt $partition_scheme_gpt "EF00"
+    [[ ! -z $partition_swap ]] gdisk_partition $1 $block_device_swap $partition_number_swap $partition_scheme_swap "8200"
+    [[ ! -z $partition_root ]] gdisk_partition $1 $block_device_root $partition_number_root $partition_scheme_root "8300"
+    [[ ! -z $partition_home ]] gdisk_partition $1 $block_device_home $partition_number_home $partition_scheme_home "8302"
 }
 
 #% gdiskPartition
