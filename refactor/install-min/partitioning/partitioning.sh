@@ -6,12 +6,12 @@ _DIR_PARTITIONING=$(dirname ${0})
 ###   Partitioning   ###
 ########################
 function partition_min() {
-    # gdisk_partition_all false
+    gdisk_partition_all false
     printf "Write to disk?\n"
     if ! prompt; then
         return 1
     fi
-    # gdisk_partition_all true
+    gdisk_partition_all true
     return 0
 }
 

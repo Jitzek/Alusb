@@ -27,12 +27,6 @@ function main() {
     ##############################
     ###   ENDOF Partitioning   ###
     ##############################
-
-    printf "\n%s\n" $partition_mbr
-    printf "%s\n" $partition_gpt
-    printf "%s\n" $partition_root
-    printf "%s\n" $partition_home
-    printf "%s\n" $partition_swap
 }
 
 main
