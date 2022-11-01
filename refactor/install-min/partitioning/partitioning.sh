@@ -6,12 +6,13 @@ mbr_code="EF02"
 gpt_code="EF00"
 swap_code="8200"
 root_code="8300"
-home_code="8200"
+home_code="8302"
 
 ########################
 ###   Partitioning   ###
 ########################
 function partition_min() {
+    printf "\n%s\n" $partition_scheme_home
     declare local BLOCK_DEVICES=($block_device_mbr)
     [[ ! "${BLOCK_DEVICES[*]} " =~ "${block_device_gpt}" ]] && BLOCK_DEVICES+=($block_device_gpt)
     [[ ! "${BLOCK_DEVICES[*]} " =~ "${block_device_swap}" ]] && BLOCK_DEVICES+=($block_device_swap)
