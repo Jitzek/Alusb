@@ -1,17 +1,11 @@
 #!/bin/bash
 
 _DIR_PARTITIONING=$(dirname ${0})
-[[ -f "${_DIR_PARTITIONING}/../../general/prompt.sh" ]] && source "${_DIR_PARTITIONING}/../../general/prompt.sh"
-[[ -f "${_DIR_PARTITIONING}/form-partition.sh" ]] && source source "${_DIR_PARTITIONING}/form-partition.sh"
 
 ########################
 ###   Partitioning   ###
 ########################
 function partition_min() {
-    if [[ $(type -t form_partition_min) == function ]]; then
-        form_partition_min
-    fi
-
     # gdisk_partition_all false
     printf "Write to disk?\n"
     if ! prompt; then
@@ -183,5 +177,3 @@ function gdisk_partition() {
 #         fi
 #     ) | gdisk $block_device
 # }
-
-partition_min

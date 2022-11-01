@@ -12,7 +12,21 @@ function main() {
     ## Prerequisites
     pacman --noconfirm -S "${prerequisites[@]}"
 
-    partition_min
+    ##############################
+    ###      Partitioning      ###
+    ##############################
+    printf "Partition Disks?\n"
+    if prompt; then
+        while true; do
+            form_partition_min
+            if partition_min; then
+                break
+            fi
+        done
+    fi
+    ##############################
+    ###   ENDOF Partitioning   ###
+    ##############################
 
     printf "\n%s\n" $partition_mbr
     printf "%s\n" $partition_gpt
