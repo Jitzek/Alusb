@@ -2,6 +2,13 @@
 
 _DIR_PARTITIONING=$(dirname ${0})
 
+local mbr_code="EF02"
+local gpt_code="EF00"
+local swap_code="8200"
+local root_code="8300"
+local home_code="8302"
+
+
 ########################
 ###   Partitioning   ###
 ########################
@@ -14,11 +21,11 @@ function partition_min() {
 
     for block_device in "${BLOCK_DEVICES[@]}"; do
         printf "\nBlock Device: \"%s\":" $block_device
-        [[ ! -z $partition_mbr ]] && [[ "${block_device}" == "${block_device_mbr}" ]] && printf "\n\tMBR (\"%s\"). Size: \"%s\"" $partition_mbr $partition_scheme_mbr
-        [[ ! -z $partition_gpt ]] && [[ "${block_device}" == "${block_device_gpt}" ]] && printf "\n\tGPT (\"%s\"). Size: \"%s\"" $partition_gpt $partition_scheme_gpt
-        [[ ! -z $partition_swap ]] && [[ "${block_device}" == "${block_device_swap}" ]] && printf "\n\tSWAP (\"%s\"). Size: \"%s\"" $partition_swap $partition_scheme_swap
-        [[ ! -z $partition_root ]] && [[ "${block_device}" == "${block_device_root}" ]] && printf "\n\tROOT (\"%s\"). Size: \"%s\"" $partition_root $partition_scheme_root
-        [[ ! -z $partition_home ]] && [[ "${block_device}" == "${block_device_home}" ]] && printf "\n\tHOME (\"%s\"). Size: \"%s\"" $partition_home $partition_scheme_home
+        [[ ! -z $partition_mbr ]] && [[ "${block_device}" == "${block_device_mbr}" ]] && printf "\n\tMBR (\"%s\"). Size: \"%s\". Code: \"%s\"" $partition_mbr $partition_scheme_mbr $mbr_code
+        [[ ! -z $partition_gpt ]] && [[ "${block_device}" == "${block_device_gpt}" ]] && printf "\n\tGPT (\"%s\"). Size: \"%s\". Code: \"%s\"" $partition_gpt $partition_scheme_gpt $gpt_code
+        [[ ! -z $partition_swap ]] && [[ "${block_device}" == "${block_device_swap}" ]] && printf "\n\tSWAP (\"%s\"). Size: \"%s\". Code: \"%s\"" $partition_swap $partition_scheme_swap $swap_code
+        [[ ! -z $partition_root ]] && [[ "${block_device}" == "${block_device_root}" ]] && printf "\n\tROOT (\"%s\"). Size: \"%s\". Code: \"%s\"" $partition_root $partition_scheme_root $root_code
+        [[ ! -z $partition_home ]] && [[ "${block_device}" == "${block_device_home}" ]] && printf "\n\tHOME (\"%s\"). Size: \"%s\". Code: \"%s\"" $partition_home $partition_scheme_home $home_code
     done
     printf "\nAn empty size means that the partition will take up all the remaining space on the block device\n"
     
@@ -35,11 +42,11 @@ function partition_min() {
 #% DESCRIPTION
 #% Helper function to partition all disks using gdisk
 function gdisk_partition_all() {
-    [[ ! -z $partition_mbr ]] && gdisk_partition $1 $block_device_mbr $partition_number_mbr $partition_scheme_mbr "EF02"
-    [[ ! -z $partition_gpt ]] && gdisk_partition $1 $block_device_gpt $partition_number_gpt $partition_scheme_gpt "EF00"
-    [[ ! -z $partition_swap ]] && gdisk_partition $1 $block_device_swap $partition_number_swap $partition_scheme_swap "8200"
-    [[ ! -z $partition_root ]] && gdisk_partition $1 $block_device_root $partition_number_root $partition_scheme_root "8300"
-    [[ ! -z $partition_home ]] && gdisk_partition $1 $block_device_home $partition_number_home $partition_scheme_home "8302"
+    [[ ! -z $partition_mbr ]] && gdisk_partition $1 $block_device_mbr $partition_number_mbr $partition_scheme_mbr $mbr_code
+    [[ ! -z $partition_gpt ]] && gdisk_partition $1 $block_device_gpt $partition_number_gpt $partition_scheme_gpt $gpt_code
+    [[ ! -z $partition_swap ]] && gdisk_partition $1 $block_device_swap $partition_number_swap $partition_scheme_swap $swap_code
+    [[ ! -z $partition_root ]] && gdisk_partition $1 $block_device_root $partition_number_root $partition_scheme_root $root_code
+    [[ ! -z $partition_home ]] && gdisk_partition $1 $block_device_home $partition_number_home $partition_scheme_home $home_code
 }
 
 #% gdiskPartition
