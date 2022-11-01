@@ -57,7 +57,8 @@ function gdisk_partition() {
         echo n
         echo $partition_number
         echo ""
-        if [[ ! -z "${partition_scheme}" ]] then;
+        
+        if [[ ! -z "${partition_scheme}" ]]; then
             echo "+${partition_scheme}"
         else
             echo ""
