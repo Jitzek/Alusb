@@ -6,8 +6,7 @@ mbr_code="EF02"
 gpt_code="EF00"
 swap_code="8200"
 root_code="8300"
-home_code="8302"
-
+home_code="8200"
 
 ########################
 ###   Partitioning   ###
