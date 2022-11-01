@@ -12,7 +12,6 @@ home_code="8302"
 ###   Partitioning   ###
 ########################
 function partition_min() {
-    printf "\n%s\n" $partition_scheme_home
     declare local BLOCK_DEVICES=($block_device_mbr)
     [[ ! "${BLOCK_DEVICES[*]} " =~ "${block_device_gpt}" ]] && BLOCK_DEVICES+=($block_device_gpt)
     [[ ! "${BLOCK_DEVICES[*]} " =~ "${block_device_swap}" ]] && BLOCK_DEVICES+=($block_device_swap)
@@ -25,7 +24,7 @@ function partition_min() {
         [[ ! -z $partition_gpt ]] && [[ "${block_device}" == "${block_device_gpt}" ]] && printf "\n\tGPT (\"%s\"). Size: \"%s\". Code: \"%s\"" $partition_gpt $partition_scheme_gpt $gpt_code
         [[ ! -z $partition_swap ]] && [[ "${block_device}" == "${block_device_swap}" ]] && printf "\n\tSWAP (\"%s\"). Size: \"%s\". Code: \"%s\"" $partition_swap $partition_scheme_swap $swap_code
         [[ ! -z $partition_root ]] && [[ "${block_device}" == "${block_device_root}" ]] && printf "\n\tROOT (\"%s\"). Size: \"%s\". Code: \"%s\"" $partition_root $partition_scheme_root $root_code
-        [[ ! -z $partition_home ]] && [[ "${block_device}" == "${block_device_home}" ]] && printf "\n\tHOME (\"%s\"). Size: \"%s\". Code: \"%s\"" $partition_home $partition_scheme_home $home_code
+        [[ ! -z $partition_home ]] && [[ "${block_device}" == "${block_device_home}" ]] && printf "\n\tHOME (\"%s\"). Size: \"%s\". Code: \"%s\"" $partition_home "" $home_code
     done
     printf "\nAn empty size means that the partition will take up all the remaining space on the block device\n"
     
