@@ -6,19 +6,6 @@ _DIR_PARTITIONING=$(dirname ${0})
 ###   Partitioning   ###
 ########################
 function partition_min() {
-    printf "Write to disk?\n"
-    if ! prompt; then
-        return 1
-    fi
-    gdisk_partition_all true
-    return 0
-}
-
-#% gdiskPartition
-#+ gdiskPartition WRITE_TO_DISK:boolean
-#% DESCRIPTION
-#% Helper function to partition all disks using gdisk
-function gdisk_partition_all() {
     local BLOCK_DEVICES=($block_device_mbr)
     [[ "${BLOCK_DEVICES[*]} " =~ "${block_device_gpt}" ]] && BLOCK_DEVICES+=($block_device_gpt)
     [[ "${BLOCK_DEVICES[*]} " =~ "${block_device_swap}" ]] && BLOCK_DEVICES+=($block_device_swap)
@@ -33,7 +20,20 @@ function gdisk_partition_all() {
         [[ "${block_device}" == "${block_device_root} " ]] && printf "\nROOT (\"%s\")" $partition_root
         [[ "${block_device}" == "${block_device_home} " ]] && printf "\nHOME (\"%s\")" $partition_home
     done
+    
+    # printf "Write to disk?\n"
+    # if ! prompt; then
+    #     return 1
+    # fi
+    # gdisk_partition_all true
+    # return 0
+}
 
+#% gdiskPartition
+#+ gdiskPartition WRITE_TO_DISK:boolean
+#% DESCRIPTION
+#% Helper function to partition all disks using gdisk
+function gdisk_partition_all() {
     [[ ! -z $partition_mbr ]] && gdisk_partition $1 $block_device_mbr $partition_number_mbr $partition_scheme_mbr "EF02"
     [[ ! -z $partition_gpt ]] && gdisk_partition $1 $block_device_gpt $partition_number_gpt $partition_scheme_gpt "EF00"
     [[ ! -z $partition_swap ]] && gdisk_partition $1 $block_device_swap $partition_number_swap $partition_scheme_swap "8200"
