@@ -20,11 +20,11 @@ function partition_min() {
 
     for block_device in "${BLOCK_DEVICES[@]}"; do
         printf "\nBlock Device: \"%s\":" $block_device
-        [[ ! -z $partition_mbr ]] && [[ "${block_device}" == "${block_device_mbr}" ]] && printf "\n\tMBR (\"%s\"). Size: \"%s\". Code: \"%s\"" $partition_mbr $partition_scheme_mbr $mbr_code
-        [[ ! -z $partition_gpt ]] && [[ "${block_device}" == "${block_device_gpt}" ]] && printf "\n\tGPT (\"%s\"). Size: \"%s\". Code: \"%s\"" $partition_gpt $partition_scheme_gpt $gpt_code
-        [[ ! -z $partition_swap ]] && [[ "${block_device}" == "${block_device_swap}" ]] && printf "\n\tSWAP (\"%s\"). Size: \"%s\". Code: \"%s\"" $partition_swap $partition_scheme_swap $swap_code
-        [[ ! -z $partition_root ]] && [[ "${block_device}" == "${block_device_root}" ]] && printf "\n\tROOT (\"%s\"). Size: \"%s\". Code: \"%s\"" $partition_root $partition_scheme_root $root_code
-        [[ ! -z $partition_home ]] && [[ "${block_device}" == "${block_device_home}" ]] && printf "\n\tHOME (\"%s\"). Size: \"%s\". Code: \"%s\"" $partition_home "" $home_code
+        [[ ! -z $partition_mbr ]] && [[ "${block_device}" == "${block_device_mbr}" ]] && printf "\n\tMBR (\"%s\"). Size: \"%s\". Code: \"%s\"" "${partition_mbr}" "${partition_scheme_mbr}" "${mbr_code}"
+        [[ ! -z $partition_gpt ]] && [[ "${block_device}" == "${block_device_gpt}" ]] && printf "\n\tGPT (\"%s\"). Size: \"%s\". Code: \"%s\"" "${partition_gpt}" "${partition_scheme_gpt}" "${gpt_code}"
+        [[ ! -z $partition_swap ]] && [[ "${block_device}" == "${block_device_swap}" ]] && printf "\n\tSWAP (\"%s\"). Size: \"%s\". Code: \"%s\"" "${partition_swap}" "${partition_scheme_swap}" "${swap_code}"
+        [[ ! -z $partition_root ]] && [[ "${block_device}" == "${block_device_root}" ]] && printf "\n\tROOT (\"%s\"). Size: \"%s\". Code: \"%s\"" "${partition_root}" "${partition_scheme_root}" "${root_code}"
+        [[ ! -z $partition_home ]] && [[ "${block_device}" == "${block_device_home}" ]] && printf "\n\tHOME (\"%s\"). Size: \"%s\". Code: \"%s\"" "${partition_home}" "${partition_scheme_home}" "${home_code}"
     done
     printf "\nAn empty size means that the partition will take up all the remaining space on the block device\n"
     
@@ -64,7 +64,7 @@ function gdisk_partition() {
         echo $partition_number
         echo ""
         
-        if [[ ! -z "${partition_scheme}" ]]; then
+        if [[ ! -z $partition_scheme ]]; then
             echo "+${partition_scheme}"
         else
             echo ""
