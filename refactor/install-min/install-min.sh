@@ -2,7 +2,7 @@
 _DIR_MIN=$(dirname ${0})
 
 source "${_DIR_MIN}/../general/prompt.sh"
-source "${_DIR_MIN}/partitioning/form-partitioning.sh"
+source "${_DIR_MIN}/partitioning/partitioning.sh"
 
 prerequisites=("reflector")
 
