@@ -20,7 +20,7 @@ function partition_min() {
         [[ ! -z $partition_root ]] && [[ "${block_device}" == "${block_device_root}" ]] && printf "\n\tROOT (\"%s\"). Size: \"%s\"" $partition_root $partition_scheme_root
         [[ ! -z $partition_home ]] && [[ "${block_device}" == "${block_device_home}" ]] && printf "\n\tHOME (\"%s\"). Size: \"%s\"" $partition_home $partition_scheme_home
     done
-    printf "\nAn empty size means that the partition will take up all the remaining size of the block size\n"
+    printf "\nAn empty size means that the partition will take up all the remaining space on the block device\n"
     
     printf "Write to disk?\n"
     if ! prompt; then
@@ -57,7 +57,11 @@ function gdisk_partition() {
         echo n
         echo $partition_number
         echo ""
-        echo "+${partition_scheme}"
+        if [[ ! -z "${partition_scheme}" ]] then;
+            echo "+${partition_scheme}"
+        else
+            echo ""
+        fi
         echo "$partition_code"
 
         echo p
