@@ -1,7 +1,7 @@
 #!/bin/bash
 
 _DIR_PARTITIONING=$(dirname ${0})
-source "${_DIR_PARTITIONING}/form.sh"
+source "${_DIR_PARTITIONING}/form-partitioning.sh"
 source "${_DIR_PARTITIONING}/../../general/prompt.sh"
 source "${_DIR_PARTITIONING}/data/partitioning-data.sh"
 
