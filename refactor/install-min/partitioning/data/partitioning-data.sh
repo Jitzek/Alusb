@@ -1,23 +1,23 @@
 ########################################
 ###      Configurable variables      ###
 ########################################
-partition_mbr="/dev/vda1"
-partition_gpt="/dev/vda2"
-partition_root="/dev/vda3"
-partition_home="/dev/vda4"
-partition_swap="/dev/vda5"
+partition_mbr=""
+partition_gpt=""
+partition_root=""
+partition_home=""
+partition_swap=""
 
-block_device_mbr="/dev/vda"
-block_device_gpt="/dev/vda"
-block_device_swap="/dev/vda"
-block_device_root="/dev/vda"
-block_device_home="/dev/vda"
+block_device_mbr=""
+block_device_gpt=""
+block_device_swap=""
+block_device_root=""
+block_device_home=""
 
-partition_number_mbr="1"
-partition_number_gpt="2"
-partition_number_swap="3"
-partition_number_root="4"
-partition_number_home="5"
+partition_number_mbr=""
+partition_number_gpt=""
+partition_number_swap=""
+partition_number_root=""
+partition_number_home=""
 
 ## If false, user will not be prompted for creation of mbr and gpt partitions
 create_boot_partitions=true
