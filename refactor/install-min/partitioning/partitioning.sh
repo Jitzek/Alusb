@@ -27,7 +27,7 @@ function partition_min() {
         [[ ! -z $partition_home ]] && [[ "${block_device}" == "${block_device_home}" ]] && printf "\n\tHOME (\"%s\"). Size: \"%s\". Code: \"%s\"" "${partition_home}" "${partition_scheme_home}" "${home_code}"
     done
     printf "\nAn empty size means that the partition will take up all the remaining space on the block device\n"
-    
+
     printf "Write to disk?\n"
     if ! prompt; then
         return 1
@@ -41,11 +41,11 @@ function partition_min() {
 #% DESCRIPTION
 #% Helper function to partition all disks using gdisk
 function gdisk_partition_all() {
-    [[ ! -z $partition_mbr ]] && gdisk_partition $1 $block_device_mbr $partition_number_mbr $partition_scheme_mbr $mbr_code
-    [[ ! -z $partition_gpt ]] && gdisk_partition $1 $block_device_gpt $partition_number_gpt $partition_scheme_gpt $gpt_code
-    [[ ! -z $partition_swap ]] && gdisk_partition $1 $block_device_swap $partition_number_swap $partition_scheme_swap $swap_code
-    [[ ! -z $partition_root ]] && gdisk_partition $1 $block_device_root $partition_number_root $partition_scheme_root $root_code
-    [[ ! -z $partition_home ]] && gdisk_partition $1 $block_device_home $partition_number_home $partition_scheme_home $home_code
+    [[ ! -z $partition_mbr ]] && gdisk_partition $1 "$block_device_mbr" "$partition_number_mbr" "$partition_scheme_mbr" "$mbr_code"
+    [[ ! -z $partition_gpt ]] && gdisk_partition $1 "$block_device_gpt" "$partition_number_gpt" "$partition_scheme_gpt" "$gpt_code"
+    [[ ! -z $partition_swap ]] && gdisk_partition $1 "$block_device_swap" "$partition_number_swap" "$partition_scheme_swap" "$swap_code"
+    [[ ! -z $partition_root ]] && gdisk_partition $1 "$block_device_root" "$partition_number_root" "$partition_scheme_root" "$root_code"
+    [[ ! -z $partition_home ]] && gdisk_partition $1 "$block_device_home" "$partition_number_home" "$partition_scheme_home" "$home_code"
 }
 
 #% gdiskPartition
@@ -60,15 +60,19 @@ function gdisk_partition() {
     local partition_code=$5
 
     (
+        ## New partition
         echo n
+
+        ## Partition number
         echo $partition_number
+
+        ## First sector
         echo ""
-        
-        if [[ ! -z $partition_scheme ]]; then
-            echo "+${partition_scheme}"
-        else
-            echo ""
-        fi
+
+        ## Last sector
+        echo "+${partition_scheme}"
+
+        ## Gdisk partition code
         echo "$partition_code"
 
         echo p
