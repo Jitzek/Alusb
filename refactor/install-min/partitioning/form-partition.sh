@@ -198,11 +198,11 @@ function form_get_first_available_partition() {
     partition_return=""
     while true; do
         local block_device=""
-        printf "Which block device should the %s partition be installed on?\n\n" "$topic"
+        printf "Which block device should the %s partition be installed on?:\n" "$topic"
 
         lsblk -no kname
 
-        read -p "Please insert the name of the block device for the ${topic} partition: /dev/" block_device
+        read -p "\nPlease insert the name of the block device for the ${topic} partition: /dev/" block_device
         if [ -z "$block_device" ]; then
             printf "Given input is empty\n"
             continue
@@ -217,7 +217,7 @@ function form_get_first_available_partition() {
         partition_suffix=$(get_first_available_partition_suffix $block_device)
         
         local partition_number=$?
-        printf 'The %s will be installed on "%s"\n' "$topic" "${block_device}${partition_suffix}"
+        printf '\nThe %s will be installed on "%s"\n' "$topic" "${block_device}${partition_suffix}"
         printf "Confirm?\n"
         if ! prompt; then
             continue
