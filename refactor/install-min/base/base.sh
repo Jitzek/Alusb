@@ -66,7 +66,7 @@ function base_min() {
     sed -i '/ext4/s/relatime/noatime/' /etc/fstab
 
     $(
-        if [[ ! -z "${PARTITION_MAP[home]}" = true ]] && [ "$encrypt_home_partition" = true ]; then
+        if [[ ! -z "${PARTITION_MAP[home]}" ]] && [ "$encrypt_home_partition" = true ]; then
             echo "echo -e 'home\\t${PARTITION_MAP[home]}' >> /etc/crypttab"
             echo "sed -i \"/GRUB_CMDLINE_LINUX=/c\\GRUB_CMDLINE_LINUX=cryptdevice=$(blkid -s UUID -o value ${PARTITION_MAP[home]}):home\" /etc/default/grub"
             echo "sed -i 's/^HOOKS=(base udev autodetect modconf block/& encrypt/' /etc/mkinitcpio.conf"
