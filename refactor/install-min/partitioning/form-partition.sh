@@ -8,7 +8,17 @@ function form_partition_min() {
 
     for ((i = 0; i < ${#PARTITION_INDEX_MAP[@]}; i++)); do
         local l_partition_key="${PARTITION_INDEX_MAP[$i]}"
-        [[ ! -z "${PARTITION_MAP[$l_partition_key]}" ]] && continue
+        if [[ ! -z "${PARTITION_MAP[$l_partition_key]}" ]]; then
+            if [[ "$l_partition_key" == "home" ]]; then
+                if [ "$encrypt_home_partition" = false ]; then
+                    printf "\nEncrypt Home partition?\n"
+                    if prompt; then
+                        encrypt_home_partition=true
+                    fi
+                fi
+            fi
+            continue
+        fi
 
         local l_partition_name="$(echo $l_partition_key | awk '{print toupper($0)}')"
 
@@ -37,15 +47,6 @@ function form_partition_min() {
                 PARTITION_SCHEME_MAP[$l_partition_key]="$l_partition_scheme"
                 break
             done
-        fi
-
-        if [[ $l_partition_key == "home" ]]; then
-            if [ "$encrypt_home_partition" = false ]; then
-                printf "\nEncrypt Home partition?\n"
-                if prompt; then
-                    encrypt_home_partition=true
-                fi
-            fi
         fi
     done
 
