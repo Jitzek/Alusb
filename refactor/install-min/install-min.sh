@@ -47,8 +47,6 @@ function main() {
     ##############################
     ###       ENDOF Base       ###
     ##############################
-
-    printf "Installation complete!"
 }
 
 main

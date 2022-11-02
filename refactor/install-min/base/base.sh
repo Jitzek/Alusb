@@ -117,6 +117,8 @@ function base_min() {
     if [ "${encrypt_home_partition}" = true ]; then
         cryptsetup close home
     fi
+
+    printf "\nInstallation complete!\n"
 }
 ########################
 ###    ENDOF Base    ###
