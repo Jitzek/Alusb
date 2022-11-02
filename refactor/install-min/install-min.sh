@@ -29,9 +29,14 @@ function main() {
             fi
         done
     fi
+    ##############################
+    ###   ENDOF Partitioning   ###
+    ##############################
 
+    ##############################
+    ###          Base          ###
+    ##############################
     printf "\nConfigure Base?\n"
-
     if prompt; then
         while true; do
             form_base_min
@@ -40,10 +45,11 @@ function main() {
             fi
         done
     fi
+    ##############################
+    ###       ENDOF Base       ###
+    ##############################
 
-    ##############################
-    ###   ENDOF Partitioning   ###
-    ##############################
+    printf "Installation complete!"
 }
 
 main
