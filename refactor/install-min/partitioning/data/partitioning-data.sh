@@ -5,7 +5,7 @@ declare -A PARTITION_MAP
 PARTITION_MAP[mbr]="/dev/vda1"
 PARTITION_MAP[gpt]="/dev/vda2"
 PARTITION_MAP[root]="/dev/vda3"
-PARTITION_MAP[home]=""
+PARTITION_MAP[home]="/dev/vda4"
 PARTITION_MAP[swap]=""
 
 ## If false, user will not be prompted for creation of mbr and gpt partitions

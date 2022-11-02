@@ -34,7 +34,8 @@ function partition_min() {
     if ! prompt; then
         return 1
     fi
-    # gdisk_partition_all true
+    gdisk_partition_all true
+
     return 0
 }
 
