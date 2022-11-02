@@ -51,7 +51,7 @@ function gdisk_partition_all() {
             printf "${PARTITION_SCHEME_MAP[$l_partition_key]}\n"
             printf "${PARTITION_SCHEME_MAP[$l_partition_key]}\n\n"
 
-            gdisk_partition $1 "${BLOCK_DEVICE_MAP[$l_partition_key]}" "${PARTITION_NUMBER_MAP[$l_partition_key]}" "${PARTITION_SCHEME_MAP[$l_partition_key]}" "${PARTITION_SCHEME_MAP[$l_partition_key]}"
+            # gdisk_partition $1 "${BLOCK_DEVICE_MAP[$l_partition_key]}" "${PARTITION_NUMBER_MAP[$l_partition_key]}" "${PARTITION_SCHEME_MAP[$l_partition_key]}" "${PARTITION_SCHEME_MAP[$l_partition_key]}"
         fi
     done
 }
