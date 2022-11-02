@@ -45,7 +45,7 @@ function partition_min() {
 function gdisk_partition_all() {
     for ((i = 0; i < ${#PARTITION_INDEX_MAP[@]}; i++)); do
         local l_partition_key="${PARTITION_INDEX_MAP[$i]}"
-        if [[ ! -z "${PARTITION_MAP[$l_l_partition_key]}" ]]; then
+        if [[ ! -z "${PARTITION_MAP[$l_partition_key]}" ]]; then
             gdisk_partition $1 ${BLOCK_DEVICE_MAP[$l_partition_key]} ${PARTITION_NUMBER_MAP[$l_partition_key]} ${PARTITION_SCHEME_MAP[$l_partition_key]} ${PARTITION_SCHEME_MAP[$l_partition_key]}
         fi
     done
