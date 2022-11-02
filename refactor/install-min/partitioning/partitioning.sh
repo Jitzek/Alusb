@@ -12,18 +12,18 @@ home_code="8302"
 ###   Partitioning   ###
 ########################
 function partition_min() {
-    declare local UNIQUE_BLOCK_DEVICES=($block_device_mbr)
+    declare local l_UNIQUE_BLOCK_DEVICES=($block_device_mbr)
     for block_device in "${BLOCK_DEVICE_MAP[@]}"; do
-        [[ ! "${UNIQUE_BLOCK_DEVICES[*]} " =~ "${block_device}" ]] && UNIQUE_BLOCK_DEVICES+=($block_device)
+        [[ ! "${l_UNIQUE_BLOCK_DEVICES[*]} " =~ "${block_device}" ]] && l_UNIQUE_BLOCK_DEVICES+=($block_device)
 
     done
 
-    for block_device in "${UNIQUE_BLOCK_DEVICES[@]}"; do
+    for block_device in "${l_UNIQUE_BLOCK_DEVICES[@]}"; do
         printf "\nBlock Device: \"%s\":" $block_device
 
         for block_device_key in "${!BLOCK_DEVICE_MAP[@]}"; do
             if [[ "${BLOCK_DEVICE_MAP[$block_device_key]}" == "${block_device}" ]]; then
-                printf "\n\t%s (\"%s\"). Size: \"%s\". Code: \"%s\"" "$(echo $block_device_key | awk '{print toupper($0)}')" "${PARTITION_MAP[$block_device_key]}" "${partition_scheme_mbr}" "${mbr_code}"
+                printf "\n\t%s (\"%s\"). Size: \"%s\". Code: \"%s\"" "$(echo $block_device_key | awk '{print toupper($0)}')" "${PARTITION_MAP[$block_device_key]}" "${PARTITION_SCHEME_MAP[$block_device_key]}" "${PARTITION_CODE_MAP[$block_device_key]}"
                 [[ "$block_device_key" == "home" ]] && printf ". Encrypted: \"%s\"" $encrypt_home_partition
             fi
         done

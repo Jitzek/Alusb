@@ -6,39 +6,40 @@ function form_partition_min() {
     touch $temp_partitions_file
     cat /proc/partitions >$temp_partitions_file
 
-    for partition_key in "${!PARTITION_MAP[@]}"; do
-        [[ ! -z "${PARTITION_MAP[$partition_key]}" ]] && continue
+    for ((i = 0; i < ${#PARTITION_INDEX_MAP[@]}; i++)); do
+        local l_partition_key="${PARTITION_INDEX_MAP[$i]}"
+        [[ ! -z "${PARTITION_MAP[$l_partition_key]}" ]] && continue
 
-        local l_partition_name="$(echo $partition_key | awk '{print toupper($0)}')"
+        local l_partition_name="$(echo $l_partition_key | awk '{print toupper($0)}')"
 
         printf "\n%s partition not set\n" "$l_partition_name"
         printf "Create %s partition?\n" "$l_partition_name"
         ! prompt && continue
         form_get_first_available_partition "$l_partition_name"
-        PARTITION_MAP[$partition_key]="$partition_return"
+        PARTITION_MAP[$l_partition_key]="$partition_return"
 
         ## Partition is empty
-        if [[ -z $PARTITION_SCHEME_MAP[$partition_key] ]]; then
+        if [[ -z "${PARTITION_SCHEME_MAP[$l_partition_key]}" ]]; then
             printf "\n%s partition size is empty\n" "$l_partition_name"
             while true; do
-                partition_scheme_mbr="10MB"
-                printf "Insert size of MBR partition (default: %s)\n" "$partition_scheme_mbr"
-                read local l_partition_scheme
+                printf "Insert size of %s partition (Leave empty to take up all remaining space on the device)\n" $l_partition_name
+                read l_partition_scheme
                 if [ -z "$l_partition_scheme" ]; then
-                    printf "Given input is empty\n"
-                    continue
+                    printf "\nA %s partition will be created and take up all remaining space on the device.\n" "$l_partition_name"
+                else
+                    printf "\nA %s partition with size %s will be created.\n" "$l_partition_name" "$l_partition_scheme"
                 fi
 
-                printf "\nA %s partition with size %s will be created.\n" "$l_partition_name" "$l_partition_scheme"
                 printf "Confirm?\n"
                 if ! prompt; then
                     continue
                 fi
+                PARTITION_SCHEME_MAP[$l_partition_key]="$l_partition_scheme"
                 break
             done
         fi
 
-        if [[ $partition_key == "home" ]]; then
+        if [[ $l_partition_key == "home" ]]; then
             if [ "$encrypt_home_partition" = false ]; then
                 printf "\nEncrypt Home partition?\n"
                 if prompt; then
@@ -48,15 +49,15 @@ function form_partition_min() {
         fi
     done
 
-    for partition_key in "${!PARTITION_MAP[@]}"; do
-        [[ -z "${PARTITION_MAP[$partition_key]}" ]] && continue
+    for l_partition_key in "${!PARTITION_MAP[@]}"; do
+        [[ -z "${PARTITION_MAP[$l_partition_key]}" ]] && continue
 
-        if [[ "${PARTITION_MAP[$partition_key]}" == *p[0-9] ]]; then
-            BLOCK_DEVICE_MAP[$partition_key]="${PARTITION_MAP[$partition_key]::-2}"
+        if [[ "${PARTITION_MAP[$l_partition_key]}" == *p[0-9] ]]; then
+            BLOCK_DEVICE_MAP[$l_partition_key]="${PARTITION_MAP[$l_partition_key]::-2}"
         else
-            BLOCK_DEVICE_MAP[$partition_key]="${PARTITION_MAP[$partition_key]::-1}"
+            BLOCK_DEVICE_MAP[$l_partition_key]="${PARTITION_MAP[$l_partition_key]::-1}"
         fi
-        PARTITION_NUMBER_MAP[$partition_key]=${PARTITION_MAP[$partition_key]: -1}
+        PARTITION_NUMBER_MAP[$l_partition_key]=${PARTITION_MAP[$l_partition_key]: -1}
     done
 
     rm $temp_partitions_file
