@@ -37,7 +37,7 @@ function base_min() {
         mount "${PARTITION_MAP[home]}" /mnt/home
     fi
 
-    pacstrap /mnt "${BASE_PACKAGES[@]}" "${ADDITIONAL_PACKAGES[@]}"
+    pacstrap /mnt "${BASE_PACKAGES[@]}"
     if [ "${encrypt_home_partition}" = true ]; then
         pacstrap /mnt "${ENCRYPT_PACKAGES[@]}"
     fi
@@ -79,7 +79,7 @@ function base_min() {
     echo 'GRUB_DISABLE_OS_PROBER=false' | tee --append /etc/default/grub
     grub-mkconfig -o /boot/grub/grub.cfg
     
-    # pacman -S ${ADDITIONAL_PACKAGES[@]} --noconfirm
+    pacman -S ${ADDITIONAL_PACKAGES[@]} --noconfirm
 
     echo -e '# Enable tab completion\nif [[ -f /etc/bash_completion ]]; then\n\t/etc/bash_completion\nfi' | tee --append /etc/environment
 
