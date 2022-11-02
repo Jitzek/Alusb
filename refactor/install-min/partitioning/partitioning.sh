@@ -15,7 +15,6 @@ function partition_min() {
     declare local l_UNIQUE_BLOCK_DEVICES=($block_device_mbr)
     for block_device in "${BLOCK_DEVICE_MAP[@]}"; do
         [[ ! "${l_UNIQUE_BLOCK_DEVICES[*]} " =~ "${block_device}" ]] && l_UNIQUE_BLOCK_DEVICES+=($block_device)
-
     done
 
     for block_device in "${l_UNIQUE_BLOCK_DEVICES[@]}"; do
@@ -44,11 +43,11 @@ function partition_min() {
 #% DESCRIPTION
 #% Helper function to partition all disks using gdisk
 function gdisk_partition_all() {
-    [[ ! -z $partition_mbr ]] && gdisk_partition $1 "$block_device_mbr" "$partition_number_mbr" "$partition_scheme_mbr" "$mbr_code"
-    [[ ! -z $partition_gpt ]] && gdisk_partition $1 "$block_device_gpt" "$partition_number_gpt" "$partition_scheme_gpt" "$gpt_code"
-    [[ ! -z $partition_swap ]] && gdisk_partition $1 "$block_device_swap" "$partition_number_swap" "$partition_scheme_swap" "$swap_code"
-    [[ ! -z $partition_root ]] && gdisk_partition $1 "$block_device_root" "$partition_number_root" "$partition_scheme_root" "$root_code"
-    [[ ! -z $partition_home ]] && gdisk_partition $1 "$block_device_home" "$partition_number_home" "$partition_scheme_home" "$home_code"
+    for partition_key in "${!PARTITION_MAP[@]}"; do
+        if [[ ! -z "${PARTITION_MAP[$partition_key]}" ]]; then
+            gdisk_partition $1 ${BLOCK_DEVICE_MAP[$partition_key]} ${PARTITION_NUMBER_MAP[$partition_key]} ${PARTITION_SCHEME_MAP[$partition_key]} ${PARTITION_SCHEME_MAP[$partition_key]}
+        fi
+    done
 }
 
 #% gdiskPartition
