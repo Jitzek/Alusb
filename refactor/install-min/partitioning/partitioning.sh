@@ -12,19 +12,21 @@ home_code="8302"
 ###   Partitioning   ###
 ########################
 function partition_min() {
-    declare local BLOCK_DEVICES=($block_device_mbr)
-    [[ ! "${BLOCK_DEVICES[*]} " =~ "${block_device_gpt}" ]] && BLOCK_DEVICES+=($block_device_gpt)
-    [[ ! "${BLOCK_DEVICES[*]} " =~ "${block_device_swap}" ]] && BLOCK_DEVICES+=($block_device_swap)
-    [[ ! "${BLOCK_DEVICES[*]} " =~ "${block_device_root}" ]] && BLOCK_DEVICES+=($block_device_root)
-    [[ ! "${BLOCK_DEVICES[*]} " =~ "${block_device_home}" ]] && BLOCK_DEVICES+=($block_device_home)
+    declare local UNIQUE_BLOCK_DEVICES=($block_device_mbr)
+    for block_device in "${BLOCK_DEVICE_MAP[@]}"; do
+        [[ ! "${UNIQUE_BLOCK_DEVICES[*]} " =~ "${block_device}" ]] && UNIQUE_BLOCK_DEVICES+=($block_device)
 
-    for block_device in "${BLOCK_DEVICES[@]}"; do
+    done
+
+    for block_device in "${UNIQUE_BLOCK_DEVICES[@]}"; do
         printf "\nBlock Device: \"%s\":" $block_device
-        [[ ! -z $partition_mbr ]] && [[ "${block_device}" == "${block_device_mbr}" ]] && printf "\n\tMBR (\"%s\"). Size: \"%s\". Code: \"%s\"" "${partition_mbr}" "${partition_scheme_mbr}" "${mbr_code}"
-        [[ ! -z $partition_gpt ]] && [[ "${block_device}" == "${block_device_gpt}" ]] && printf "\n\tGPT (\"%s\"). Size: \"%s\". Code: \"%s\"" "${partition_gpt}" "${partition_scheme_gpt}" "${gpt_code}"
-        [[ ! -z $partition_swap ]] && [[ "${block_device}" == "${block_device_swap}" ]] && printf "\n\tSWAP (\"%s\"). Size: \"%s\". Code: \"%s\"" "${partition_swap}" "${partition_scheme_swap}" "${swap_code}"
-        [[ ! -z $partition_root ]] && [[ "${block_device}" == "${block_device_root}" ]] && printf "\n\tROOT (\"%s\"). Size: \"%s\". Code: \"%s\"" "${partition_root}" "${partition_scheme_root}" "${root_code}"
-        [[ ! -z $partition_home ]] && [[ "${block_device}" == "${block_device_home}" ]] && printf "\n\tHOME (\"%s\"). Size: \"%s\". Code: \"%s\"" "${partition_home}" "${partition_scheme_home}" "${home_code}"
+
+        for block_device_key in "${!BLOCK_DEVICE_MAP[@]}"; do
+            if [[ "${BLOCK_DEVICE_MAP[$block_device_key]}" == "${block_device}" ]]; then
+                printf "\n\t%s (\"%s\"). Size: \"%s\". Code: \"%s\"" "$(echo $block_device_key | awk '{print toupper($0)}')" "${PARTITION_MAP[$block_device_key]}" "${partition_scheme_mbr}" "${mbr_code}"
+                [[ "$block_device_key" == "home" ]] && printf ". Encrypted: \"%s\"" $encrypt_home_partition
+            fi
+        done
     done
     printf "\nAn empty size means that the partition will take up all the remaining space on the block device\n"
 
@@ -32,7 +34,7 @@ function partition_min() {
     if ! prompt; then
         return 1
     fi
-    gdisk_partition_all true
+    # gdisk_partition_all true
     return 0
 }
 

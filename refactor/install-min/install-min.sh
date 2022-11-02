@@ -16,6 +16,7 @@ function main() {
     ###      Partitioning      ###
     ##############################
     printf "\nPartition Disks?\n"
+
     if prompt; then
         while true; do
             form_partition_min

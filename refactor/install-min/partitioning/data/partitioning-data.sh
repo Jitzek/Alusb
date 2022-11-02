@@ -1,38 +1,29 @@
 ########################################
 ###      Configurable variables      ###
 ########################################
-partition_mbr=""
-partition_gpt=""
-partition_root=""
-partition_home=""
-partition_swap=""
-
-block_device_mbr=""
-block_device_gpt=""
-block_device_swap=""
-block_device_root=""
-block_device_home=""
-
-partition_number_mbr=""
-partition_number_gpt=""
-partition_number_swap=""
-partition_number_root=""
-partition_number_home=""
+declare -A PARTITION_MAP
+PARTITION_MAP[mbr]="/dev/vda1"
+PARTITION_MAP[gpt]="/dev/vda2"
+PARTITION_MAP[root]="/dev/vda3"
+PARTITION_MAP[home]="/dev/vdb1"
+PARTITION_MAP[swap]="/dev/vda4"
 
 ## If false, user will not be prompted for creation of mbr and gpt partitions
-create_boot_partitions=true
-partition_scheme_mbr="10MB"
-partition_scheme_gpt="500MB"
+declare -A PARTITION_SCHEME_MAP
+PARTITION_SCHEME_MAP[mbr]="10MB"
+PARTITION_SCHEME_MAP[gpt]="500MB"
 ## Leave empty to not create swap
-partition_scheme_swap=""
+PARTITION_SCHEME_MAP[swap]=""
 ## Leave empty for max available size
-partition_scheme_root=""
+PARTITION_SCHEME_MAP[root]="20GB"
 ## Leave empty for max available size
-partition_scheme_home=""
-## If false, user will not be prompted for creation of home partition
-create_home_partition=true
+PARTITION_SCHEME_MAP[home]=""
 ## If false, home partition will not be encrypted (user will be prompted)
 encrypt_home_partition=false
 ########################################
 ###   ENDOF Configurable variables   ###
 ########################################
+
+declare -A BLOCK_DEVICE_MAP
+
+declare -A PARTITION_NUMBER_MAP
