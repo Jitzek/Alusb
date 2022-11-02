@@ -20,15 +20,15 @@ function main() {
     ##############################
     ###      Partitioning      ###
     ##############################
-    printf "\nPartition Disks?\n"
-    if prompt; then
-        while true; do
+    while true; do
+        printf "\nPartition Disks?\n"
+        if prompt; then
             form_partition_min
             if partition_min; then
                 break
             fi
-        done
-    fi
+        fi
+    done
     ##############################
     ###   ENDOF Partitioning   ###
     ##############################
@@ -36,15 +36,14 @@ function main() {
     ##############################
     ###          Base          ###
     ##############################
-    printf "\nConfigure Base?\n"
-    if prompt; then
-        while true; do
+    while true; do
+        printf "\nInstall Base?\n"
+        if prompt; then
             form_base_min
-            if base_min; then
-                break
-            fi
-        done
-    fi
+            base_min
+            break
+        fi
+    done
     ##############################
     ###       ENDOF Base       ###
     ##############################
