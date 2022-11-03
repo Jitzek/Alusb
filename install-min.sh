@@ -1,15 +1,15 @@
 #!/bin/bash
 _DIR_MIN=$(dirname ${0})
 
-source "${_DIR_MIN}/../general/prompt.sh"
+source "${_DIR_MIN}/lib/general/prompt.sh"
 
-source "${_DIR_MIN}/partitioning/data/partitioning-data.sh"
-source "${_DIR_MIN}/partitioning/form-partition.sh"
-source "${_DIR_MIN}/partitioning/partitioning.sh"
+source "${_DIR_MIN}/lib/install-min/partitioning/data/partitioning-data.sh"
+source "${_DIR_MIN}/lib/install-min/partitioning/form-partition.sh"
+source "${_DIR_MIN}/lib/install-min/partitioning/partitioning.sh"
 
-source "${_DIR_MIN}/base/data/base-data.sh"
-source "${_DIR_MIN}/base/base.sh"
-source "${_DIR_MIN}/base/form-base.sh"
+source "${_DIR_MIN}/lib/install-min/base/data/base-data.sh"
+source "${_DIR_MIN}/lib/install-min/base/base.sh"
+source "${_DIR_MIN}/lib/install-min/base/form-base.sh"
 
 prerequisites=("reflector")
 

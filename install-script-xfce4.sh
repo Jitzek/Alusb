@@ -2,8 +2,8 @@
 
 _DIR_XFCE4=$(dirname ${0})
 _TEMP_XFCE4=${_DIR_XFCE4}/tmp/
-source "${_DIR_XFCE4}/../general/prompt.sh"
-source "${_DIR_XFCE4}/form-xfce4.sh"
+source "${_DIR_XFCE4}/lib/general/prompt.sh"
+source "${_DIR_XFCE4}/lib/additional-install-xfce4/form-xfce4.sh"
 
 ## Configurable variables ##
 home_dir=""
