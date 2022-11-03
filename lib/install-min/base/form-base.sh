@@ -1,5 +1,6 @@
-#% form
-function form_rest() {
+_DIR_FORM_BASE=$(dirname ${0})
+
+function form_base_min() {
     if [[ -z $region ]]; then
         printf "\nRegion has not been set\n"
         while true; do
