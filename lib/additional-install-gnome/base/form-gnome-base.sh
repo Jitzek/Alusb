@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #% form
-function form_gnome() {
+function form_gnome_base() {
     # Guess home directory of user if left empty
     if [[ -z "$home_dir" ]]; then
         home_dir=/home/$(who am i | awk '{print $1}')

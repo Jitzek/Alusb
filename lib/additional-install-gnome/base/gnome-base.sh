@@ -5,7 +5,7 @@ _DIR_GNOME_BASE=$(dirname ${0})
 #######################
 ###       Base      ###
 #######################
-function base_gnome() {
+function gnome_base() {
     sudo pacman --noconfirm -S "${BASE_PACKAGES[@]}"
     sudo systemctl enable lightdm
     git clone https://aur.archlinux.org/yay-git.git ${_TEMP_XFCE4}/yay/
