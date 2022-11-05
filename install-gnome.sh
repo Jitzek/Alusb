@@ -54,3 +54,5 @@ function main() {
     ####################
     rm -rf ${_TEMP_GNOME}
 }
+
+main
