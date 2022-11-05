@@ -15,6 +15,8 @@ function base_gnome() {
     sudo systemctl enable cups.service
     sudo systemctl enable avahi-daemon.service
 
+    sudo systemctl enable gdm.service
+
     return 0
 }
 #######################
