@@ -1,7 +1,7 @@
 #!/bin/bash
 
-_DIR_GNOME_THEMING=$(dirname ${0})
-_TEMP_GNOME_THEMING=${_TEMP_GNOME_THEMING}/tmp/gnome-theming
+_DIR_GNOME_THEMING=${_DIR_GNOME}/lib/additional-install-gnome/theming
+_TEMP_GNOME_THEMING=${_DIR_GNOME_THEMING}/tmp/gnome-theming
 
 ##########################
 ###       Theming      ###
