@@ -13,6 +13,8 @@ source "${_DIR_GNOME}/lib/additional-install-gnome/nvidia/data/gnome-nvidia-data
 source "${_DIR_GNOME}/lib/additional-install-gnome/nvidia/form-gnome-nvidia.sh"
 source "${_DIR_GNOME}/lib/additional-install-gnome/nvidia/gnome-nvidia.sh"
 
+source "${_DIR_GNOME}/lib/additional-install-gnome/base/gnome-theming.sh"
+
 function main() {
     mkdir ${_TEMP_GNOME}
     sudo pacman --noconfirm -Syu "${prerequisites[@]}"
@@ -22,11 +24,12 @@ function main() {
     ######################
     while true; do
         printf "\nInstall Base?\n"
-        if prompt; then
-            form_gnome_base
-            if gnome_base; then
-                break
-            fi
+        if ! prompt; then
+            break
+        fi
+        form_gnome_base
+        if gnome_base; then
+            break
         fi
     done
     ######################
@@ -38,16 +41,35 @@ function main() {
     ########################
     while true; do
         printf "\nConfigure NVIDIA?\n"
-        if prompt; then
-            form_gnome_nvidia
-            if gnome_nvidia; then
-                break
-            fi
+        if ! prompt; then
+            break
+        fi
+        form_gnome_nvidia
+        if gnome_nvidia; then
+            break
         fi
     done
     ########################
     ###   ENDOF Nvidia   ###
     ########################
+
+
+    #########################
+    ###      Theming      ###
+    #########################
+    while true; do
+        printf "\nInstall Theming?\n"
+        if ! prompt; then
+            break
+        fi
+        if gnome_theming; then
+            break
+        fi
+    done
+    #########################
+    ###   ENDOF Theming   ###
+    #########################
+
 
     ####################
     ###   Clean-up   ###
