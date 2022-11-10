@@ -11,6 +11,10 @@ function gnome_theming() {
 
     unzip "${_DIR_GNOME_THEMING}/payloads.zip" -d "${_TEMP_GNOME_THEMING}"
     
+    mkdir ${home_dir}/.icons/
+    mkdir ${home_dir}/.themes/
+    mkdir ${home_dir}/.local/
+    mkdir ${home_dir}/.local/share/
     cp -rf ${_TEMP_GNOME_THEMING}/payloads/home/icons/* ${home_dir}/.icons/
     cp -rf ${_TEMP_GNOME_THEMING}/payloads/home/themes/* ${home_dir}/.themes/
 
