@@ -13,7 +13,7 @@ source "${_DIR_GNOME}/lib/additional-install-gnome/nvidia/data/gnome-nvidia-data
 source "${_DIR_GNOME}/lib/additional-install-gnome/nvidia/form-gnome-nvidia.sh"
 source "${_DIR_GNOME}/lib/additional-install-gnome/nvidia/gnome-nvidia.sh"
 
-source "${_DIR_GNOME}/lib/additional-install-gnome/base/gnome-theming.sh"
+source "${_DIR_GNOME}/lib/additional-install-gnome/theming/gnome-theming.sh"
 
 function main() {
     mkdir ${_TEMP_GNOME}
