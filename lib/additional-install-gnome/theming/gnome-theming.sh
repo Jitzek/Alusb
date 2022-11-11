@@ -1,25 +1,25 @@
 #!/bin/bash
 
-_DIR_GNOME_THEMING=${_DIR_GNOME}/lib/additional-install-gnome/theming
-_TEMP_GNOME_THEMING=${_DIR_GNOME_THEMING}/tmp/gnome-theming
+_DIR_GNOME_THEMING=$(dirname ${0})
+_DIR_GNOME_THEMING_TEMP=${_DIR_GNOME_THEMING}/tmp/gnome-theming
 
 ##########################
 ###       Theming      ###
 ##########################
 function gnome_theming() {
-    mkdir -p ${_TEMP_GNOME_THEMING}
+    mkdir -p ${_DIR_GNOME_THEMING_TEMP}
 
-    unzip "${_DIR_GNOME_THEMING}/payloads.zip" -d "${_TEMP_GNOME_THEMING}"
+    unzip "${_DIR_GNOME_THEMING}/payloads.zip" -d "${_DIR_GNOME_THEMING_TEMP}"
     
     mkdir ${home_dir}/.icons/
     mkdir ${home_dir}/.themes/
     mkdir ${home_dir}/.local/
     mkdir ${home_dir}/.local/share/
-    cp -rf ${_TEMP_GNOME_THEMING}/payloads/home/icons/* ${home_dir}/.icons/
-    cp -rf ${_TEMP_GNOME_THEMING}/payloads/home/themes/* ${home_dir}/.themes/
+    cp -rf ${_DIR_GNOME_THEMING_TEMP}/payloads/home/icons/* ${home_dir}/.icons/
+    cp -rf ${_DIR_GNOME_THEMING_TEMP}/payloads/home/themes/* ${home_dir}/.themes/
 
-    cp -rf ${_TEMP_GNOME_THEMING}/payloads/home/config/* ${home_dir}/.config/
-    cp -rf ${_TEMP_GNOME_THEMING}/payloads/home/.bashrc ${home_dir}
+    cp -rf ${_DIR_GNOME_THEMING_TEMP}/payloads/home/config/* ${home_dir}/.config/
+    cp -rf ${_DIR_GNOME_THEMING_TEMP}/payloads/home/.bashrc ${home_dir}
     for d in ${home_dir}/.icons/*/; do
         gtk-update-icon-cache "$d"
     done
@@ -27,12 +27,12 @@ function gnome_theming() {
         gtk-update-icon-cache "$d"
     done
 
-    cp -rf ${_TEMP_GNOME_THEMING}/payloads/home/local/share/* ${home_dir}/.local/share/
+    cp -rf ${_DIR_GNOME_THEMING_TEMP}/payloads/home/local/share/* ${home_dir}/.local/share/
 
-    sudo chmod +x ${_TEMP_GNOME_THEMING}/payloads/grub/install.sh
-    $(cd ${_TEMP_GNOME_THEMING}/payloads/grub && sudo ./install.sh)
+    sudo chmod +x ${_DIR_GNOME_THEMING_TEMP}/payloads/grub/install.sh
+    $(cd ${_DIR_GNOME_THEMING_TEMP}/payloads/grub && sudo ./install.sh)
 
-    rm -rf ${_TEMP_GNOME_THEMING}
+    rm -rf ${_DIR_GNOME_THEMING_TEMP}
 
     return 0
 }
