@@ -10,7 +10,7 @@ function form_partition_min() {
         local l_partition_key="${PARTITION_INDEX_MAP[$i]}"
         if [[ ! -z "${PARTITION_MAP[$l_partition_key]}" ]]; then
             if [[ "$l_partition_key" == "home" ]]; then
-                if [ "$encrypt_home_partition" = false ]; then
+                if [[ -z "$encrypt_home_partition" ]]; then
                     printf "\nEncrypt Home partition?\n"
                     if prompt; then
                         encrypt_home_partition=true
