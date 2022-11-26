@@ -8,15 +8,17 @@ function form_partition_min() {
 
     for ((i = 0; i < ${#PARTITION_INDEX_MAP[@]}; i++)); do
         local l_partition_key="${PARTITION_INDEX_MAP[$i]}"
-        if [[ ! -z "${PARTITION_MAP[$l_partition_key]}" ]]; then
-            if [[ "$l_partition_key" == "home" ]]; then
-                if [[ -z "$encrypt_home_partition" ]]; then
-                    printf "\nEncrypt Home partition?\n"
-                    if prompt; then
-                        encrypt_home_partition=true
-                    fi
+        
+        if [[ "$l_partition_key" == "home" ]]; then
+            if [[ -z "$encrypt_home_partition" ]]; then
+                printf "\nEncrypt Home partition?\n"
+                if prompt; then
+                    encrypt_home_partition=true
                 fi
             fi
+        fi
+        
+        if [[ ! -z "${PARTITION_MAP[$l_partition_key]}" ]]; then
             continue
         fi
 
