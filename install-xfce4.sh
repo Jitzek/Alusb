@@ -27,7 +27,7 @@ function main() {
     ################
     sudo pacman --noconfirm -S "${base_packages[@]}"
     sudo systemctl enable lightdm
-    git clone https://aur.archlinux.org/yay-git.git ${_TEMP_XFCE4}/yay/
+    git clone https://aur.archlinux.org/yay.git ${_TEMP_XFCE4}/yay/
     $(cd ${_TEMP_XFCE4}/yay && makepkg -si --noconfirm)
     yay --noconfirm -Syu "${additional_yay_packages[@]}"
     sudo pacman --noconfirm -S "${additional_pacman_packages[@]}"
