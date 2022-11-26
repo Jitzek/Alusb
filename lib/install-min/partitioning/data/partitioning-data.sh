@@ -15,7 +15,7 @@ PARTITION_SCHEME_MAP[gpt]="500MB"
 ## Leave empty to not create swap
 PARTITION_SCHEME_MAP[swap]=""
 ## Leave empty for max available size
-PARTITION_SCHEME_MAP[root]="20GB"
+PARTITION_SCHEME_MAP[root]=""
 ## Leave empty for max available size
 PARTITION_SCHEME_MAP[home]=""
 ## If false, home partition will not be encrypted (user will be prompted)
