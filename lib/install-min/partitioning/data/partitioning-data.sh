@@ -18,8 +18,8 @@ PARTITION_SCHEME_MAP[swap]=""
 PARTITION_SCHEME_MAP[root]=""
 ## Leave empty for max available size
 PARTITION_SCHEME_MAP[home]=""
-## If false, home partition will not be encrypted (user will be prompted)
-encrypt_home_partition=false
+## If false, home partition will not be encrypted (leave empty ("") for prompt)
+encrypt_home_partition=""
 ########################################
 ###   ENDOF Configurable variables   ###
 ########################################
