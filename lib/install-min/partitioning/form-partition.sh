@@ -8,48 +8,47 @@ function form_partition_min() {
 
     for ((i = 0; i < ${#PARTITION_INDEX_MAP[@]}; i++)); do
         local l_partition_key="${PARTITION_INDEX_MAP[$i]}"
-        
-        if [[ "$l_partition_key" == "home" ]]; then
-            if [[ -z "$encrypt_home_partition" ]]; then
-                printf "\nEncrypt Home partition?\n"
-                if prompt; then
-                    encrypt_home_partition=true
-                fi
+
+        ## Partition not set, prompt
+        if [[ -z "${PARTITION_MAP[$l_partition_key]}" ]]; then
+            local l_partition_name="$(echo $l_partition_key | awk '{print toupper($0)}')"
+
+            printf "\n%s partition not set\n" "$l_partition_name"
+            printf "Create %s partition?\n" "$l_partition_name"
+            ! prompt && continue
+            form_get_first_available_partition "$l_partition_name"
+            PARTITION_MAP[$l_partition_key]="$partition_return"
+
+            ## Partition size not set, prompt
+            if [[ -z "${PARTITION_SCHEME_MAP[$l_partition_key]}" ]]; then
+                printf "\n%s partition size is empty\n" "$l_partition_name"
+                while true; do
+                    printf "Insert size of %s partition (Leave empty to take up all remaining space on the device)\n" $l_partition_name
+                    read l_partition_scheme
+                    if [ -z "$l_partition_scheme" ]; then
+                        printf "\nA %s partition will be created and take up all remaining space on the device.\n" "$l_partition_name"
+                    else
+                        printf "\nA %s partition with size %s will be created.\n" "$l_partition_name" "$l_partition_scheme"
+                    fi
+
+                    printf "Confirm?\n"
+                    if ! prompt; then
+                        continue
+                    fi
+                    PARTITION_SCHEME_MAP[$l_partition_key]="$l_partition_scheme"
+                    break
+                done
             fi
         fi
-        
-        if [[ ! -z "${PARTITION_MAP[$l_partition_key]}" ]]; then
-            continue
+
+        ## Prompt for home encryption if home partition is set
+        if [[ ! -z "${PARTITION_MAP[$l_partition_key]}" ]] && [[ "$l_partition_key" == "home" ]] && [[ -z "$encrypt_home_partition" ]]; then
+            printf "\nEncrypt Home partition?\n"
+            if prompt; then
+                encrypt_home_partition=true
+            fi
         fi
 
-        local l_partition_name="$(echo $l_partition_key | awk '{print toupper($0)}')"
-
-        printf "\n%s partition not set\n" "$l_partition_name"
-        printf "Create %s partition?\n" "$l_partition_name"
-        ! prompt && continue
-        form_get_first_available_partition "$l_partition_name"
-        PARTITION_MAP[$l_partition_key]="$partition_return"
-
-        ## Partition is empty
-        if [[ -z "${PARTITION_SCHEME_MAP[$l_partition_key]}" ]]; then
-            printf "\n%s partition size is empty\n" "$l_partition_name"
-            while true; do
-                printf "Insert size of %s partition (Leave empty to take up all remaining space on the device)\n" $l_partition_name
-                read l_partition_scheme
-                if [ -z "$l_partition_scheme" ]; then
-                    printf "\nA %s partition will be created and take up all remaining space on the device.\n" "$l_partition_name"
-                else
-                    printf "\nA %s partition with size %s will be created.\n" "$l_partition_name" "$l_partition_scheme"
-                fi
-
-                printf "Confirm?\n"
-                if ! prompt; then
-                    continue
-                fi
-                PARTITION_SCHEME_MAP[$l_partition_key]="$l_partition_scheme"
-                break
-            done
-        fi
     done
 
     for l_partition_key in "${!PARTITION_MAP[@]}"; do
