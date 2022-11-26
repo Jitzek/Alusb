@@ -26,8 +26,10 @@ function base_min() {
     mount "${PARTITION_MAP[root]}" /mnt
     mkdir /mnt/boot
     mkdir /mnt/boot/efi
-    if [ "$create_boot_partitions" = true ]; then
+    if [ ! -z "${PARTITION_MAP[mbr]}" ]; then
         mount "${PARTITION_MAP[mbr]}" /mnt/boot
+    fi
+    if [ ! -z "${PARTITION_MAP[gpt]}" ]; then
         mount "${PARTITION_MAP[gpt]}" /mnt/boot/efi
     fi
     mkdir /mnt/home
