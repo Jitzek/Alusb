@@ -46,6 +46,8 @@ function form_partition_min() {
             printf "\nEncrypt Home partition?\n"
             if prompt; then
                 encrypt_home_partition=true
+            else
+                encrypt_home_partition=false
             fi
         fi
 
