@@ -6,7 +6,7 @@ _DIR_KDE_BASE_TEMP=${_DIR_KDE_BASE}/tmp/base
 #######################
 ###       Base      ###
 #######################
-function gnome_base() {
+function kde_base() {
     mkdir -p ${_DIR_KDE_BASE_TEMP}
 
     sudo pacman --noconfirm -S "${BASE_PACKAGES[@]}"
