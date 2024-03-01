@@ -1,22 +1,22 @@
 #!/bin/bash
 
-_DIR_GNOME=$(dirname ${0})
-_TEMP_GNOME=${_DIR_GNOME}/tmp/
+_DIR_KDE=$(dirname ${0})
+_TEMP_KDE=${_DIR_KDE}/tmp/
 
-source "${_DIR_GNOME}/lib/general/prompt.sh"
+source "${_DIR_KDE}/lib/general/prompt.sh"
 
-source "${_DIR_GNOME}/lib/additional-install-gnome/base/data/gnome-base-data.sh"
-source "${_DIR_GNOME}/lib/additional-install-gnome/base/form-gnome-base.sh"
-source "${_DIR_GNOME}/lib/additional-install-gnome/base/gnome-base.sh"
+source "${_DIR_KDE}/lib/additional-install-kde/base/data/kde-base-data.sh"
+source "${_DIR_KDE}/lib/additional-install-kde/base/form-kde-base.sh"
+source "${_DIR_KDE}/lib/additional-install-kde/base/kde-base.sh"
 
-source "${_DIR_GNOME}/lib/additional-install-gnome/nvidia/data/gnome-nvidia-data.sh"
-source "${_DIR_GNOME}/lib/additional-install-gnome/nvidia/form-gnome-nvidia.sh"
-source "${_DIR_GNOME}/lib/additional-install-gnome/nvidia/gnome-nvidia.sh"
+source "${_DIR_KDE}/lib/additional-install-kde/nvidia/data/kde-nvidia-data.sh"
+source "${_DIR_KDE}/lib/additional-install-kde/nvidia/form-kde-nvidia.sh"
+source "${_DIR_KDE}/lib/additional-install-kde/nvidia/kde-nvidia.sh"
 
-source "${_DIR_GNOME}/lib/additional-install-gnome/theming/gnome-theming.sh"
+source "${_DIR_KDE}/lib/additional-install-kde/theming/kde-theming.sh"
 
 function main() {
-    mkdir ${_TEMP_GNOME}
+    mkdir ${_TEMP_KDE}
     sudo pacman --noconfirm -Syu "${prerequisites[@]}"
 
     ######################
@@ -27,8 +27,8 @@ function main() {
         if ! prompt; then
             break
         fi
-        form_gnome_base
-        if gnome_base; then
+        form_kde_base
+        if kde_base; then
             break
         fi
     done
@@ -44,8 +44,8 @@ function main() {
         if ! prompt; then
             break
         fi
-        form_gnome_nvidia
-        if gnome_nvidia; then
+        form_kde_nvidia
+        if kde_nvidia; then
             break
         fi
     done
@@ -63,8 +63,8 @@ function main() {
             break
         fi
         ## Requires home directory to be configured
-        form_gnome_base
-        if gnome_theming; then
+        form_kde_base
+        if kde_theming; then
             break
         fi
     done
@@ -76,7 +76,7 @@ function main() {
     ####################
     ###   Clean-up   ###
     ####################
-    rm -rf ${_TEMP_GNOME}
+    rm -rf ${_TEMP_KDE}
 }
 
 main
