@@ -62,7 +62,7 @@ function main() {
         if ! prompt; then
             break
         fi
-        ## Requires hoem directory to be configured
+        ## Requires home directory to be configured
         form_gnome_base
         if gnome_theming; then
             break

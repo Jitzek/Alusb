@@ -37,18 +37,20 @@ function main() {
     ###################
     ###   Desktop   ###
     ###################
-    tar -xvzf "${_DIR_XFCE4}/payloads.tar.gz" -C "${_TEMP_XFCE4}"
+
+    git clone https://github.com/Jitzek/Alusb-payloads.git ${_TEMP_XFCE4}/payloads/
+    tar -xvzf "${_TEMP_XFCE4}/payloads/additional-install-xfce4/payloads.tar.gz" -C "${_TEMP_XFCE4}/extracted"
     mkdir -p ${home_dir}/.config/xfce4/xfconf
     # Clone Papirus icons
-    git clone https://github.com/PapirusDevelopmentTeam/papirus-icon-theme.git ${_TEMP_XFCE4}/papirus/
-    sudo cp -rf ${_TEMP_XFCE4}/papirus/Papirus /usr/share/icons/
-    sudo cp -rf ${_TEMP_XFCE4}/papirus/Papirus-Dark /usr/share/icons/
-    sudo cp -rf ${_TEMP_XFCE4}/payloads/usr/share/themes/* /usr/share/themes/
-    sudo cp -rf ${_TEMP_XFCE4}/payloads/usr/share/icons/* /usr/share/icons/
-    sudo cp -rf ${_TEMP_XFCE4}/payloads/usr/share/backgrounds/* /usr/share/backgrounds/
-    sudo cp -rf ${_TEMP_XFCE4}/payloads/etc/lightdm/* /etc/lightdm/
-    cp -rf ${_TEMP_XFCE4}/payloads/home/.config/* ${home_dir}/.config/
-    cp -rf ${_TEMP_XFCE4}/payloads/home/.bashrc ${home_dir}
+    git clone https://github.com/PapirusDevelopmentTeam/papirus-icon-theme.git ${_TEMP_XFCE4}/extracted/papirus/
+    sudo cp -rf ${_TEMP_XFCE4}/extracted/papirus/Papirus /usr/share/icons/
+    sudo cp -rf ${_TEMP_XFCE4}/extracted/papirus/Papirus-Dark /usr/share/icons/
+    sudo cp -rf ${_TEMP_XFCE4}/extracted/payloads/usr/share/themes/* /usr/share/themes/
+    sudo cp -rf ${_TEMP_XFCE4}/extracted/payloads/usr/share/icons/* /usr/share/icons/
+    sudo cp -rf ${_TEMP_XFCE4}/extracted/payloads/usr/share/backgrounds/* /usr/share/backgrounds/
+    sudo cp -rf ${_TEMP_XFCE4}/extracted/payloads/etc/lightdm/* /etc/lightdm/
+    cp -rf ${_TEMP_XFCE4}/extracted/payloads/home/.config/* ${home_dir}/.config/
+    cp -rf ${_TEMP_XFCE4}/extracted/payloads/home/.bashrc ${home_dir}
     for d in /usr/share/icons/*/; do
         sudo gtk-update-icon-cache "$d"
     done
@@ -57,9 +59,9 @@ function main() {
     # done
     # Only 1 theme so no need to loop through all themes
     sudo gtk-update-icon-cache /usr/share/themes/Nordic-darker
-    sudo cp -rf ${_TEMP_XFCE4}/payloads/usr/share/gtksourceview-4/styles/* /usr/share/gtksourceview-4/styles/
+    sudo cp -rf ${_TEMP_XFCE4}/extracted/payloads/usr/share/gtksourceview-4/styles/* /usr/share/gtksourceview-4/styles/
     mkdir -p ${home_dir}/.local/share/xfce4/terminal/colorschemes/
-    cp -rf ${_TEMP_XFCE4}/payloads/home/.local/share/xfce4/terminal/colorschemes/* ${home_dir}/.local/share/xfce4/terminal/colorschemes/
+    cp -rf ${_TEMP_XFCE4}/extracted/payloads/home/.local/share/xfce4/terminal/colorschemes/* ${home_dir}/.local/share/xfce4/terminal/colorschemes/
 
     ###################
     ###   Network   ###
@@ -69,8 +71,8 @@ function main() {
     ################
     ###   GRUB   ###
     ################
-    sudo chmod +x ${_TEMP_XFCE4}/payloads/grub/install.sh
-    $(cd ${_TEMP_XFCE4}/payloads/grub && sudo ./install.sh)
+    sudo chmod +x ${_TEMP_XFCE4}/extracted/payloads/grub/install.sh
+    $(cd ${_TEMP_XFCE4}/extracted/payloads/grub && sudo ./install.sh)
     ## For some reason changing the wallpaper (sometimes) causes the grub theme to not work
     # sudo mv /boot/grub/themes/Xenlism-Arch/background.jpg /boot/grub/themes/Xenlism-Arch/background.jpg.bak
     # sudo cp ${_TEMP_XFCE4}/payloads/grub/background.jpg /boot/grub/themes/Xenlism-Arch/background.jpg
