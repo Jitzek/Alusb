@@ -1,6 +1,7 @@
 #!/bin/bash
 
 function kde_nvidia() {
+    sudo echo "options nvidia_drm modeset=1" > /etc/modprobe.d/nvidia-drm.conf
     sudo mkdir /etc/pacman.d/hooks
     echo "[Trigger]
 Operation=Install
