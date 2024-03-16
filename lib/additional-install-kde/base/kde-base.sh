@@ -20,6 +20,8 @@ function kde_base() {
 
     sudo pacman --noconfirm -R "${TO_REMOVE_PACMAN_PACKAGES[@]}"
 
+    echo "LC_TIME=C.UTF-8" | sudo tee -a /etc/locale.conf
+
     return 0
 }
 #######################
