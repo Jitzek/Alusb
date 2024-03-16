@@ -1,7 +1,8 @@
 #!/bin/bash
 
 function kde_nvidia() {
-    sudo echo "options nvidia_drm modeset=1" | sudo tee /etc/modprobe.d/nvidia-wayland.conf
+    echo "options nvidia_drm modeset=1" | sudo tee /etc/modprobe.d/nvidia-wayland.conf
+    echo "options nvidia NVreg_PreserveVideoMemoryAllocations=1" | sudo tee /etc/modprobe.d/nvidia-sleep.conf
     sudo mkdir /etc/pacman.d/hooks
     echo "[Trigger]
 Operation=Install
@@ -18,4 +19,5 @@ Exec=/usr/bin/mkinitcpio -P" | sudo tee /etc/pacman.d/hooks/nvidia-lts.hook
     sudo pacman --noconfirm -S "${nvidia_packages[@]}"
     echo 'ACTION=="add", DEVPATH=="/bus/pci/drivers/nvidia", RUN+="/usr/bin/nvidia-modprobe -c0 -u"' | sudo tee /etc/udev/rules.d/70-nvidia.rules
     sudo mkinitcpio -P
+    sudo systemctl enable nvidia-suspend.service
 }
